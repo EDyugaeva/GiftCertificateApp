@@ -10,6 +10,5 @@ public interface GiftCertificateService {
     GiftCertificate updateGiftCertificate(Long id, Map<String, Object> params);
     GiftCertificate getGiftCertificatesById(Long id);
     List<GiftCertificate> getAll();
-
-    List<GiftCertificate> getGiftCertificatesByParameter(String sortedBy, String sortingValue, String orderingBy, boolean desc);
+    List<GiftCertificate> getGiftCertificatesByParameter(Map<String, String> filteredBy, List<String> orderingBy, String order);
 }

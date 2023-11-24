@@ -144,7 +144,6 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
         String query = SELECT_ALL + SELECT_BY_NAME + getOrderBy(sortingByName, sortingByDate, descOrdering);
         String param = "%" + name + "%";
         try {
-            System.out.println(query);
             return jdbcTemplateObject.query(query, new Object[]{param}, new ListGiftCertificateMapper());
         } catch (EmptyResultDataAccessException e) {
             log.error("Error while getting gift certificates", e);
@@ -153,6 +152,17 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
+    public List<GiftCertificate> getGiftCertificatesByQuery(String query) {
+        log.info("Getting all gift certificates with parameters ");
+        String fullQuery = SELECT_ALL + query;
+        try {
+            return jdbcTemplateObject.query(fullQuery, new ListGiftCertificateMapper());
+        } catch (EmptyResultDataAccessException e) {
+            log.error("Error while getting gift certificates", e);
+            throw new DataNotFoundException(NOT_FOUND_GIFT_CERTIFICATE.getErrorCode());
+        }
+    }
+
     public List<GiftCertificate> getGiftCertificatesByDescription(String description, boolean sortingByName,
                                                                   boolean sortingByDate, boolean descOrdering) {
         log.info("Getting all gift certificates with description like {}", description);
@@ -187,4 +197,6 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
         }
         return stringBuilder.toString();
     }
+
+
 }

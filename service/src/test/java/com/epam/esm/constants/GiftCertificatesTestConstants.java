@@ -34,8 +34,12 @@ public class GiftCertificatesTestConstants {
             LocalDateTime.of(2023, 1, 1, 0, 5), null);
     public static final Long NEW_ID = 6L;
     public static final Long ABSENT_ID = 7L;
-    public static final String TAG_NAME = "tag_name_2";
-    public static final String NAME = "gift_certificate";
-    public static final String DESCRIPTION = "description";
+    public static final String TAG_NAME_VALUE = "tag_name";
+    public static final String TAG_NAME_IN_QUERY = "tag.name";
+    public static final String NAME_VALUE = "gift_certificate";
+    public static final String DATA_IN_QUERY = "create_date";
+    public static final String DESC = "desc";
+    public static final String ASC = "asc";
+    public static final String DESCRIPTION_VALUE = "description_value";
     public static final List<GiftCertificate> GIFT_CERTIFICATE_LIST_WITH_TAG_NAME = Arrays.asList(GIFT_CERTIFICATE_1, GIFT_CERTIFICATE_2);
 }

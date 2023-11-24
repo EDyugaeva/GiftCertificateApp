@@ -13,6 +13,8 @@ public interface GiftCertificateDao {
     List<GiftCertificate> getGiftCertificates();
     List<GiftCertificate> getGiftCertificatesByTagName(String tagName, boolean sortingByName, boolean sortingByDate, boolean descOrdering);
     List<GiftCertificate> getGiftCertificatesByName(String name, boolean sortingByName, boolean sortingByDate, boolean descOrdering);
+    List<GiftCertificate> getGiftCertificatesByQuery(String query);
+
     List<GiftCertificate> getGiftCertificatesByDescription(String description, boolean sortingByName, boolean sortingByDate, boolean descOrdering);
     void deleteGiftCertificate(long id);
 }

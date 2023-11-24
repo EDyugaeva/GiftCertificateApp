@@ -5,6 +5,7 @@ import com.epam.esm.exceptions.NotSupportedSortingException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.services.GiftCertificateService;
+import com.epam.esm.utils.QueryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,21 +81,43 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificate> getGiftCertificatesByParameter(String filteredBy, String filterValue, String orderingBy, boolean desc) {
-        logger.info("Getting all gift certificates filtered by {} with value = {} ordering by {}, desc = {} ", filteredBy, filterValue, orderingBy, desc);
-        boolean orderingByName = orderingBy.contains(NAME);
-        boolean orderingByDate = orderingBy.contains(DATE);
-        if (filteredBy.isEmpty()) {
-            return giftCertificateDao.getGiftCertificates(orderingByName, orderingByDate, desc);
-        } else if (filteredBy.equals(NAME)) {
-            return giftCertificateDao.getGiftCertificatesByName(filterValue, orderingByName, orderingByDate, desc);
-        } else if (filteredBy.equals(TAG_NAME)) {
-            return giftCertificateDao.getGiftCertificatesByTagName(filterValue, orderingByName, orderingByDate, desc);
-        } else if (filteredBy.equals(DESCRIPTION)) {
-            return giftCertificateDao.getGiftCertificatesByDescription(filterValue, orderingByName, orderingByDate, desc);
-        } else {
-            logger.debug("Not supported filter = {}", filteredBy);
-            throw new NotSupportedSortingException();
+    public List<GiftCertificate> getGiftCertificatesByParameter(Map<String, String> filteredBy, List<String> orderingBy, String order) {
+        logger.info("Getting all gift certificates filtered by {} ordering by {}, order = {} ", filteredBy, orderingBy, order);
+        return giftCertificateDao.getGiftCertificatesByQuery(getQuery(filteredBy, orderingBy, order));
+    }
+
+    String getQuery(Map<String, String> filteredBy, List<String> orderingBy, String order) {
+        QueryGenerator queryGenerator = new QueryGenerator();
+        if (filteredBy != null) {
+            for (Map.Entry<String, String> entry : filteredBy.entrySet()) {
+                switch (entry.getKey()) {
+                    case NAME:
+                        queryGenerator.addSelectByName(entry.getValue());
+                        break;
+                    case DESCRIPTION:
+                        queryGenerator.addSelectByDescription(entry.getValue());
+                        break;
+                    case TAG_NAME:
+                        queryGenerator.addSelectByTagName(entry.getValue());
+                        break;
+                    default:
+                        logger.debug("Not supported filter = {}", filteredBy);
+                        throw new NotSupportedSortingException();
+                }
+            }
         }
+        if (orderingBy != null) {
+            for (String s : orderingBy) {
+                if (!s.equalsIgnoreCase(DATE) && !s.equalsIgnoreCase(NAME)) {
+                    logger.debug("Not supported ordering = {}", s);
+                    throw new NotSupportedSortingException();
+                }
+                queryGenerator.addSorting(s);
+            }
+        }
+        if (order.equalsIgnoreCase("desc")) {
+            queryGenerator.addDescOrdering();
+        }
+        return queryGenerator.getQuery();
     }
 }
