@@ -6,6 +6,7 @@ import com.epam.esm.dao.mapper.GiftCertificateTagMapper;
 import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.model.GiftCertificateTag;
 import org.slf4j.Logger;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -55,7 +56,7 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
             return jdbcTemplateObject.queryForObject(SELECT_BY_ID, new Object[]{id}, new GiftCertificateTagMapper());
         } catch (EmptyResultDataAccessException e) {
             log.error("Error while getting pair with id = {}", id, e);
-            throw new DataNotFoundException("message",NOT_FOUND_PAIR);
+            throw new DataNotFoundException(String.format("Requested resource not found (id = %d)", id), NOT_FOUND_PAIR);
         }
     }
 
@@ -66,19 +67,30 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
             return jdbcTemplateObject.query(SELECT_ALL, new GiftCertificateTagMapper());
         } catch (EmptyResultDataAccessException e) {
             log.error("Error while getting all pairs", e);
-            throw new DataNotFoundException("message",NOT_FOUND_PAIR);
+            throw new DataNotFoundException("Requested resource not found", NOT_FOUND_PAIR);
         }
     }
 
     @Override
     public void deleteGiftTag(Long id) {
         log.info("Trying to delete tag-gift pair with id = {}", id);
-        jdbcTemplateObject.update(DELETE, id);
+        try {
+            jdbcTemplateObject.update(DELETE, id);
+        }
+        catch (DataAccessException e) {
+            log.error("Exception while deleting tag-gift pair with gift certificate id = {} ", id, e);
+            throw new DataNotFoundException("Requested resource for updating  not found", NOT_FOUND_PAIR);
+        }
     }
 
     @Override
     public void deleteGiftCertificateTagByTagAndGiftCertificateId(long giftCertificateId, long tagId) {
         log.info("Trying to delete tag-gift pair with gift certificate id = {} and tag id = {}", giftCertificateId, tagId);
-        jdbcTemplateObject.update(DELETE_BY_IDS, giftCertificateId, tagId);
+        try {
+            jdbcTemplateObject.update(DELETE_BY_IDS, giftCertificateId, tagId);
+        } catch (DataAccessException e) {
+            log.error("Exception while deleting tag-gift pair with gift certificate id = {} and tag id = {}", giftCertificateId, tagId, e);
+            throw new DataNotFoundException("Requested resource for updating  not not found", NOT_FOUND_PAIR);
+        }
     }
 }

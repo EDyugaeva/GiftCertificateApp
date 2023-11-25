@@ -6,8 +6,10 @@ import com.epam.esm.dao.mapper.TagMapper;
 import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.ExceptionCodesConstants;
 import com.epam.esm.exceptions.OtherDatabaseException;
+import com.epam.esm.exceptions.WrongModelParameterException;
 import com.epam.esm.model.Tag;
 import org.slf4j.Logger;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+
+import static com.epam.esm.exceptions.ExceptionCodesConstants.*;
 
 @Component
 public class TagDaoImpl implements TagDao {
@@ -34,16 +38,22 @@ public class TagDaoImpl implements TagDao {
     @Override
     public Tag saveTag(Tag tag) {
         log.info("Saving tag " + tag);
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplateObject.update(
-                connection -> {
-                    PreparedStatement ps = connection.prepareStatement(INSERT, new String[]{Column.ID});
-                    ps.setString(1, tag.getName());
-                    return ps;
-                },
-                keyHolder);
-        tag.setId(keyHolder.getKeyAs(Long.class));
-        return tag;
+        try {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplateObject.update(
+                    connection -> {
+                        PreparedStatement ps = connection.prepareStatement(INSERT, new String[]{Column.ID});
+                        ps.setString(1, tag.getName());
+                        return ps;
+                    },
+                    keyHolder);
+            tag.setId(keyHolder.getKeyAs(Long.class));
+            return tag;
+        }
+        catch (Exception e) {
+            log.error("Exception while saving new tag");
+            throw new WrongModelParameterException("Parameters are not correct", WRONG_DATA_PARAMETER);
+        }
     }
 
     @Override
@@ -53,11 +63,10 @@ public class TagDaoImpl implements TagDao {
             return jdbcTemplateObject.queryForObject(SELECT_BY_ID, new Object[]{id}, new TagMapper());
         } catch (EmptyResultDataAccessException e) {
             log.error("Error while getting tag with id = {}", id, e);
-            throw new DataNotFoundException(String.format("Requested resource not found (id = %d)", id), ExceptionCodesConstants.NOT_FOUND_TAG);
+            throw new DataNotFoundException(String.format("Requested resource not found (id = %d)", id), NOT_FOUND_TAG);
         } catch (RuntimeException e) {
             log.error("Error while getting tag with id = {}", id, e);
             throw new OtherDatabaseException(String.format("Requested resource not found (id = %d)", id), ExceptionCodesConstants.OTHER_EXCEPTION);
-
         }
     }
 
@@ -68,7 +77,7 @@ public class TagDaoImpl implements TagDao {
             return jdbcTemplateObject.queryForObject(SELECT_BY_NAME, new Object[]{name}, new TagMapper());
         } catch (EmptyResultDataAccessException e) {
             log.error("Error while getting tag with name = {}", name, e);
-            throw new DataNotFoundException("message", "404001");
+            throw new DataNotFoundException(String.format("Requested resource not found (name = %s)", name), NOT_FOUND_TAG);
         }
     }
 
@@ -79,13 +88,19 @@ public class TagDaoImpl implements TagDao {
             return jdbcTemplateObject.query(SELECT_ALL, new TagMapper());
         } catch (EmptyResultDataAccessException e) {
             log.error("Error while getting all tags", e);
-            throw new DataNotFoundException("message", "404001");
+            throw new DataNotFoundException("Requested resource not found", NOT_FOUND_TAG);
         }
     }
 
     @Override
     public void deleteTag(long id) {
         log.info("Trying to delete tag with id = {}", id);
-        jdbcTemplateObject.update(DELETE, id);
+        try {
+            jdbcTemplateObject.update(DELETE, id);
+
+        } catch (DataAccessException e) {
+            log.error("Exception while deleting tag with id = {}", id, e);
+            throw new DataNotFoundException("Requested resource for updating  not not found", NOT_FOUND_TAG);
+        }
     }
 }

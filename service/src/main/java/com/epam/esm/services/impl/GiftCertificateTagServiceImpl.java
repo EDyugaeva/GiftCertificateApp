@@ -1,6 +1,8 @@
 package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.GiftCertificateTagDao;
+import com.epam.esm.exceptions.DataNotFoundException;
+import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificateTag;
 import com.epam.esm.services.GiftCertificateTagService;
 import org.slf4j.Logger;
@@ -9,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.epam.esm.exceptions.ExceptionCodes.WRONG_PARAMETER;
 
 @Service
 public class GiftCertificateTagServiceImpl implements GiftCertificateTagService {
@@ -44,12 +48,21 @@ public class GiftCertificateTagServiceImpl implements GiftCertificateTagService 
     @Override
     public void deleteGiftCertificateTag(long id) {
         logger.info("Deleting gift certificate - tag pair with id = {}", id);
-        dao.deleteGiftTag(id);
+        try {
+            getGiftCertificateTag(id);
+            dao.deleteGiftTag(id);
+        } catch (DataNotFoundException e) {
+            throw new WrongParameterException(e.getMessage(), WRONG_PARAMETER);
+        }
     }
 
     @Override
     public void deleteGiftCertificateTagByTagAndGiftCertificateId(long giftCertificateId, long tagId) {
         logger.info("Deleting gift certificate - tag pair with certificate id = {} and tag id = {}", giftCertificateId, tagId);
-        dao.deleteGiftCertificateTagByTagAndGiftCertificateId( giftCertificateId, tagId);
+        try {
+            dao.deleteGiftCertificateTagByTagAndGiftCertificateId(giftCertificateId, tagId);
+        } catch (RuntimeException e) {
+            throw new WrongParameterException(e.getMessage(), WRONG_PARAMETER);
+        }
     }
 }

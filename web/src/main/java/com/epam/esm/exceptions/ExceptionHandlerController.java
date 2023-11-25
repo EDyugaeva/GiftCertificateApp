@@ -13,7 +13,25 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DataNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    protected BaseCustomException handleConflictNoSuchField(BaseCustomException ex) {
+    protected BaseCustomException handleDataNotFoundException(BaseCustomException ex) {
+        return ex;
+    }
+
+    @ExceptionHandler(WrongParameterException.class)
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    protected BaseCustomException handleWrongParameterException(BaseCustomException ex) {
+        return ex;
+    }
+
+    @ExceptionHandler(OtherDatabaseException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected BaseCustomException handleOtherDatabaseException(BaseCustomException ex) {
+        return ex;
+    }
+
+    @ExceptionHandler(WrongModelParameterException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected BaseCustomException handleWrongModelParameterException(BaseCustomException ex) {
         return ex;
     }
 }

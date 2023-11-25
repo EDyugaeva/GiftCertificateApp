@@ -1,12 +1,19 @@
 package com.epam.esm.utils;
 
 import com.epam.esm.exceptions.WrongParameterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import static com.epam.esm.constants.QueryParams.DATE;
-import static com.epam.esm.constants.QueryParams.NAME;
+import java.util.List;
+import java.util.Map;
+
+import static com.epam.esm.constants.QueryParams.*;
 import static com.epam.esm.exceptions.ExceptionCodes.NOT_SUPPORTED;
 
 public class QueryGenerator {
+
+    Logger logger = LoggerFactory.getLogger(QueryGenerator.class);
+
     private static final String SELECT_BY_TAG_NAME = " gc.id in (SELECT gc.id" +
             "             FROM gift_certificate gc" +
             "                      JOIN gift_certificate_tag gct ON gc.id = gct.gift_id" +
@@ -79,6 +86,48 @@ public class QueryGenerator {
             return DATE_COLUMN;
         } else {
             throw new WrongParameterException("Not supported sorting parameter", NOT_SUPPORTED);
+        }
+    }
+
+    public void createFilter(Map<String, String> filteredBy, QueryGenerator queryGenerator) {
+        if (filteredBy != null) {
+            for (Map.Entry<String, String> entry : filteredBy.entrySet()) {
+                if (entry.getValue() != null) {
+                    switch (entry.getKey()) {
+                        case NAME:
+                            queryGenerator.addSelectByName(entry.getValue());
+                            break;
+                        case DESCRIPTION:
+                            queryGenerator.addSelectByDescription(entry.getValue());
+                            break;
+                        case TAG_NAME:
+                            queryGenerator.addSelectByTagName(entry.getValue());
+                            break;
+                        default:
+                            logger.debug("Not supported filter = {}", filteredBy);
+                            throw new WrongParameterException("Non supported filtering parameter", NOT_SUPPORTED);
+                    }
+                }
+            }
+        }
+    }
+
+    public void createSorting(List<String> orderingBy, QueryGenerator queryGenerator) {
+        if (orderingBy != null) {
+            for (String s : orderingBy) {
+                if (!s.equalsIgnoreCase(DATE) && !s.equalsIgnoreCase(NAME)) {
+                    logger.debug("Not supported ordering = {}", s);
+                    throw new WrongParameterException("Not supported ordering parameter", NOT_SUPPORTED);
+                }
+                queryGenerator.addSorting(s);
+            }
+        }
+    }
+
+
+    public static void createOrder(String order, QueryGenerator queryGenerator) {
+        if (order != null && order.equalsIgnoreCase("desc")) {
+            queryGenerator.addDescOrdering();
         }
     }
 }

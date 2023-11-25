@@ -2,6 +2,7 @@ package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.exceptions.DataNotFoundException;
+import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.Tag;
 import com.epam.esm.services.TagService;
 import org.slf4j.Logger;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.epam.esm.exceptions.ExceptionCodes.WRONG_PARAMETER;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -51,6 +54,11 @@ public class TagServiceImpl implements TagService {
     @Override
     public void deleteTag(long id) {
         logger.info("Deleting tag with id {}", id);
-        tagDao.deleteTag(id);
+        try {
+            getTag(id);
+            tagDao.deleteTag(id);
+        } catch (RuntimeException e) {
+            throw new WrongParameterException(e.getMessage(), WRONG_PARAMETER);
+        }
     }
 }

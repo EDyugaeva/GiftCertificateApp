@@ -4,10 +4,10 @@ import com.epam.esm.dao.Column;
 import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.dao.mapper.ListGiftCertificateMapper;
 import com.epam.esm.exceptions.DataNotFoundException;
+import com.epam.esm.exceptions.WrongModelParameterException;
 import com.epam.esm.model.GiftCertificate;
 import org.slf4j.Logger;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -17,7 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.util.List;
 
-import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_FOUND_GIFT_CERTIFICATE;
+import static com.epam.esm.exceptions.ExceptionCodesConstants.*;
 
 @Component
 public class GiftCertificateDaoImpl implements GiftCertificateDao {
@@ -52,32 +52,46 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     public GiftCertificate saveGiftCertificate(GiftCertificate giftCertificate) {
         log.info("Saving gift certificate = {}", giftCertificate);
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplateObject.update(
-                connection -> {
-                    PreparedStatement ps = connection.prepareStatement(INSERT, new String[]{Column.ID});
-                    ps.setString(1, giftCertificate.getName());
-                    ps.setString(2, giftCertificate.getDescription());
-                    ps.setFloat(3, giftCertificate.getPrice());
-                    ps.setInt(4, giftCertificate.getDuration());
-                    ps.setTimestamp(5, Timestamp.valueOf(giftCertificate.getCreateDate()));
-                    if (giftCertificate.getLastUpdateDate() != null) {
-                        ps.setTimestamp(6, Timestamp.valueOf(giftCertificate.getLastUpdateDate()));
-                    }
-                    else {
-                        ps.setTimestamp(6, null);
-                    }
-                    return ps;
-                },
-                keyHolder);
-        giftCertificate.setId(keyHolder.getKeyAs(Long.class));
-        return giftCertificate;
+        try {
+            jdbcTemplateObject.update(
+                    connection -> {
+                        PreparedStatement ps = connection.prepareStatement(INSERT, new String[]{Column.ID});
+                        ps.setString(1, giftCertificate.getName());
+                        ps.setString(2, giftCertificate.getDescription());
+                        ps.setFloat(3, giftCertificate.getPrice());
+                        ps.setInt(4, giftCertificate.getDuration());
+                        ps.setTimestamp(5, Timestamp.valueOf(giftCertificate.getCreateDate()));
+                        if (giftCertificate.getLastUpdateDate() != null) {
+                            ps.setTimestamp(6, Timestamp.valueOf(giftCertificate.getLastUpdateDate()));
+                        } else {
+                            ps.setTimestamp(6, null);
+                        }
+                        return ps;
+                    },
+                    keyHolder);
+            giftCertificate.setId(keyHolder.getKeyAs(Long.class));
+            return giftCertificate;
+        } catch (Exception e) {
+            log.error("Exception while saving new gift certificate");
+            throw new WrongModelParameterException("Parameters are not correct", WRONG_DATA_PARAMETER);
+        }
     }
 
     @Override
     public GiftCertificate updateGiftCertificate(GiftCertificate giftCertificate) {
         log.info("Updating gift certificate = {}", giftCertificate);
-        jdbcTemplateObject.update(UPDATE, giftCertificate.getName(), giftCertificate.getDescription(), giftCertificate.getPrice(), giftCertificate.getDuration(),
-                Timestamp.valueOf(giftCertificate.getCreateDate()), Timestamp.valueOf(giftCertificate.getLastUpdateDate()), giftCertificate.getId());
+        try {
+            jdbcTemplateObject.update(UPDATE, giftCertificate.getName(),
+                    giftCertificate.getDescription(),
+                    giftCertificate.getPrice(), giftCertificate.getDuration(),
+                    Timestamp.valueOf(giftCertificate.getCreateDate()),
+                    Timestamp.valueOf(giftCertificate.getLastUpdateDate()),
+                    giftCertificate.getId());
+        } catch (DataAccessException e) {
+            log.error("Exception while updating recourse with id = {}", giftCertificate.getId(), e);
+            throw new DataNotFoundException(String.format("Requested resource for updating not found (id = %d)",
+                    giftCertificate.getId()), NOT_FOUND_GIFT_CERTIFICATE);
+        }
         return giftCertificate;
     }
 
@@ -88,21 +102,28 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
         try {
             List<GiftCertificate> list = jdbcTemplateObject.query(query, new Object[]{id}, new ListGiftCertificateMapper());
             return list.get(0);
-        } catch (EmptyResultDataAccessException | DataIntegrityViolationException e) {
+        } catch (RuntimeException e) {
             log.error("Error while getting gift certificate with id = {}", id, e);
-            throw new DataNotFoundException("message", NOT_FOUND_GIFT_CERTIFICATE);
+            throw new DataNotFoundException(String.format("Requested resource not found (id = %d)", id),
+                    NOT_FOUND_GIFT_CERTIFICATE);
         }
     }
 
     @Override
-    public List<GiftCertificate> getGiftCertificates(){
+    public List<GiftCertificate> getGiftCertificates() {
         return getGiftCertificatesByQuery("");
     }
 
     @Override
     public void deleteGiftCertificate(long id) {
         log.info("Deleting  gift certificate with id = ?");
-        jdbcTemplateObject.update(DELETE, id);
+        try {
+            jdbcTemplateObject.update(DELETE, id);
+        } catch (DataAccessException e) {
+            log.error("Deleting gift certificate with id = {} failed", id, e);
+            throw new DataNotFoundException(String.format("Deleting gift certificate with id  %d failed", id),
+                    OTHER_EXCEPTION);
+        }
     }
 
     @Override
@@ -113,7 +134,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
             return jdbcTemplateObject.query(fullQuery, new ListGiftCertificateMapper());
         } catch (RuntimeException e) {
             log.error("Error while getting gift certificates", e);
-            throw new DataNotFoundException("message", "404000");
+            throw new DataNotFoundException("Requested resource not found ", NOT_FOUND_GIFT_CERTIFICATE);
         }
     }
 }
