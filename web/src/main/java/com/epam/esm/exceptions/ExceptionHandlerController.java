@@ -1,13 +1,12 @@
 package com.epam.esm.exceptions;
 
+import jakarta.servlet.ServletException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -36,7 +35,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
                 new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
-    @ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler(ServletException.class)
     protected ResponseEntity<Object> handleConflictRuntime(RuntimeException ex, WebRequest request) {
         String bodyOfResponse =  "Error message: " + ex.getMessage();
         return handleExceptionInternal(ex, bodyOfResponse,

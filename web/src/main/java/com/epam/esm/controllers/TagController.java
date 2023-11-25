@@ -32,15 +32,9 @@ public class TagController {
     @GetMapping("/{id}")
     public Tag getTag(@PathVariable("id") Long id) {
         logger.info("Getting tag with id = {} in controller", id);
-        try {
-            System.out.println("in exception");
-            tagService.getTag(id);
-        } catch (Exception e) {
-            System.out.println("in handling");
-            throw new CustomException("sdfsd");
-        }
         return tagService.getTag(id);
     }
+
 
     @GetMapping()
     public List<Tag> getTags() {
