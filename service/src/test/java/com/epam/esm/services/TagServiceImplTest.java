@@ -1,6 +1,8 @@
 package com.epam.esm.services;
 
 import com.epam.esm.dao.impl.TagDaoImpl;
+import com.epam.esm.exceptions.DataNotFoundException;
+import com.epam.esm.exceptions.NotSupportedSortingException;
 import com.epam.esm.model.Tag;
 import com.epam.esm.services.impl.TagServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.epam.esm.constants.TagTestConstants.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 
@@ -27,6 +30,14 @@ public class TagServiceImplTest {
     public void getTag_expectedTag_whenGettingTag() {
         when(mock.getTag(TAG_1.getId())).thenReturn(TAG_1);
         assertEquals("Actual tag should be equal to expected", TAG_1, service.getTag(TAG_1.getId()));
+    }
+
+    @Test
+    public void getTag_exception_whenGettingException() {
+        when(mock.getTag(TAG_1.getId())).thenThrow(DataNotFoundException.class);
+        DataNotFoundException exception = assertThrows(DataNotFoundException.class,
+                () -> service.getTag(TAG_1.getId()),
+                "Tag should be not found and DataNotFoundException should be thrown");
     }
 
     @Test

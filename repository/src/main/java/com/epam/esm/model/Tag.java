@@ -1,20 +1,20 @@
 package com.epam.esm.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import java.util.List;
 import java.util.Objects;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Tag {
     private Long id;
 
     private String name;
-
+    @JsonIgnore
     private List<GiftCertificate> giftCertificateList;
 
     public Long getId() {

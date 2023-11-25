@@ -45,7 +45,7 @@ public class TagDaoTest {
     public void getTag_exception_whenTryToGetAbsentTag() {
         DataNotFoundException exception = assertThrows(DataNotFoundException.class, () -> tagDao.getTag(ABSENT_ID),
                 "Tag should be not found and  DataNotFoundException should be thrown");
-        assertEquals(NOT_FOUND_TAG.getErrorCode(), exception.getMessage(), "Exception message should be " + NOT_FOUND_TAG.getErrorCode());
+        assertEquals(NOT_FOUND_TAG.getErrorCode(), exception.getErrorCode(), "Exception message should be " + NOT_FOUND_TAG.getErrorCode());
     }
 
     @Test
@@ -61,7 +61,7 @@ public class TagDaoTest {
         tagDao.deleteTag(TAG_1.getId());
         DataNotFoundException exception = assertThrows(DataNotFoundException.class, () -> tagDao.getTag(TAG_1.getId()),
                 "Tag should be not found and  DataNotFoundException should be thrown");
-        assertEquals(NOT_FOUND_TAG.getErrorCode(), exception.getMessage(), "Exception message should be " + NOT_FOUND_TAG.getErrorCode());
+        assertEquals(NOT_FOUND_TAG.getErrorCode(), exception.getErrorCode(), "Exception message should be " + NOT_FOUND_TAG.getErrorCode());
     }
 }
 

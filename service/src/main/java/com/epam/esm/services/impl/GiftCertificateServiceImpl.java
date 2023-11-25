@@ -2,6 +2,7 @@ package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.exceptions.NotSupportedSortingException;
+import com.epam.esm.exceptions.TestException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.GiftCertificateTag;
@@ -106,7 +107,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificate> getAll() {
+    public List<GiftCertificate> getAll() throws TestException {
         logger.info("Getting all gift certificates");
         return dao.getGiftCertificates();
     }
@@ -119,7 +120,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificate> getGiftCertificatesByParameter(Map<String, String> filteredBy, List<String> orderingBy, String order) {
+    public List<GiftCertificate> getGiftCertificatesByParameter(Map<String, String> filteredBy, List<String> orderingBy, String order) throws TestException {
         logger.info("Getting all gift certificates filtered by {} ordering by {}, order = {} ", filteredBy, orderingBy, order);
         return dao.getGiftCertificatesByQuery(getQuery(filteredBy, orderingBy, order));
     }

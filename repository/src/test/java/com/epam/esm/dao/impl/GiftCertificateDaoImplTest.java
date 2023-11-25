@@ -3,6 +3,7 @@ package com.epam.esm.dao.impl;
 import com.epam.esm.config.AppConfig;
 import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.ExceptionCodes;
+import com.epam.esm.exceptions.TestException;
 import com.epam.esm.model.GiftCertificate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +31,7 @@ public class GiftCertificateDaoImplTest {
     private GiftCertificateDaoImpl giftCertificateDao;
 
     @Test
-    public void getTags_correctTagList_whenGetGiftCertificates() {
+    public void getTags_correctTagList_whenGetGiftCertificates() throws TestException {
         assertEquals(GIFT_CERTIFICATE_LIST, giftCertificateDao.getGiftCertificates(),
                 "When getting certificates, list should be equal to database values");
     }
@@ -45,7 +46,7 @@ public class GiftCertificateDaoImplTest {
     public void getGiftCertificate_exception_whenTryToGetAbsentCertificate() {
         DataNotFoundException exception = assertThrows(DataNotFoundException.class, () -> giftCertificateDao.getGiftCertificate(ABSENT_ID),
                 "Tag should be not found and  DataNotFoundException should be thrown");
-        assertEquals(NOT_FOUND_GIFT_CERTIFICATE.getErrorCode(), exception.getMessage(), "Exception message should be " + NOT_FOUND_GIFT_CERTIFICATE.getErrorCode());
+        assertEquals(NOT_FOUND_GIFT_CERTIFICATE.getErrorCode(), exception.getErrorCode(), "Exception message should be " + NOT_FOUND_GIFT_CERTIFICATE.getErrorCode());
     }
 
     @Test
@@ -68,11 +69,11 @@ public class GiftCertificateDaoImplTest {
         giftCertificateDao.deleteGiftCertificate(GIFT_CERTIFICATE_1.getId());
         DataNotFoundException exception = assertThrows(DataNotFoundException.class, () -> giftCertificateDao.getGiftCertificate(GIFT_CERTIFICATE_1.getId()),
                 "Tag should be not found and  DataNotFoundException should be thrown");
-        assertEquals(NOT_FOUND_GIFT_CERTIFICATE.getErrorCode(), exception.getMessage(), "Exception message should be " + NOT_FOUND_GIFT_CERTIFICATE.getErrorCode());
+        assertEquals(NOT_FOUND_GIFT_CERTIFICATE.getErrorCode(), exception.getErrorCode(), "Exception message should be " + NOT_FOUND_GIFT_CERTIFICATE.getErrorCode());
     }
 
     @Test
-    public void getGiftCertificatesByDescription_certificateList_whenGetListFilterByAllParams() {
+    public void getGiftCertificatesByDescription_certificateList_whenGetListFilterByAllParams() throws TestException {
         List<GiftCertificate> giftCertificateList = GIFT_CERTIFICATE_LIST_WITH_TAG_NAME
                 .stream()
                 .filter(g -> g.getName().contains(NAME_VALUE))

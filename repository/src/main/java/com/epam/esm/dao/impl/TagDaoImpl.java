@@ -55,7 +55,8 @@ public class TagDaoImpl implements TagDao {
             return jdbcTemplateObject.queryForObject(SELECT_BY_ID, new Object[]{id}, new TagMapper());
         } catch (EmptyResultDataAccessException e) {
             log.error("Error while getting tag with id = {}", id, e);
-            throw new DataNotFoundException(NOT_FOUND_TAG.getErrorCode());
+            log.error(e.getMessage());
+            throw new DataNotFoundException("message", NOT_FOUND_TAG.getErrorCode());
         }
     }
 
@@ -66,7 +67,7 @@ public class TagDaoImpl implements TagDao {
             return jdbcTemplateObject.queryForObject(SELECT_BY_NAME, new Object[]{name}, new TagMapper());
         } catch (EmptyResultDataAccessException e) {
             log.error("Error while getting tag with name = {}", name, e);
-            throw new DataNotFoundException(NOT_FOUND_TAG.getErrorCode());
+            throw new DataNotFoundException("message",NOT_FOUND_TAG.getErrorCode());
         }
     }
 
@@ -77,7 +78,7 @@ public class TagDaoImpl implements TagDao {
             return jdbcTemplateObject.query(SELECT_ALL, new TagMapper());
         } catch (EmptyResultDataAccessException e) {
             log.error("Error while getting all tags", e);
-            throw new DataNotFoundException(NOT_FOUND_TAG.getErrorCode());
+            throw new DataNotFoundException("message",NOT_FOUND_TAG.getErrorCode());
         }
     }
 

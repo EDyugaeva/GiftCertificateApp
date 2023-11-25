@@ -53,7 +53,7 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
             return jdbcTemplateObject.queryForObject(SELECT_BY_ID, new Object[]{id}, new GiftCertificateTagMapper());
         } catch (EmptyResultDataAccessException e) {
             log.error("Error while getting pair with id = {}", id, e);
-            throw new DataNotFoundException(NOT_FOUND_PAIR.getErrorCode());
+            throw new DataNotFoundException("message",NOT_FOUND_PAIR.getErrorCode());
         }
     }
 
@@ -64,7 +64,7 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
             return jdbcTemplateObject.query(SELECT_ALL, new GiftCertificateTagMapper());
         } catch (EmptyResultDataAccessException e) {
             log.error("Error while getting all pairs", e);
-            throw new DataNotFoundException(NOT_FOUND_PAIR.getErrorCode());
+            throw new DataNotFoundException("message",NOT_FOUND_PAIR.getErrorCode());
         }
     }
 

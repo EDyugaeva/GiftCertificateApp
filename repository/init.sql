@@ -1,7 +1,7 @@
 CREATE TABLE gift_certificate
 (
-    id               SERIAL PRIMARY KEY,
-    name             varchar,
+    id               BIGSERIAL PRIMARY KEY,
+    name             varchar UNIQUE ,
     description      varchar,
     price            float,
     duration         int,
@@ -12,13 +12,13 @@ CREATE TABLE gift_certificate
 
 CREATE TABLE tag
 (
-    id   SERIAL PRIMARY KEY,
-    name varchar
+    id   BIGSERIAL PRIMARY KEY,
+    name varchar UNIQUE
 );
 
 CREATE TABLE gift_certificate_tag
 (
-    id   SERIAL PRIMARY KEY,
+    id   BIGSERIAL PRIMARY KEY,
     gift_id bigint REFERENCES gift_certificate (id) ON UPDATE CASCADE,
     tag_id  bigint REFERENCES tag (id) ON UPDATE CASCADE
 

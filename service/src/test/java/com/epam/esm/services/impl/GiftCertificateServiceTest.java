@@ -3,6 +3,7 @@ package com.epam.esm.services.impl;
 import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.exceptions.ExceptionCodes;
 import com.epam.esm.exceptions.NotSupportedSortingException;
+import com.epam.esm.exceptions.TestException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.services.GiftCertificateTagService;
 import com.epam.esm.services.TagService;
@@ -49,14 +50,14 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void getAll_expectedGiftCertificateList_whenGetting1GiftCertificates() {
+    public void getAll_expectedGiftCertificateList_whenGetting1GiftCertificates() throws TestException {
         when(mock.getGiftCertificates()).thenReturn(GIFT_CERTIFICATE_LIST);
         assertEquals("Actual gift certificate list should be equal to expected",
                 GIFT_CERTIFICATE_LIST, service.getAll());
     }
 
     @Test
-    public void getByParameter_expectedGiftCertificateList_whenGettingGiftCertificatesWithNullParams() {
+    public void getByParameter_expectedGiftCertificateList_whenGettingGiftCertificatesWithNullParams() throws TestException {
         String query = service.getQuery(null, null, null);
         when(mock.getGiftCertificatesByQuery(query)).thenReturn(GIFT_CERTIFICATE_LIST);
         assertEquals("Actual gift certificate list should be equal to expected",
@@ -64,7 +65,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void getByParameter_expectedGiftCertificateList_whenGettingGiftCertificatesWithParams() {
+    public void getByParameter_expectedGiftCertificateList_whenGettingGiftCertificatesWithParams() throws TestException {
         HashMap<String, String> params = new HashMap<>();
         params.put(NAME, NAME_VALUE);
         String query = service.getQuery(params, Arrays.asList(NAME, DATE), DESC);
@@ -84,7 +85,7 @@ public class GiftCertificateServiceTest {
         map.put(NAME_VALUE, NAME_VALUE);
         NotSupportedSortingException exception = assertThrows(NotSupportedSortingException.class,
                 () -> service.getQuery(map, null, null),
-                "Tag should be not found and  DataNotFoundException should be thrown");
+                "Gift certificate should be not found and  DataNotFoundException should be thrown");
         assertEquals("Exception code should be " + ExceptionCodes.NOT_SUPPORTED.getErrorCode(),
                 ExceptionCodes.NOT_SUPPORTED.getErrorCode(), exception.getMessage());
     }

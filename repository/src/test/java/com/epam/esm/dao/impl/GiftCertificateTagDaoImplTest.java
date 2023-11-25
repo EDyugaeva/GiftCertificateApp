@@ -37,7 +37,7 @@ public class GiftCertificateTagDaoImplTest {
     public void getGiftCertificateTag_exception_whenTryToGetAbsentGiftCertificateTag() {
         DataNotFoundException exception = assertThrows(DataNotFoundException.class, () -> dao.getGiftCertificateTag(ABSENT_ID),
                 "Pair should be not found and  DataNotFoundException should be thrown");
-        assertEquals(NOT_FOUND_PAIR.getErrorCode(), exception.getMessage(), "Exception message should be " + NOT_FOUND_PAIR.getErrorCode());
+        assertEquals(NOT_FOUND_PAIR.getErrorCode(), exception.getErrorCode(), "Exception message should be " + NOT_FOUND_PAIR.getErrorCode());
     }
 
     @Test
@@ -53,6 +53,6 @@ public class GiftCertificateTagDaoImplTest {
         dao.deleteGiftTag(GIFT_TAG_1.getId());
         DataNotFoundException exception = assertThrows(DataNotFoundException.class, () -> dao.getGiftCertificateTag(GIFT_TAG_1.getId()),
                 "Gift tag pair should be not found and  DataNotFoundException should be thrown");
-        assertEquals(NOT_FOUND_PAIR.getErrorCode(), exception.getMessage(), "Exception message should be " + NOT_FOUND_PAIR.getErrorCode());
+        assertEquals(NOT_FOUND_PAIR.getErrorCode(), exception.getErrorCode(), "Exception message should be " + NOT_FOUND_PAIR.getErrorCode());
     }
 }
