@@ -1,6 +1,7 @@
 package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.TagDao;
+import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.model.Tag;
 import com.epam.esm.services.TagService;
 import org.slf4j.Logger;
@@ -30,7 +31,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Tag getTag(long id) {
+    public Tag getTag(long id) throws DataNotFoundException {
         logger.info("Getting tag with id {}", id);
         return tagDao.getTag(id);
     }

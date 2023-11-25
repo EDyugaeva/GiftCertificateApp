@@ -3,9 +3,11 @@ package com.epam.esm.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
+/**
+ * Class configuration for web project
+ */
 @Configuration
-public class MyWebInitializer extends
-        AbstractAnnotationConfigDispatcherServletInitializer {
+public class MyWebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
     @Override
     protected Class[] getRootConfigClasses() {

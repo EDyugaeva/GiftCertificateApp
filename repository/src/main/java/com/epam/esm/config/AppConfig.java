@@ -9,16 +9,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 
 @Configuration
 @ComponentScan("com.epam.esm")
 @PropertySource("classpath:application.properties")
 public class AppConfig {
-    static {
-        System.out.println("in bean");
-    }
-
     @Value("${database.driver.class.name}")
     String driverClassName;
     @Value("${database.url}")

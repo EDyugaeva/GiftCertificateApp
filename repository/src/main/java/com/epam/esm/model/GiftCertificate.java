@@ -11,6 +11,7 @@ import java.util.List;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class GiftCertificate {
     private Long id;
     private String name;

@@ -10,15 +10,14 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.util.List;
 
 import static com.epam.esm.exceptions.ExceptionCodes.NOT_FOUND_TAG;
 
-@Repository
+@Component
 public class TagDaoImpl implements TagDao {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(TagDao.class);
     private final JdbcTemplate jdbcTemplateObject;
@@ -33,7 +32,6 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
-    @Transactional
     public Tag saveTag(Tag tag) {
         log.info("Saving tag " + tag);
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -83,7 +81,6 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
-    @Transactional
     public void deleteTag(long id) {
         log.info("Trying to delete tag with id = {}", id);
         jdbcTemplateObject.update(DELETE, id);

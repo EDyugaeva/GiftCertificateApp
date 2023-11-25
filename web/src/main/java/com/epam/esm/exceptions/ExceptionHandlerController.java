@@ -1,6 +1,5 @@
 package com.epam.esm.exceptions;
 
-import jakarta.servlet.ServletException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -31,13 +30,6 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
     @ExceptionHandler(DataNotFoundException.class)
     protected ResponseEntity<Object> handleConflictNoSuchField(RuntimeException ex, WebRequest request) {
        String bodyOfResponse =  "Error message: " + ex.getMessage();
-        return handleExceptionInternal(ex, bodyOfResponse,
-                new HttpHeaders(), HttpStatus.NOT_FOUND, request);
-    }
-
-    @ExceptionHandler(ServletException.class)
-    protected ResponseEntity<Object> handleConflictRuntime(RuntimeException ex, WebRequest request) {
-        String bodyOfResponse =  "Error message: " + ex.getMessage();
         return handleExceptionInternal(ex, bodyOfResponse,
                 new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }

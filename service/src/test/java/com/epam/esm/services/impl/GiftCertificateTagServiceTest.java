@@ -1,9 +1,8 @@
-package com.epam.esm.services;
+package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.GiftCertificateTagDao;
 import com.epam.esm.dao.impl.GiftCertificateTagDaoImpl;
 import com.epam.esm.model.GiftCertificateTag;
-import com.epam.esm.services.impl.GiftCertificateTagServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,11 +23,19 @@ public class ListGiftCertificateMapper implements ResultSetExtractor<List<GiftCe
             GiftCertificate giftCertificate = new GiftCertificate();
             giftCertificate.setId(rs.getLong(String.format(STRUCTURE, Column.GiftCertificateColumn.TABLE_NAME, ID)));
             giftCertificate.setName(rs.getString(String.format(STRUCTURE, Column.GiftCertificateColumn.TABLE_NAME, NAME)));
-            giftCertificate.setDescription(rs.getString(String.format(STRUCTURE, Column.GiftCertificateColumn.TABLE_NAME, Column.GiftCertificateColumn.DESCRIPTION)));
-            giftCertificate.setPrice(rs.getFloat(String.format(STRUCTURE, Column.GiftCertificateColumn.TABLE_NAME, Column.GiftCertificateColumn.PRICE)));
-            giftCertificate.setDuration(rs.getInt(String.format(STRUCTURE, Column.GiftCertificateColumn.TABLE_NAME, Column.GiftCertificateColumn.DURATION)));
-            giftCertificate.setCreateDate(rs.getTimestamp(String.format(STRUCTURE, Column.GiftCertificateColumn.TABLE_NAME, Column.GiftCertificateColumn.CREATE_DATE)).toLocalDateTime());
-            giftCertificate.setLastUpdateDate(rs.getTimestamp(String.format(STRUCTURE, Column.GiftCertificateColumn.TABLE_NAME, Column.GiftCertificateColumn.LAST_UPDATE_DATE)).toLocalDateTime());
+            giftCertificate.setDescription(rs.getString(String.format(STRUCTURE, Column.GiftCertificateColumn.TABLE_NAME,
+                    Column.GiftCertificateColumn.DESCRIPTION)));
+            giftCertificate.setPrice(rs.getFloat(String.format(STRUCTURE, Column.GiftCertificateColumn.TABLE_NAME,
+                    Column.GiftCertificateColumn.PRICE)));
+            giftCertificate.setDuration(rs.getInt(String.format(STRUCTURE, Column.GiftCertificateColumn.TABLE_NAME,
+                    Column.GiftCertificateColumn.DURATION)));
+            giftCertificate.setCreateDate(rs.getTimestamp(String.format(STRUCTURE, Column.GiftCertificateColumn.TABLE_NAME,
+                    Column.GiftCertificateColumn.CREATE_DATE)).toLocalDateTime());
+            Timestamp lastUpdate =  rs.getTimestamp(String.format(STRUCTURE, Column.GiftCertificateColumn.TABLE_NAME,
+                            Column.GiftCertificateColumn.LAST_UPDATE_DATE));
+            if (lastUpdate != null) {
+                giftCertificate.setLastUpdateDate(lastUpdate.toLocalDateTime());
+            }
 
             List<Tag> tags = new ArrayList<>();
             while (!rs.isAfterLast() && rs.getInt(String.format(STRUCTURE, Column.GiftCertificateColumn.TABLE_NAME, ID)) == giftCertificate.getId()) {

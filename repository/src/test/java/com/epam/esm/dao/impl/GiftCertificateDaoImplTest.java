@@ -2,7 +2,6 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.config.AppConfig;
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.ExceptionCodes;
 import com.epam.esm.exceptions.TestException;
 import com.epam.esm.model.GiftCertificate;
 import org.junit.jupiter.api.Test;

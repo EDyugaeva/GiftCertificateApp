@@ -46,4 +46,10 @@ public class GiftCertificateTagServiceImpl implements GiftCertificateTagService 
         logger.info("Deleting gift certificate - tag pair with id = {}", id);
         dao.deleteGiftTag(id);
     }
+
+    @Override
+    public void deleteGiftCertificateTagByTagAndGiftCertificateId(long giftCertificateId, long tagId) {
+        logger.info("Deleting gift certificate - tag pair with certificate id = {} and tag id = {}", giftCertificateId, tagId);
+        dao.deleteGiftCertificateTagByTagAndGiftCertificateId( giftCertificateId, tagId);
+    }
 }

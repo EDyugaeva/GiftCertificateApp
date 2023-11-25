@@ -9,4 +9,6 @@ public interface GiftCertificateTagDao {
     GiftCertificateTag getGiftCertificateTag(Long id);
     List<GiftCertificateTag> getGiftCertificateTags();
     void deleteGiftTag(Long id);
+    void deleteGiftCertificateTagByTagAndGiftCertificateId(long giftCertificateId, long tagId);
+
 }

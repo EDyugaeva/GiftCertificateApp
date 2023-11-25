@@ -19,6 +19,10 @@ public class GiftCertificatesTestConstants {
     public static final GiftCertificate GIFT_CERTIFICATE_2_BEFORE_UPDATE = new GiftCertificate(2L, "gift_certificate_2_before", "description 2",150.5f, 5,
             LocalDateTime.of(2018, 2, 1, 0, 0),
             null, Arrays.asList(TAG_1, TAG_2));
+
+    public static final GiftCertificate GIFT_CERTIFICATE_2_TO_UPDATE = new GiftCertificate(2L, "gift_certificate_2", "description 2",150.5f, 5,
+            LocalDateTime.of(2018, 2, 1, 0, 0),
+            null, Arrays.asList(TAG_1, TAG_2));
     public static final GiftCertificate GIFT_CERTIFICATE_3 = new GiftCertificate(3L, "gift_certificate_3", "description 3", 140f, 4,
             LocalDateTime.of(2018, 3, 1, 0, 0),
             LocalDateTime.of(2018, 3, 9, 0, 5), null);

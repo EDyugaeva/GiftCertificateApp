@@ -10,14 +10,14 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.util.List;
 
 import static com.epam.esm.exceptions.ExceptionCodes.NOT_FOUND_PAIR;
 
-@Repository
+@Component
 public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(GiftCertificateTagDaoImpl.class);
     private final JdbcTemplate jdbcTemplateObject;
@@ -25,6 +25,7 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
     private static final String SELECT_BY_ID = "select * from gift_certificate_tag where id = ?";
     private static final String SELECT_ALL = "select * from gift_certificate_tag";
     private static final String DELETE = "delete from gift_certificate_tag where id = ?";
+    private static final String DELETE_BY_IDS = "delete from gift_certificate_tag where gift_id = ? AND tag_id = ?";
 
     public GiftCertificateTagDaoImpl(JdbcTemplate jdbcTemplateObject) {
         this.jdbcTemplateObject = jdbcTemplateObject;
@@ -72,5 +73,11 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
     public void deleteGiftTag(Long id) {
         log.info("Trying to delete tag-gift pair with id = {}", id);
         jdbcTemplateObject.update(DELETE, id);
+    }
+
+    @Override
+    public void deleteGiftCertificateTagByTagAndGiftCertificateId(long giftCertificateId, long tagId) {
+        log.info("Trying to delete tag-gift pair with gift certificate id = {} and tag id = {}", giftCertificateId, tagId);
+        jdbcTemplateObject.update(DELETE_BY_IDS, giftCertificateId, tagId);
     }
 }

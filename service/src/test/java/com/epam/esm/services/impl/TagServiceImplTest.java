@@ -1,10 +1,8 @@
-package com.epam.esm.services;
+package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.impl.TagDaoImpl;
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.NotSupportedSortingException;
 import com.epam.esm.model.Tag;
-import com.epam.esm.services.impl.TagServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

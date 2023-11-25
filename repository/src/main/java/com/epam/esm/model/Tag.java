@@ -17,18 +17,6 @@ public class Tag {
     @JsonIgnore
     private List<GiftCertificate> giftCertificateList;
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public List<GiftCertificate> getGiftCertificateList() {
-        return giftCertificateList;
-    }
-
     public Tag(String name) {
         this.name = name;
     }

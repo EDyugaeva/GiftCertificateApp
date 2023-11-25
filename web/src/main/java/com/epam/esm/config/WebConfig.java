@@ -5,10 +5,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * Class for configuration of web project
+ */
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = {"com.epam.esm"})
 public class WebConfig implements WebMvcConfigurer {
-
-
 }

@@ -12,4 +12,6 @@ public interface GiftCertificateTagService {
     List<GiftCertificateTag> getGiftCertificateTags();
 
     void deleteGiftCertificateTag(long id);
+
+    void deleteGiftCertificateTagByTagAndGiftCertificateId(long giftCertificateId, long tagId);
 }

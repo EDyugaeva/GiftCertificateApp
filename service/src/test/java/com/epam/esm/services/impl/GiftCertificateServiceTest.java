@@ -17,11 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
-import static com.epam.esm.constants.GiftCertificateTagTestConstants.*;
 import static com.epam.esm.constants.GiftCertificatesTestConstants.*;
 import static com.epam.esm.constants.QueryParams.*;
-import static com.epam.esm.constants.TagTestConstants.TAG_1;
-import static com.epam.esm.constants.TagTestConstants.TAG_2;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -81,7 +78,7 @@ public class GiftCertificateServiceTest {
 
     @Test
     public void getQuery_exception_whenWrongParams() {
-        HashMap<String, String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         map.put(NAME_VALUE, NAME_VALUE);
         NotSupportedSortingException exception = assertThrows(NotSupportedSortingException.class,
                 () -> service.getQuery(map, null, null),
@@ -118,12 +115,7 @@ public class GiftCertificateServiceTest {
     @Test
     public void saveGiftCertificate_GiftCertificateWithRightParams_whenSavingCorrectGiftCertificate() {
         when(mock.saveGiftCertificate(any())).thenReturn(GIFT_CERTIFICATE_1);
-        when(mockTagService.getTags()).thenReturn(TAG_LIST);
-        when(mockTagService.getTagByName(TAG_1.getName())).thenReturn(TAG_1);
-        when(mockTagService.getTagByName(TAG_2.getName())).thenReturn(TAG_2);
-        when(mockGiftCertificateTagService.getGiftCertificateTags()).thenReturn(new ArrayList<>());
-        when(mockGiftCertificateTagService.saveGiftCertificateTag(GIFT_CERTIFICATE_1.getId(), TAG_1.getId())).thenReturn(GIFT_TAG_1);
-        when(mockGiftCertificateTagService.saveGiftCertificateTag(GIFT_CERTIFICATE_1.getId(), TAG_2.getId())).thenReturn(GIFT_TAG_2);
+        when(mock.getGiftCertificate(GIFT_CERTIFICATE_1.getId())).thenReturn(GIFT_CERTIFICATE_1);
 
         GiftCertificate actualGC = service.saveGiftCertificate(GIFT_CERTIFICATE_1);
 
@@ -146,13 +138,8 @@ public class GiftCertificateServiceTest {
         params.put(TAGS, GIFT_CERTIFICATE_2.getTagList());
 
         when(mock.getGiftCertificate(GIFT_CERTIFICATE_2.getId())).thenReturn(GIFT_CERTIFICATE_2_BEFORE_UPDATE);
-        when(mock.updateGiftCertificate(any())).thenReturn(GIFT_CERTIFICATE_2);
-        when(mockTagService.getTags()).thenReturn(TAG_LIST);
-        when(mockTagService.getTagByName(TAG_1.getName())).thenReturn(TAG_1);
-        when(mockTagService.getTagByName(TAG_2.getName())).thenReturn(TAG_2);
-        when(mockGiftCertificateTagService.getGiftCertificateTags()).thenReturn(TAG_GIFT_LIST);
 
-        GiftCertificate actualGC = service.updateGiftCertificate(GIFT_CERTIFICATE_2.getId(), params);
+        GiftCertificate actualGC = service.updateGiftCertificate(GIFT_CERTIFICATE_2_BEFORE_UPDATE.getId(), GIFT_CERTIFICATE_2_TO_UPDATE);
 
         assertEquals("Actual name should be equal to expected", GIFT_CERTIFICATE_2.getName(), actualGC.getName());
         assertEquals("Actual description should be equal to expected", GIFT_CERTIFICATE_2.getDescription(), actualGC.getDescription());
