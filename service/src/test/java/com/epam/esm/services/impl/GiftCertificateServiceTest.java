@@ -2,11 +2,8 @@ package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.exceptions.ExceptionCodes;
-import com.epam.esm.exceptions.NotSupportedSortingException;
-import com.epam.esm.exceptions.TestException;
+import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
-import com.epam.esm.services.GiftCertificateTagService;
-import com.epam.esm.services.TagService;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +12,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.epam.esm.constants.GiftCertificatesTestConstants.*;
 import static com.epam.esm.constants.QueryParams.*;
@@ -30,12 +30,6 @@ public class GiftCertificateServiceTest {
     @Mock
     private GiftCertificateDao mock = Mockito.mock(GiftCertificateDao.class);
 
-    @Mock
-    private TagService mockTagService = Mockito.mock(TagService.class);
-
-    @Mock
-    private GiftCertificateTagService mockGiftCertificateTagService = Mockito.mock(GiftCertificateTagService.class);
-
     @InjectMocks
     private GiftCertificateServiceImpl service;
 
@@ -47,14 +41,14 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void getAll_expectedGiftCertificateList_whenGetting1GiftCertificates() throws TestException {
+    public void getAll_expectedGiftCertificateList_whenGetting1GiftCertificates() {
         when(mock.getGiftCertificates()).thenReturn(GIFT_CERTIFICATE_LIST);
         assertEquals("Actual gift certificate list should be equal to expected",
                 GIFT_CERTIFICATE_LIST, service.getAll());
     }
 
     @Test
-    public void getByParameter_expectedGiftCertificateList_whenGettingGiftCertificatesWithNullParams() throws TestException {
+    public void getByParameter_expectedGiftCertificateList_whenGettingGiftCertificatesWithNullParams() {
         String query = service.getQuery(null, null, null);
         when(mock.getGiftCertificatesByQuery(query)).thenReturn(GIFT_CERTIFICATE_LIST);
         assertEquals("Actual gift certificate list should be equal to expected",
@@ -62,7 +56,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void getByParameter_expectedGiftCertificateList_whenGettingGiftCertificatesWithParams() throws TestException {
+    public void getByParameter_expectedGiftCertificateList_whenGettingGiftCertificatesWithParams()  {
         HashMap<String, String> params = new HashMap<>();
         params.put(NAME, NAME_VALUE);
         String query = service.getQuery(params, Arrays.asList(NAME, DATE), DESC);
@@ -80,11 +74,11 @@ public class GiftCertificateServiceTest {
     public void getQuery_exception_whenWrongParams() {
         Map<String, String> map = new HashMap<>();
         map.put(NAME_VALUE, NAME_VALUE);
-        NotSupportedSortingException exception = assertThrows(NotSupportedSortingException.class,
+        WrongParameterException exception = assertThrows(WrongParameterException.class,
                 () -> service.getQuery(map, null, null),
-                "Gift certificate should be not found and  DataNotFoundException should be thrown");
-        assertEquals("Exception code should be " + ExceptionCodes.NOT_SUPPORTED.getErrorCode(),
-                ExceptionCodes.NOT_SUPPORTED.getErrorCode(), exception.getMessage());
+                "Gift certificate should be not found and  WrongParameterException should be thrown");
+        assertEquals("Exception code should be " + ExceptionCodes.NOT_SUPPORTED,
+                ExceptionCodes.NOT_SUPPORTED, exception.getErrorCode());
     }
 
     @Test

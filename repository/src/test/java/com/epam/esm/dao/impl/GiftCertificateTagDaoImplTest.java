@@ -11,7 +11,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static com.epam.esm.constants.GiftCertificateTagTestConstants.*;
-import static com.epam.esm.exceptions.ExceptionCodes.NOT_FOUND_PAIR;
+import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_FOUND_PAIR;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -37,7 +37,7 @@ public class GiftCertificateTagDaoImplTest {
     public void getGiftCertificateTag_exception_whenTryToGetAbsentGiftCertificateTag() {
         DataNotFoundException exception = assertThrows(DataNotFoundException.class, () -> dao.getGiftCertificateTag(ABSENT_ID),
                 "Pair should be not found and  DataNotFoundException should be thrown");
-        assertEquals(NOT_FOUND_PAIR.getErrorCode(), exception.getErrorCode(), "Exception message should be " + NOT_FOUND_PAIR.getErrorCode());
+        assertEquals(NOT_FOUND_PAIR, exception.getErrorCode(), "Exception message should be " + NOT_FOUND_PAIR);
     }
 
     @Test
@@ -53,6 +53,6 @@ public class GiftCertificateTagDaoImplTest {
         dao.deleteGiftTag(GIFT_TAG_1.getId());
         DataNotFoundException exception = assertThrows(DataNotFoundException.class, () -> dao.getGiftCertificateTag(GIFT_TAG_1.getId()),
                 "Gift tag pair should be not found and  DataNotFoundException should be thrown");
-        assertEquals(NOT_FOUND_PAIR.getErrorCode(), exception.getErrorCode(), "Exception message should be " + NOT_FOUND_PAIR.getErrorCode());
+        assertEquals(NOT_FOUND_PAIR, exception.getErrorCode(), "Exception message should be " + NOT_FOUND_PAIR);
     }
 }

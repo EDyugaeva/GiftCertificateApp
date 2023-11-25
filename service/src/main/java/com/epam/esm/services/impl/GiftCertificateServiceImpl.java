@@ -1,7 +1,6 @@
 package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.GiftCertificateDao;
-import com.epam.esm.exceptions.NotSupportedSortingException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.GiftCertificateTag;
@@ -22,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import static com.epam.esm.constants.QueryParams.*;
+import static com.epam.esm.exceptions.ExceptionCodes.NOT_SUPPORTED;
+import static com.epam.esm.exceptions.ExceptionCodes.WRONG_PARAMETER;
 
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
@@ -117,11 +118,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                         break;
                     default:
                         logger.debug("Not supported parameter = {}", entry.getValue());
-                        throw new WrongParameterException();
+                        throw new WrongParameterException("Wrong parameter in updating gift certificate", WRONG_PARAMETER);
                 }
             }
             updatingGiftCertificate.setLastUpdateDate(LocalDateTime.now());
-            dao.updateGiftCertificate(giftCertificate);
+            dao.updateGiftCertificate(updatingGiftCertificate);
         }
         return getGiftCertificatesById(id);
     }
@@ -168,7 +169,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                             break;
                         default:
                             logger.debug("Not supported filter = {}", filteredBy);
-                            throw new NotSupportedSortingException();
+                            throw new WrongParameterException("Non supported filtering parameter", NOT_SUPPORTED);
                     }
                 }
             }
@@ -177,7 +178,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             for (String s : orderingBy) {
                 if (!s.equalsIgnoreCase(DATE) && !s.equalsIgnoreCase(NAME)) {
                     logger.debug("Not supported ordering = {}", s);
-                    throw new NotSupportedSortingException();
+                    throw new WrongParameterException("Not supported ordering parameter", NOT_SUPPORTED);
                 }
                 queryGenerator.addSorting(s);
             }

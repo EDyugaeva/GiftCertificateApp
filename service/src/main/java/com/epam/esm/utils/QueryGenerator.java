@@ -4,6 +4,7 @@ import com.epam.esm.exceptions.WrongParameterException;
 
 import static com.epam.esm.constants.QueryParams.DATE;
 import static com.epam.esm.constants.QueryParams.NAME;
+import static com.epam.esm.exceptions.ExceptionCodes.NOT_SUPPORTED;
 
 public class QueryGenerator {
     private static final String SELECT_BY_TAG_NAME = " gc.id in (SELECT gc.id" +
@@ -77,7 +78,7 @@ public class QueryGenerator {
         } else if (sortValue.equalsIgnoreCase(DATE)) {
             return DATE_COLUMN;
         } else {
-            throw new WrongParameterException();
+            throw new WrongParameterException("Not supported sorting parameter", NOT_SUPPORTED);
         }
     }
 }

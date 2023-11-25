@@ -22,6 +22,5 @@ CREATE TABLE gift_certificate_tag
     gift_id bigint REFERENCES gift_certificate (id) ON UPDATE CASCADE ON delete cascade ,
     tag_id  bigint REFERENCES tag (id) ON UPDATE CASCADE ON delete cascade ,
     CONSTRAINT unique_pair_constraint unique (gift_id, tag_id)
-
-)
+);
 

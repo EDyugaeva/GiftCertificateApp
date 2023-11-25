@@ -15,7 +15,8 @@ import org.springframework.stereotype.Component;
 import java.sql.PreparedStatement;
 import java.util.List;
 
-import static com.epam.esm.exceptions.ExceptionCodes.NOT_FOUND_PAIR;
+import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_FOUND_PAIR;
+
 
 @Component
 public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
@@ -54,7 +55,7 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
             return jdbcTemplateObject.queryForObject(SELECT_BY_ID, new Object[]{id}, new GiftCertificateTagMapper());
         } catch (EmptyResultDataAccessException e) {
             log.error("Error while getting pair with id = {}", id, e);
-            throw new DataNotFoundException("message",NOT_FOUND_PAIR.getErrorCode());
+            throw new DataNotFoundException("message",NOT_FOUND_PAIR);
         }
     }
 
@@ -65,7 +66,7 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
             return jdbcTemplateObject.query(SELECT_ALL, new GiftCertificateTagMapper());
         } catch (EmptyResultDataAccessException e) {
             log.error("Error while getting all pairs", e);
-            throw new DataNotFoundException("message",NOT_FOUND_PAIR.getErrorCode());
+            throw new DataNotFoundException("message",NOT_FOUND_PAIR);
         }
     }
 

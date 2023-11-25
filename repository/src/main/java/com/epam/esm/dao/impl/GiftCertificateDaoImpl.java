@@ -6,6 +6,8 @@ import com.epam.esm.dao.mapper.ListGiftCertificateMapper;
 import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.model.GiftCertificate;
 import org.slf4j.Logger;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -15,7 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.util.List;
 
-import static com.epam.esm.exceptions.ExceptionCodes.NOT_FOUND_GIFT_CERTIFICATE;
+import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_FOUND_GIFT_CERTIFICATE;
 
 @Component
 public class GiftCertificateDaoImpl implements GiftCertificateDao {
@@ -86,9 +88,9 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
         try {
             List<GiftCertificate> list = jdbcTemplateObject.query(query, new Object[]{id}, new ListGiftCertificateMapper());
             return list.get(0);
-        } catch (RuntimeException e) {
+        } catch (EmptyResultDataAccessException | DataIntegrityViolationException e) {
             log.error("Error while getting gift certificate with id = {}", id, e);
-            throw new DataNotFoundException("message", NOT_FOUND_GIFT_CERTIFICATE.getErrorCode());
+            throw new DataNotFoundException("message", NOT_FOUND_GIFT_CERTIFICATE);
         }
     }
 
@@ -111,7 +113,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
             return jdbcTemplateObject.query(fullQuery, new ListGiftCertificateMapper());
         } catch (RuntimeException e) {
             log.error("Error while getting gift certificates", e);
-            throw new DataNotFoundException("message", NOT_FOUND_GIFT_CERTIFICATE.getErrorCode());
+            throw new DataNotFoundException("message", "404000");
         }
     }
 }

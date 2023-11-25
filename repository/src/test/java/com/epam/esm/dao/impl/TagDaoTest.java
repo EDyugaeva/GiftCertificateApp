@@ -12,7 +12,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static com.epam.esm.constants.TagTestConstants.*;
-import static com.epam.esm.exceptions.ExceptionCodes.NOT_FOUND_TAG;
+import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_FOUND_TAG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -45,7 +45,7 @@ public class TagDaoTest {
     public void getTag_exception_whenTryToGetAbsentTag() {
         DataNotFoundException exception = assertThrows(DataNotFoundException.class, () -> tagDao.getTag(ABSENT_ID),
                 "Tag should be not found and  DataNotFoundException should be thrown");
-        assertEquals(NOT_FOUND_TAG.getErrorCode(), exception.getErrorCode(), "Exception message should be " + NOT_FOUND_TAG.getErrorCode());
+        assertEquals(NOT_FOUND_TAG, exception.getErrorCode(), "Exception message should be " + NOT_FOUND_TAG);
     }
 
     @Test
@@ -61,7 +61,7 @@ public class TagDaoTest {
         tagDao.deleteTag(TAG_1.getId());
         DataNotFoundException exception = assertThrows(DataNotFoundException.class, () -> tagDao.getTag(TAG_1.getId()),
                 "Tag should be not found and  DataNotFoundException should be thrown");
-        assertEquals(NOT_FOUND_TAG.getErrorCode(), exception.getErrorCode(), "Exception message should be " + NOT_FOUND_TAG.getErrorCode());
+        assertEquals(NOT_FOUND_TAG, exception.getErrorCode(), "Exception message should be " + NOT_FOUND_TAG);
     }
 }
 

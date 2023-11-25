@@ -1,11 +1,10 @@
 package com.epam.esm.exceptions;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.experimental.UtilityClass;
 
-@AllArgsConstructor
-@Getter
-public enum ExceptionCodes {
-    NOT_SUPPORTED("500001"), WRONG_PARAMETER("400002");
-    private String errorCode;
+@UtilityClass
+public class ExceptionCodes {
+
+    public static final String  NOT_SUPPORTED = "500001";
+    public static final String  WRONG_PARAMETER = "500002";
 }

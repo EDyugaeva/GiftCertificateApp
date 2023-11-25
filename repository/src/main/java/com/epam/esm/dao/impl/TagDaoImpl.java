@@ -4,6 +4,8 @@ import com.epam.esm.dao.Column;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.dao.mapper.TagMapper;
 import com.epam.esm.exceptions.DataNotFoundException;
+import com.epam.esm.exceptions.ExceptionCodesConstants;
+import com.epam.esm.exceptions.OtherDatabaseException;
 import com.epam.esm.model.Tag;
 import org.slf4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -14,8 +16,6 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-
-import static com.epam.esm.exceptions.ExceptionCodes.NOT_FOUND_TAG;
 
 @Component
 public class TagDaoImpl implements TagDao {
@@ -53,8 +53,11 @@ public class TagDaoImpl implements TagDao {
             return jdbcTemplateObject.queryForObject(SELECT_BY_ID, new Object[]{id}, new TagMapper());
         } catch (EmptyResultDataAccessException e) {
             log.error("Error while getting tag with id = {}", id, e);
-            log.error(e.getMessage());
-            throw new DataNotFoundException("message", NOT_FOUND_TAG.getErrorCode());
+            throw new DataNotFoundException(String.format("Requested resource not found (id = %d)", id), ExceptionCodesConstants.NOT_FOUND_TAG);
+        } catch (RuntimeException e) {
+            log.error("Error while getting tag with id = {}", id, e);
+            throw new OtherDatabaseException(String.format("Requested resource not found (id = %d)", id), ExceptionCodesConstants.OTHER_EXCEPTION);
+
         }
     }
 
@@ -65,7 +68,7 @@ public class TagDaoImpl implements TagDao {
             return jdbcTemplateObject.queryForObject(SELECT_BY_NAME, new Object[]{name}, new TagMapper());
         } catch (EmptyResultDataAccessException e) {
             log.error("Error while getting tag with name = {}", name, e);
-            throw new DataNotFoundException("message",NOT_FOUND_TAG.getErrorCode());
+            throw new DataNotFoundException("message", "404001");
         }
     }
 
@@ -76,7 +79,7 @@ public class TagDaoImpl implements TagDao {
             return jdbcTemplateObject.query(SELECT_ALL, new TagMapper());
         } catch (EmptyResultDataAccessException e) {
             log.error("Error while getting all tags", e);
-            throw new DataNotFoundException("message",NOT_FOUND_TAG.getErrorCode());
+            throw new DataNotFoundException("message", "404001");
         }
     }
 

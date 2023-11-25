@@ -2,7 +2,6 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.config.AppConfig;
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.TestException;
 import com.epam.esm.model.GiftCertificate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.epam.esm.constants.GiftCertificatesTestConstants.*;
-import static com.epam.esm.exceptions.ExceptionCodes.NOT_FOUND_GIFT_CERTIFICATE;
+import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_FOUND_GIFT_CERTIFICATE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -30,7 +29,7 @@ public class GiftCertificateDaoImplTest {
     private GiftCertificateDaoImpl giftCertificateDao;
 
     @Test
-    public void getTags_correctTagList_whenGetGiftCertificates() throws TestException {
+    public void getTags_correctTagList_whenGetGiftCertificates()   {
         assertEquals(GIFT_CERTIFICATE_LIST, giftCertificateDao.getGiftCertificates(),
                 "When getting certificates, list should be equal to database values");
     }
@@ -45,7 +44,7 @@ public class GiftCertificateDaoImplTest {
     public void getGiftCertificate_exception_whenTryToGetAbsentCertificate() {
         DataNotFoundException exception = assertThrows(DataNotFoundException.class, () -> giftCertificateDao.getGiftCertificate(ABSENT_ID),
                 "Tag should be not found and  DataNotFoundException should be thrown");
-        assertEquals(NOT_FOUND_GIFT_CERTIFICATE.getErrorCode(), exception.getErrorCode(), "Exception message should be " + NOT_FOUND_GIFT_CERTIFICATE.getErrorCode());
+        assertEquals(NOT_FOUND_GIFT_CERTIFICATE, exception.getErrorCode(), "Exception message should be " + NOT_FOUND_GIFT_CERTIFICATE);
     }
 
     @Test
@@ -64,15 +63,15 @@ public class GiftCertificateDaoImplTest {
     }
 
     @Test
-    public void deleteGiftCertificate_Exception_whenTryToGetDeletedGiftCertificate() {
+    public void deleteGiftCertificate_exception_whenTryToGetDeletedGiftCertificate() {
         giftCertificateDao.deleteGiftCertificate(GIFT_CERTIFICATE_1.getId());
         DataNotFoundException exception = assertThrows(DataNotFoundException.class, () -> giftCertificateDao.getGiftCertificate(GIFT_CERTIFICATE_1.getId()),
                 "Tag should be not found and  DataNotFoundException should be thrown");
-        assertEquals(NOT_FOUND_GIFT_CERTIFICATE.getErrorCode(), exception.getErrorCode(), "Exception message should be " + NOT_FOUND_GIFT_CERTIFICATE.getErrorCode());
+        assertEquals(NOT_FOUND_GIFT_CERTIFICATE, exception.getErrorCode(), "Exception message should be " + NOT_FOUND_GIFT_CERTIFICATE);
     }
 
     @Test
-    public void getGiftCertificatesByDescription_certificateList_whenGetListFilterByAllParams() throws TestException {
+    public void getGiftCertificatesByDescription_certificateList_whenGetListFilterByAllParams() {
         List<GiftCertificate> giftCertificateList = GIFT_CERTIFICATE_LIST_WITH_TAG_NAME
                 .stream()
                 .filter(g -> g.getName().contains(NAME_VALUE))
