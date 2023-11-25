@@ -6,6 +6,7 @@ import com.epam.esm.dao.mapper.ListGiftCertificateMapper;
 import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.WrongModelParameterException;
 import com.epam.esm.model.GiftCertificate;
+import com.epam.esm.utils.QueryGenerator;
 import org.slf4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 import static com.epam.esm.exceptions.ExceptionCodesConstants.*;
 
@@ -111,7 +113,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
     @Override
     public List<GiftCertificate> getGiftCertificates() {
-        return getGiftCertificatesByQuery("");
+        return getGiftCertificatesByQuery(null, null, null);
     }
 
     @Override
@@ -127,14 +129,22 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
-    public List<GiftCertificate> getGiftCertificatesByQuery(String query) {
+    public List<GiftCertificate> getGiftCertificatesByQuery(Map<String, String> filteredBy, List<String> orderingBy, String order) {
         log.info("Getting all gift certificates with parameters ");
-        String fullQuery = SELECT_ALL + query;
+        String fullQuery = SELECT_ALL + getQuery(filteredBy, orderingBy, order);
         try {
             return jdbcTemplateObject.query(fullQuery, new ListGiftCertificateMapper());
         } catch (RuntimeException e) {
             log.error("Error while getting gift certificates", e);
             throw new DataNotFoundException("Requested resource not found ", NOT_FOUND_GIFT_CERTIFICATE);
         }
+    }
+
+    String getQuery(Map<String, String> filteredBy, List<String> orderingBy, String order) {
+        QueryGenerator queryGenerator = new QueryGenerator();
+        queryGenerator.createFilter(filteredBy, queryGenerator);
+        queryGenerator.createSorting(orderingBy, queryGenerator);
+        queryGenerator.createOrder(order, queryGenerator);
+        return queryGenerator.getQuery();
     }
 }

@@ -1,10 +1,7 @@
 package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.GiftCertificateDao;
-import com.epam.esm.exceptions.ExceptionCodes;
-import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,12 +11,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.epam.esm.constants.GiftCertificatesTestConstants.*;
 import static com.epam.esm.constants.QueryParams.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.AssertionErrors.*;
@@ -49,8 +44,7 @@ public class GiftCertificateServiceTest {
 
     @Test
     public void getByParameter_expectedGiftCertificateList_whenGettingGiftCertificatesWithNullParams() {
-        String query = service.getQuery(null, null, null);
-        when(mock.getGiftCertificatesByQuery(query)).thenReturn(GIFT_CERTIFICATE_LIST);
+        when(mock.getGiftCertificatesByQuery(null, null, null)).thenReturn(GIFT_CERTIFICATE_LIST);
         assertEquals("Actual gift certificate list should be equal to expected",
                 GIFT_CERTIFICATE_LIST, service.getGiftCertificatesByParameter(null, null, null));
     }
@@ -59,51 +53,9 @@ public class GiftCertificateServiceTest {
     public void getByParameter_expectedGiftCertificateList_whenGettingGiftCertificatesWithParams()  {
         HashMap<String, String> params = new HashMap<>();
         params.put(NAME, NAME_VALUE);
-        String query = service.getQuery(params, Arrays.asList(NAME, DATE), DESC);
-        when(mock.getGiftCertificatesByQuery(query)).thenReturn(GIFT_CERTIFICATE_LIST);
+        when(mock.getGiftCertificatesByQuery(params, Arrays.asList(NAME, DATE), DESC)).thenReturn(GIFT_CERTIFICATE_LIST);
         assertEquals("Actual gift certificate list should be equal to expected",
                 GIFT_CERTIFICATE_LIST, service.getGiftCertificatesByParameter(params, Arrays.asList(NAME, DATE), DESC));
-    }
-
-    @Test
-    public void getQuery_emptyString_whenNullParams() {
-        assertEquals("Actual query should be empty", "", service.getQuery(null, null, ""));
-    }
-
-    @Test
-    public void getQuery_exception_whenWrongParams() {
-        Map<String, String> map = new HashMap<>();
-        map.put(NAME_VALUE, NAME_VALUE);
-        WrongParameterException exception = assertThrows(WrongParameterException.class,
-                () -> service.getQuery(map, null, null),
-                "Gift certificate should be not found and  WrongParameterException should be thrown");
-        assertEquals("Exception code should be " + ExceptionCodes.NOT_SUPPORTED,
-                ExceptionCodes.NOT_SUPPORTED, exception.getErrorCode());
-    }
-
-    @Test
-    public void getQuery_queryWithAllParams_whenSortingByAllParams() {
-        HashMap<String, String> map = new HashMap<>();
-        map.put(NAME, NAME_VALUE);
-        map.put(DESCRIPTION, DESCRIPTION_VALUE);
-        map.put(TAG_NAME, TAG_NAME_VALUE);
-
-        List<String> ordering = Arrays.asList(NAME, DATE);
-        String query = service.getQuery(map, ordering, DESC);
-        assertTrue("Actual query should include desc", StringUtils.containsIgnoreCase(query, DESC));
-        assertFalse("Actual query should not include asc", StringUtils.containsIgnoreCase(query, ASC));
-
-        assertTrue("Actual query should include name", StringUtils.containsIgnoreCase(query, NAME));
-        assertTrue("Actual query should include name param", StringUtils.containsIgnoreCase(query, NAME_VALUE));
-
-        assertTrue("Actual query should include description", StringUtils.containsIgnoreCase(query, DESCRIPTION));
-        assertTrue("Actual query should include description param", StringUtils.containsIgnoreCase(query, DESCRIPTION_VALUE));
-
-        assertTrue("Actual query should include tagName", StringUtils.containsIgnoreCase(query, TAG_NAME_IN_QUERY));
-        assertTrue("Actual query should include tag name value", StringUtils.containsIgnoreCase(query, TAG_NAME_VALUE));
-
-        assertTrue("Actual query should include ordering", StringUtils.containsIgnoreCase(query, "ORDER BY"));
-        assertTrue("Actual query should include order parameter", StringUtils.containsIgnoreCase(query, DATA_IN_QUERY));
     }
 
     @Test

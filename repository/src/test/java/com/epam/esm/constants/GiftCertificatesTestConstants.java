@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.epam.esm.constants.QueryParams.DATE;
+import static com.epam.esm.constants.QueryParams.NAME;
 import static com.epam.esm.constants.TagTestConstants.*;
 
 public class GiftCertificatesTestConstants {
@@ -36,7 +38,13 @@ public class GiftCertificatesTestConstants {
     public static final Long ABSENT_ID = 7L;
     public static final String TAG_NAME_VALUE = "tag_name_2";
     public static final String NAME_VALUE = "gift_certificate_2";
-    public static final String DESCRIPTION = "description";
+    public static final String DESCRIPTION_VALUE = "description";
+    public static final String DESC = "desc";
+    public static final String ASC = "asc";
+    public static final String TAG_NAME_IN_QUERY = "tag.name";
+    public static final String DATA_IN_QUERY = "create_date";
+    public static final String ORDER_BY = "ORDER BY";
+    public static final List<String> SORTING_VALUE = Arrays.asList(NAME, DATE);
     public static final List<GiftCertificate> GIFT_CERTIFICATE_LIST_WITH_TAG_NAME = Arrays.asList(GIFT_CERTIFICATE_1, GIFT_CERTIFICATE_2);
 
     public static final String QUERY = "WHERE  gc.id in (SELECT gc.id " +

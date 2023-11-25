@@ -27,12 +27,8 @@ public class GiftCertificatesTestConstants {
             LocalDateTime.of(2018, 3, 1, 0, 0),
             LocalDateTime.of(2018, 3, 9, 0, 5), null);
     public static final List<GiftCertificate> GIFT_CERTIFICATE_LIST = Arrays.asList(GIFT_CERTIFICATE_1, GIFT_CERTIFICATE_2, GIFT_CERTIFICATE_3);
-    public static final String TAG_NAME_VALUE = "tag_name";
-    public static final String TAG_NAME_IN_QUERY = "tag.name";
     public static final String NAME_VALUE = "gift_certificate";
-    public static final String DATA_IN_QUERY = "create_date";
     public static final String DESC = "desc";
     public static final String ASC = "asc";
-    public static final String DESCRIPTION_VALUE = "description_value";
     public static final List<Tag> TAG_LIST = Arrays.asList(TAG_1, TAG_2);
 }

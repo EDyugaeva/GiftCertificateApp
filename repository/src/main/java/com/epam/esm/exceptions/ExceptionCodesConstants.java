@@ -9,5 +9,6 @@ public class ExceptionCodesConstants {
     public static final String NOT_FOUND_PAIR = "404002";
     public static final String WRONG_DATA_PARAMETER = "400003";
     public static final String OTHER_EXCEPTION = "500000";
+    public static final String  NOT_SUPPORTED = "500001";
 
 }

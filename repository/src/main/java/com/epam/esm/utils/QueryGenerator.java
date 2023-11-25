@@ -1,5 +1,6 @@
 package com.epam.esm.utils;
 
+import com.epam.esm.constants.QueryParams;
 import com.epam.esm.exceptions.WrongParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.epam.esm.constants.QueryParams.*;
-import static com.epam.esm.exceptions.ExceptionCodes.NOT_SUPPORTED;
+import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_SUPPORTED;
 
 public class QueryGenerator {
 
@@ -94,13 +95,13 @@ public class QueryGenerator {
             for (Map.Entry<String, String> entry : filteredBy.entrySet()) {
                 if (entry.getValue() != null) {
                     switch (entry.getKey()) {
-                        case NAME:
+                        case QueryParams.NAME:
                             queryGenerator.addSelectByName(entry.getValue());
                             break;
-                        case DESCRIPTION:
+                        case QueryParams.DESCRIPTION:
                             queryGenerator.addSelectByDescription(entry.getValue());
                             break;
-                        case TAG_NAME:
+                        case QueryParams.TAG_NAME:
                             queryGenerator.addSelectByTagName(entry.getValue());
                             break;
                         default:
@@ -115,7 +116,7 @@ public class QueryGenerator {
     public void createSorting(List<String> orderingBy, QueryGenerator queryGenerator) {
         if (orderingBy != null) {
             for (String s : orderingBy) {
-                if (!s.equalsIgnoreCase(DATE) && !s.equalsIgnoreCase(NAME)) {
+                if (!s.equalsIgnoreCase(QueryParams.DATE) && !s.equalsIgnoreCase(QueryParams.NAME)) {
                     logger.debug("Not supported ordering = {}", s);
                     throw new WrongParameterException("Not supported ordering parameter", NOT_SUPPORTED);
                 }
@@ -123,7 +124,6 @@ public class QueryGenerator {
             }
         }
     }
-
 
     public static void createOrder(String order, QueryGenerator queryGenerator) {
         if (order != null && order.equalsIgnoreCase("desc")) {

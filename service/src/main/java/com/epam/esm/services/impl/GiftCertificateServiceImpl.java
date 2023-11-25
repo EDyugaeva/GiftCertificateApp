@@ -138,15 +138,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<GiftCertificate> getGiftCertificatesByParameter(Map<String, String> filteredBy, List<String> orderingBy, String order) {
         logger.info("Getting all gift certificates filtered by {} ordering by {}, order = {} ", filteredBy, orderingBy, order);
-        return dao.getGiftCertificatesByQuery(getQuery(filteredBy, orderingBy, order));
-    }
-
-    String getQuery(Map<String, String> filteredBy, List<String> orderingBy, String order) {
-        QueryGenerator queryGenerator = new QueryGenerator();
-        queryGenerator.createFilter(filteredBy, queryGenerator);
-        queryGenerator.createSorting(orderingBy, queryGenerator);
-        queryGenerator.createOrder(order, queryGenerator);
-        return queryGenerator.getQuery();
+        return dao.getGiftCertificatesByQuery(filteredBy, orderingBy, order);
     }
 
     private void updatingGiftCertificateValues(Map<String, Object> params, GiftCertificate updatingGiftCertificate) {
