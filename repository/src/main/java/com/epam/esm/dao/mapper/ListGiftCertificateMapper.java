@@ -29,7 +29,7 @@ public class ListGiftCertificateMapper implements ResultSetExtractor<List<GiftCe
             giftCertificate.setLastUpdateDate(rs.getTimestamp(String.format(STRUCTURE, Column.GiftCertificateColumn.TABLE_NAME, Column.GiftCertificateColumn.LAST_UPDATE_DATE)).toLocalDateTime());
 
             List<Tag> tags = new ArrayList<>();
-            while (!rs.isAfterLast() && rs.getInt(ID) == giftCertificate.getId()) {
+            while (!rs.isAfterLast() && rs.getInt(String.format(STRUCTURE, Column.GiftCertificateColumn.TABLE_NAME, ID)) == giftCertificate.getId()) {
                 long tagId = rs.getLong(String.format(STRUCTURE, Column.TagColumn.TABLE_NAME, ID));
                 String tagName = rs.getString(String.format(STRUCTURE, Column.TagColumn.TABLE_NAME, NAME));
                 if (tagId != 0) {

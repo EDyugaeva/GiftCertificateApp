@@ -4,12 +4,17 @@ import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.exceptions.NotSupportedSortingException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
+import com.epam.esm.model.GiftCertificateTag;
+import com.epam.esm.model.Tag;
 import com.epam.esm.services.GiftCertificateService;
+import com.epam.esm.services.GiftCertificateTagService;
+import com.epam.esm.services.TagService;
 import com.epam.esm.utils.QueryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,23 +25,46 @@ import static com.epam.esm.constants.QueryParams.*;
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
     Logger logger = LoggerFactory.getLogger(GiftCertificateServiceImpl.class);
-    private final GiftCertificateDao giftCertificateDao;
+    private final GiftCertificateDao dao;
+    private final TagService tagService;
+    private final GiftCertificateTagService giftCertificateTagService;
+
 
     @Autowired
-    public GiftCertificateServiceImpl(GiftCertificateDao giftCertificateDao) {
-        this.giftCertificateDao = giftCertificateDao;
+    public GiftCertificateServiceImpl(GiftCertificateDao dao, TagService tagService, GiftCertificateTagService giftCertificateTagService) {
+        this.dao = dao;
+        this.tagService = tagService;
+        this.giftCertificateTagService = giftCertificateTagService;
     }
 
+    @Transactional
     @Override
-    public GiftCertificate saveGiftCertificate(String name, String description, float price, int duration) {
-        logger.info("Saving new gift certificate with name = {}, description = {}, price = {}, duration = {}", name, description, price, duration);
-        GiftCertificate giftCertificate = new GiftCertificate();
-        giftCertificate.setName(name);
-        giftCertificate.setDescription(description);
-        giftCertificate.setPrice(price);
-        giftCertificate.setDuration(duration);
+    public GiftCertificate saveGiftCertificate(GiftCertificate giftCertificate) {
+        logger.info("Saving new gift certificate with {}}", giftCertificate);
         giftCertificate.setCreateDate(LocalDateTime.now());
-        return giftCertificateDao.saveGiftCertificate(giftCertificate);
+        GiftCertificate savedGiftCertificate = dao.saveGiftCertificate(giftCertificate);
+
+        savingTags(giftCertificate.getTagList(), savedGiftCertificate);
+
+        return savedGiftCertificate;
+    }
+
+    private void savingTags(List<Tag> tagList, GiftCertificate giftCertificate) {
+        long giftCertificateId = giftCertificate.getId();
+        List<Tag> savedTag = tagService.getTags();
+        List<GiftCertificateTag> giftCertificateTagList = giftCertificateTagService.getGiftCertificateTags();
+        for (Tag tag : tagList) {
+            long tagId;
+            if (!savedTag.contains(tag)) {
+                tagId = tagService.saveTag(tag.getName()).getId();
+            } else {
+                tagId = tagService.getTagByName(tag.getName()).getId();
+            }
+            GiftCertificateTag certificateTag = new GiftCertificateTag(giftCertificateId, tagId);
+            if (!giftCertificateTagList.contains(certificateTag)) {
+                giftCertificateTagService.saveGiftCertificateTag(giftCertificateId, tagId);
+            }
+        }
     }
 
     @Override
@@ -58,6 +86,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                     case DESCRIPTION:
                         updatingGiftCertificate.setDescription((String) entry.getValue());
                         break;
+                    case TAGS:
+                        savingTags((List<Tag>) entry.getValue(), updatingGiftCertificate);
+                        break;
                     default:
                         logger.debug("Not supported parameter = {}", entry.getValue());
                         throw new WrongParameterException();
@@ -65,25 +96,32 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             }
             updatingGiftCertificate.setLastUpdateDate(LocalDateTime.now());
         }
-        return giftCertificateDao.updateGiftCertificate(updatingGiftCertificate);
+        return dao.updateGiftCertificate(updatingGiftCertificate);
     }
 
     @Override
     public GiftCertificate getGiftCertificatesById(Long id) {
         logger.info("Getting gift certificate by id = {}", id);
-        return giftCertificateDao.getGiftCertificate(id);
+        return dao.getGiftCertificate(id);
     }
 
     @Override
     public List<GiftCertificate> getAll() {
         logger.info("Getting all gift certificates");
-        return giftCertificateDao.getGiftCertificates();
+        return dao.getGiftCertificates();
+    }
+
+    @Transactional
+    @Override
+    public void deleteGiftCertificate(long id) {
+        logger.info("Deleting gift certificate with id = {}", id);
+        dao.deleteGiftCertificate(id);
     }
 
     @Override
     public List<GiftCertificate> getGiftCertificatesByParameter(Map<String, String> filteredBy, List<String> orderingBy, String order) {
         logger.info("Getting all gift certificates filtered by {} ordering by {}, order = {} ", filteredBy, orderingBy, order);
-        return giftCertificateDao.getGiftCertificatesByQuery(getQuery(filteredBy, orderingBy, order));
+        return dao.getGiftCertificatesByQuery(getQuery(filteredBy, orderingBy, order));
     }
 
     String getQuery(Map<String, String> filteredBy, List<String> orderingBy, String order) {
@@ -115,7 +153,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 queryGenerator.addSorting(s);
             }
         }
-        if (order.equalsIgnoreCase("desc")) {
+        if (order != null && order.equalsIgnoreCase("desc")) {
             queryGenerator.addDescOrdering();
         }
         return queryGenerator.getQuery();

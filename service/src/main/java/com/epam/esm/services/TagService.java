@@ -9,4 +9,5 @@ public interface TagService {
     Tag getTag(long id);
     List<Tag> getTags();
     void deleteTag(long id);
+    Tag getTagByName(String name);
 }

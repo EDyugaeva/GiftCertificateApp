@@ -41,9 +41,8 @@ public class QueryGenerator {
 
     private void checkingOnFilter() {
         if (filtering) {
-            query.append(AND) ;
-        }
-        else {
+            query.append(AND);
+        } else {
             query.append(WHERE);
             filtering = true;
         }
@@ -51,7 +50,7 @@ public class QueryGenerator {
 
     public void addSelectByDescription(String description) {
         checkingOnFilter();
-        query.append(String.format(SELECT_BY_DESCRIPTION, "%" + description));
+        query.append(String.format(SELECT_BY_DESCRIPTION, "%" + description + "%"));
     }
 
     public void addSelectByTagName(String tagName) {
@@ -77,8 +76,7 @@ public class QueryGenerator {
             return NAME_COLUMN;
         } else if (sortValue.equalsIgnoreCase(DATE)) {
             return DATE_COLUMN;
-        }
-        else {
+        } else {
             throw new WrongParameterException();
         }
     }

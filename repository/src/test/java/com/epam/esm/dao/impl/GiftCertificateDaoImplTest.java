@@ -72,70 +72,16 @@ public class GiftCertificateDaoImplTest {
     }
 
     @Test
-    public void getGiftCertificates_orderedList_whenGetListOrderByName() {
-        List<GiftCertificate> giftCertificateListOrderedByName = GIFT_CERTIFICATE_LIST
+    public void getGiftCertificatesByDescription_certificateList_whenGetListFilterByAllParams() {
+        List<GiftCertificate> giftCertificateList = GIFT_CERTIFICATE_LIST_WITH_TAG_NAME
                 .stream()
-                .sorted(Comparator.comparing(GiftCertificate::getName))
-                .collect(Collectors.toList());
-        assertEquals(giftCertificateListOrderedByName, giftCertificateDao.getGiftCertificates(true, false, false),
-                "Actual list should be ordered by name");
-    }
-
-    @Test
-    public void getGiftCertificates_orderedList_whenGetListOrderByCreatedDate() {
-        List<GiftCertificate> giftCertificateListOrderedByName = GIFT_CERTIFICATE_LIST
-                .stream()
-                .sorted(Comparator.comparing(GiftCertificate::getCreateDate))
-                .collect(Collectors.toList());
-        assertEquals(giftCertificateListOrderedByName, giftCertificateDao.getGiftCertificates(false, true, false),
-                "Actual list should be ordered by created date");
-    }
-
-    @Test
-    public void getGiftCertificates_orderedList_whenGetListOrderByCreatedDateAndName() {
-        List<GiftCertificate> giftCertificateListOrderedByName = GIFT_CERTIFICATE_LIST
-                .stream()
-                .sorted(Comparator.comparing(GiftCertificate::getName)
-                        .thenComparing(GiftCertificate::getCreateDate))
-                .collect(Collectors.toList());
-        assertEquals(giftCertificateListOrderedByName, giftCertificateDao.getGiftCertificates(true, true, false),
-                "Actual list should be ordered by name and created date");
-    }
-
-    @Test
-    public void getGiftCertificates_orderedList_whenGetListOrderByNameDesc() {
-        List<GiftCertificate> giftCertificateListOrderedByName = GIFT_CERTIFICATE_LIST
-                .stream()
-                .sorted(Comparator.comparing(GiftCertificate::getName).reversed())
-                .collect(Collectors.toList());
-        assertEquals(giftCertificateListOrderedByName, giftCertificateDao.getGiftCertificates(true, false, true),
-                "Actual list should be ordered by name desc");
-    }
-
-    @Test
-    public void getGiftCertificatesByTagName_certificateList_whenGetListByTagName() {
-        assertEquals(GIFT_CERTIFICATE_LIST_WITH_TAG_NAME, giftCertificateDao.getGiftCertificatesByTagName(TAG_NAME,false, false, false),
-                "Actual list should be filtered by tag name");
-    }
-
-    @Test
-    public void getGiftCertificatesByName_certificateList_whenGetListByName() {
-        List<GiftCertificate> giftCertificateListOrderedByName = GIFT_CERTIFICATE_LIST
-                .stream()
-                .filter(g -> g.getName().contains(NAME))
-                .collect(Collectors.toList());
-        assertEquals(giftCertificateListOrderedByName, giftCertificateDao.getGiftCertificatesByName(NAME,false, false, false),
-                "Actual list should be filtered by name");
-    }
-
-    @Test
-    public void getGiftCertificatesByDescription_certificateList_whenGetListByDescription() {
-        List<GiftCertificate> giftCertificateListOrderedByName = GIFT_CERTIFICATE_LIST
-                .stream()
+                .filter(g -> g.getName().contains(NAME_VALUE))
                 .filter(g -> g.getDescription().contains(DESCRIPTION))
+                .sorted(Comparator.comparing(GiftCertificate::getName).thenComparing(GiftCertificate::getCreateDate))
                 .collect(Collectors.toList());
-        assertEquals(giftCertificateListOrderedByName, giftCertificateDao.getGiftCertificatesByDescription(DESCRIPTION,false, false, false),
-                "Actual list should be filtered by description");
+
+        assertEquals(giftCertificateList, giftCertificateDao.getGiftCertificatesByQuery(QUERY),
+                "Actual list should be filtered by all params");
     }
 }
 

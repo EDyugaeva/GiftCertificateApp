@@ -36,6 +36,12 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    public Tag getTagByName(String name) {
+        logger.info("Getting tag with name {}", name);
+        return tagDao.getTagByName(name);
+    }
+
+    @Override
     public List<Tag> getTags() {
         logger.info("Getting all tags");
         return tagDao.getTags();

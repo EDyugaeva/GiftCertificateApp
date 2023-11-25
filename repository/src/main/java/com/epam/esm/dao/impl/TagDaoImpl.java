@@ -24,6 +24,7 @@ public class TagDaoImpl implements TagDao {
     private final JdbcTemplate jdbcTemplateObject;
     private static final String INSERT = "insert into Tag (name) values (?)";
     private static final String SELECT_BY_ID = "select * from Tag where id = ?";
+    private static final String SELECT_BY_NAME = "select * from Tag where name = ?";
     private static final String SELECT_ALL = "select * from Tag";
     private static final String DELETE = "delete from Tag where id = ?";
 
@@ -54,6 +55,17 @@ public class TagDaoImpl implements TagDao {
             return jdbcTemplateObject.queryForObject(SELECT_BY_ID, new Object[]{id}, new TagMapper());
         } catch (EmptyResultDataAccessException e) {
             log.error("Error while getting tag with id = {}", id, e);
+            throw new DataNotFoundException(NOT_FOUND_TAG.getErrorCode());
+        }
+    }
+
+    @Override
+    public Tag getTagByName(String name) {
+        try {
+            log.info("Trying to get tag with name = {}", name);
+            return jdbcTemplateObject.queryForObject(SELECT_BY_NAME, new Object[]{name}, new TagMapper());
+        } catch (EmptyResultDataAccessException e) {
+            log.error("Error while getting tag with name = {}", name, e);
             throw new DataNotFoundException(NOT_FOUND_TAG.getErrorCode());
         }
     }

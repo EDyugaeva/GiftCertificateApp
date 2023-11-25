@@ -43,16 +43,6 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
             "    tag t ON gct.tag_id = t.id ";
     private static final String SELECT_BY_ID = " where gc.id = ?";
     private static final String DELETE = "delete from gift_certificate where id = ?";
-    private static final String SELECT_BY_TAG_NAME = " where gc.id in (SELECT gc.id" +
-            "             FROM gift_certificate gc" +
-            "                      JOIN gift_certificate_tag gct ON gc.id = gct.gift_id" +
-            "                      JOIN tag ON gct.tag_id = tag.id" +
-            "             WHERE tag.name = ?)";
-    private static final String SELECT_BY_NAME = " where gc.name ILIKE ?";
-    private static final String SELECT_BY_DESCRIPTION = " where gc.description ILIKE ?";
-    private static final String ORDER_BY = " order by ";
-    private static final String DESC = "DESC";
-
 
     public GiftCertificateDaoImpl(JdbcTemplate jdbcTemplateObject) {
         this.jdbcTemplateObject = jdbcTemplateObject;
@@ -102,19 +92,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
     @Override
     public List<GiftCertificate> getGiftCertificates() {
-        return getGiftCertificates(false, false, false);
-    }
-
-    @Override
-    public List<GiftCertificate> getGiftCertificates(boolean sortingByName, boolean sortingByDate, boolean descOrdering) {
-        log.info("Getting all gift certificates");
-        String query = SELECT_ALL + getOrderBy(sortingByName, sortingByDate, descOrdering);
-        try {
-            return jdbcTemplateObject.query(query, new ListGiftCertificateMapper());
-        } catch (EmptyResultDataAccessException e) {
-            log.error("Error while getting gift certificates", e);
-            throw new DataNotFoundException(NOT_FOUND_GIFT_CERTIFICATE.getErrorCode());
-        }
+        return getGiftCertificatesByQuery("");
     }
 
     @Override
@@ -122,33 +100,6 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     public void deleteGiftCertificate(long id) {
         log.info("Deleting  gift certificate with id = ?");
         jdbcTemplateObject.update(DELETE, id);
-    }
-
-    @Override
-    public List<GiftCertificate> getGiftCertificatesByTagName(String tagName, boolean sortingByName,
-                                                              boolean sortingByDate, boolean descOrdering) {
-        log.info("Getting all gift certificates with tag name = {}", tagName);
-        String query = SELECT_ALL + SELECT_BY_TAG_NAME + getOrderBy(sortingByName, sortingByDate, descOrdering);
-        try {
-            return jdbcTemplateObject.query(query, new Object[]{tagName}, new ListGiftCertificateMapper());
-        } catch (EmptyResultDataAccessException e) {
-            log.error("Error while getting gift certificates", e);
-            throw new DataNotFoundException(NOT_FOUND_GIFT_CERTIFICATE.getErrorCode());
-        }
-    }
-
-    @Override
-    public List<GiftCertificate> getGiftCertificatesByName(String name, boolean sortingByName,
-                                                           boolean sortingByDate, boolean descOrdering) {
-        log.info("Getting all gift certificates with name like {}", name);
-        String query = SELECT_ALL + SELECT_BY_NAME + getOrderBy(sortingByName, sortingByDate, descOrdering);
-        String param = "%" + name + "%";
-        try {
-            return jdbcTemplateObject.query(query, new Object[]{param}, new ListGiftCertificateMapper());
-        } catch (EmptyResultDataAccessException e) {
-            log.error("Error while getting gift certificates", e);
-            throw new DataNotFoundException(NOT_FOUND_GIFT_CERTIFICATE.getErrorCode());
-        }
     }
 
     @Override
@@ -162,41 +113,4 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
             throw new DataNotFoundException(NOT_FOUND_GIFT_CERTIFICATE.getErrorCode());
         }
     }
-
-    public List<GiftCertificate> getGiftCertificatesByDescription(String description, boolean sortingByName,
-                                                                  boolean sortingByDate, boolean descOrdering) {
-        log.info("Getting all gift certificates with description like {}", description);
-        String query = SELECT_ALL + SELECT_BY_DESCRIPTION + getOrderBy(sortingByName, sortingByDate, descOrdering);
-        String param = "%" + description + "%";
-        try {
-            System.out.println(query);
-            return jdbcTemplateObject.query(query, new Object[]{param}, new ListGiftCertificateMapper());
-        } catch (EmptyResultDataAccessException e) {
-            log.error("Error while getting gift certificates", e);
-            throw new DataNotFoundException(NOT_FOUND_GIFT_CERTIFICATE.getErrorCode());
-        }
-    }
-
-    private static String getOrderBy(boolean name, boolean date, boolean desc) {
-        log.info("Adding ordering to get request: by name = {}, by date = {}, desc = {}", name, date, desc);
-        StringBuilder stringBuilder = new StringBuilder();
-        if (name || date) {
-            stringBuilder.append(ORDER_BY);
-        }
-        if (name) {
-            stringBuilder.append(String.format(Column.STRUCTURE, Column.GiftCertificateColumn.TABLE_NAME, Column.NAME));
-            if (date) {
-                stringBuilder.append(", ").append(Column.GiftCertificateColumn.CREATE_DATE);
-            }
-        }
-        if (date && !name) {
-            stringBuilder.append(Column.GiftCertificateColumn.CREATE_DATE);
-        }
-        if (desc) {
-            stringBuilder.append(" ").append(DESC);
-        }
-        return stringBuilder.toString();
-    }
-
-
 }

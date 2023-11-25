@@ -9,6 +9,7 @@ public interface TagDao {
     Tag saveTag(Tag tag);
 
     Tag getTag(long id) throws DataNotFoundException;
+    Tag getTagByName(String name) throws DataNotFoundException;
 
     List<Tag> getTags() throws DataNotFoundException;
 

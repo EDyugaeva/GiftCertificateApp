@@ -20,7 +20,6 @@ public class MyWebInitializer extends
 
     @Override
     protected String[] getServletMappings() {
-
         return new String[]{"/"};
     }
 }

@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,5 +17,18 @@ public class GiftCertificateTag {
     public GiftCertificateTag(Long tagId, Long giftCertificateId) {
         this.tagId = tagId;
         this.giftCertificateId = giftCertificateId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GiftCertificateTag that = (GiftCertificateTag) o;
+        return Objects.equals(tagId, that.tagId) && Objects.equals(giftCertificateId, that.giftCertificateId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tagId, giftCertificateId);
     }
 }

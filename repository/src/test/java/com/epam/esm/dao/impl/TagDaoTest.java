@@ -37,6 +37,11 @@ public class TagDaoTest {
     }
 
     @Test
+    public void getTagByName_correctTag_whenGetTagByName() {
+        assertEquals(TAG_1, tagDao.getTagByName(TAG_1.getName()), "When getting tag, tag should be equal to database value");
+    }
+
+    @Test
     public void getTag_exception_whenTryToGetAbsentTag() {
         DataNotFoundException exception = assertThrows(DataNotFoundException.class, () -> tagDao.getTag(ABSENT_ID),
                 "Tag should be not found and  DataNotFoundException should be thrown");

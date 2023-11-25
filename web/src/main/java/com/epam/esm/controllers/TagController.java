@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/tag")
 public class TagController {
 
     private TagService tagService;
@@ -22,7 +21,7 @@ public class TagController {
     }
 
     @GetMapping("/hello")
-    public String printHelloWorld(Model model) {
+    public String printHelloWorld() {
 
         return "helloWorld";
     }
