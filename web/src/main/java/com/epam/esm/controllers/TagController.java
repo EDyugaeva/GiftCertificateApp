@@ -1,9 +1,11 @@
 package com.epam.esm.controllers;
 
+import com.epam.esm.exceptions.DataNotFoundException;
+import com.epam.esm.exceptions.OtherDatabaseException;
+import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.Tag;
 import com.epam.esm.services.TagService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,9 +15,8 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/tag")
+@Slf4j
 public class TagController {
-    private Logger logger = LoggerFactory.getLogger(TagController.class);
-
     private TagService tagService;
 
     public TagController(TagService tagService) {
@@ -29,8 +30,8 @@ public class TagController {
      * @return Tag
      */
     @GetMapping("/{id}")
-    public Tag getTag(@PathVariable("id") Long id) {
-        logger.info("Getting tag with id = {} in controller", id);
+    public Tag getTag(@PathVariable("id") Long id) throws DataNotFoundException {
+        log.info("Getting tag with id = {} in controller", id);
         return tagService.getTag(id);
     }
 
@@ -40,8 +41,8 @@ public class TagController {
      * @return list of all tags
      */
     @GetMapping()
-    public List<Tag> getTags() {
-        logger.info("Getting tags");
+    public List<Tag> getTags() throws DataNotFoundException {
+        log.info("Getting tags");
         return tagService.getTags();
     }
 
@@ -52,8 +53,8 @@ public class TagController {
      * @return saved tag
      */
     @PostMapping()
-    public Tag saveTag(@RequestBody String name) {
-        logger.info("Creating new tag with name = {}", name);
+    public Tag saveTag(@RequestBody String name) throws WrongParameterException, OtherDatabaseException {
+        log.info("Creating new tag with name = {}", name);
         return tagService.saveTag(name);
     }
 
@@ -63,8 +64,8 @@ public class TagController {
      * @param id of tag, should be > 0
      */
     @DeleteMapping("/{id}")
-    public void deleteTag(@PathVariable("id") Long id) {
-        logger.info("Deleting tag with id = {} in controller", id);
+    public void deleteTag(@PathVariable("id") Long id) throws WrongParameterException {
+        log.info("Deleting tag with id = {} in controller", id);
         tagService.deleteTag(id);
     }
 }

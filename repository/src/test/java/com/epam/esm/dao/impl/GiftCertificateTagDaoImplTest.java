@@ -2,6 +2,8 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.config.AppConfig;
 import com.epam.esm.exceptions.DataNotFoundException;
+import com.epam.esm.exceptions.OtherDatabaseException;
+import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificateTag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,12 +26,12 @@ public class GiftCertificateTagDaoImplTest {
     private GiftCertificateTagDaoImpl dao;
 
     @Test
-    public void getGiftCertificateTags_correctList_whenGetAllPairs() {
+    public void getGiftCertificateTags_correctList_whenGetAllPairs() throws DataNotFoundException {
         assertEquals(TAG_GIFT_LIST, dao.getGiftCertificateTags(), "When getting tags gifts pair, their list should be equal to database values");
     }
 
     @Test
-    public void getGiftCertificateTag_correctPair_whenGetGiftTagsPair() {
+    public void getGiftCertificateTag_correctPair_whenGetGiftTagsPair() throws DataNotFoundException {
         assertEquals(GIFT_TAG_1, dao.getGiftCertificateTag(GIFT_TAG_1.getId()), "When getting tags gifts pair, it should be equal to database value");
     }
 
@@ -41,7 +43,7 @@ public class GiftCertificateTagDaoImplTest {
     }
 
     @Test
-    public void saveGiftTag_savedGiftTag_whenGiftTagWasSaved() {
+    public void saveGiftTag_savedGiftTag_whenGiftTagWasSaved() throws OtherDatabaseException, WrongParameterException, DataNotFoundException {
         GiftCertificateTag savingPair = GIFT_TAG_NEW;
         dao.saveGiftTag(savingPair);
         savingPair.setId(NEW_ID);
@@ -49,7 +51,7 @@ public class GiftCertificateTagDaoImplTest {
     }
 
     @Test
-    public void deleteGiftTag_Exception_whenTryToGetDeletedGiftTag() {
+    public void deleteGiftTag_Exception_whenTryToGetDeletedGiftTag() throws OtherDatabaseException {
         dao.deleteGiftTag(GIFT_TAG_1.getId());
         DataNotFoundException exception = assertThrows(DataNotFoundException.class, () -> dao.getGiftCertificateTag(GIFT_TAG_1.getId()),
                 "Gift tag pair should be not found and  DataNotFoundException should be thrown");

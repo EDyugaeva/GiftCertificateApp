@@ -1,17 +1,21 @@
 package com.epam.esm.services;
 
+import com.epam.esm.exceptions.DataNotFoundException;
+import com.epam.esm.exceptions.OtherDatabaseException;
+import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificateTag;
 
 import java.util.List;
 
 public interface GiftCertificateTagService {
-    GiftCertificateTag saveGiftCertificateTag(long giftCertificateId, long tagId);
+    GiftCertificateTag saveGiftCertificateTag(long giftCertificateId, long tagId)
+            throws OtherDatabaseException, WrongParameterException;
 
-    GiftCertificateTag getGiftCertificateTag(long id);
+    GiftCertificateTag getGiftCertificateTag(long id) throws DataNotFoundException;
 
-    List<GiftCertificateTag> getGiftCertificateTags();
+    List<GiftCertificateTag> getGiftCertificateTags() throws DataNotFoundException;
 
-    void deleteGiftCertificateTag(long id);
+    void deleteGiftCertificateTag(long id) throws OtherDatabaseException;
 
-    void deleteGiftCertificateTagByTagAndGiftCertificateId(long giftCertificateId, long tagId);
+    void deleteGiftCertificateTagByTagAndGiftCertificateId(long giftCertificateId, long tagId) throws OtherDatabaseException;
 }

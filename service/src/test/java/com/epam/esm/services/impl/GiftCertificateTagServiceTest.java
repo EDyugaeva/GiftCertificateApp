@@ -2,6 +2,10 @@ package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.GiftCertificateTagDao;
 import com.epam.esm.dao.impl.GiftCertificateTagDaoImpl;
+import com.epam.esm.exceptions.DataNotFoundException;
+import com.epam.esm.exceptions.OtherDatabaseException;
+import com.epam.esm.exceptions.WrongModelParameterException;
+import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificateTag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,19 +28,19 @@ public class GiftCertificateTagServiceTest {
     private GiftCertificateTagServiceImpl service;
 
     @Test
-    public void getGiftCertificateTag_expectedGiftCertificateTag_whenGettingGiftCertificateTag() {
+    public void getGiftCertificateTag_expectedGiftCertificateTag_whenGettingGiftCertificateTag() throws DataNotFoundException {
         when(mock.getGiftCertificateTag(GIFT_TAG_1.getId())).thenReturn(GIFT_TAG_1);
         assertEquals("Actual gift-certificate-tag should be equal to expected", GIFT_TAG_1, service.getGiftCertificateTag(GIFT_TAG_1.getId()));
     }
 
     @Test
-    public void getGiftCertificatesTags_expectedGiftCertificateTagList_whenGettingGiftCertificateTags() {
+    public void getGiftCertificatesTags_expectedGiftCertificateTagList_whenGettingGiftCertificateTags() throws DataNotFoundException {
         when(mock.getGiftCertificateTags()).thenReturn(TAG_GIFT_LIST);
         assertEquals("Actual gift-certificate-tag list should be equal to expected", TAG_GIFT_LIST, service.getGiftCertificateTags());
     }
 
     @Test
-    public void saveGiftCertificateTag_expectedGiftCertificateTag_whenSavingGiftCertificateTag() {
+    public void saveGiftCertificateTag_expectedGiftCertificateTag_whenSavingGiftCertificateTag() throws OtherDatabaseException, WrongModelParameterException, WrongParameterException {
         GiftCertificateTag saving = new GiftCertificateTag();
         saving.setTagId(GIFT_TAG_2.getTagId());
         saving.setGiftCertificateId(GIFT_TAG_2.getGiftCertificateId());

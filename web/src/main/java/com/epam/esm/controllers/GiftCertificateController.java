@@ -1,9 +1,12 @@
 package com.epam.esm.controllers;
 
+import com.epam.esm.exceptions.DataNotFoundException;
+import com.epam.esm.exceptions.OtherDatabaseException;
+import com.epam.esm.exceptions.WrongModelParameterException;
+import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.services.GiftCertificateService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -17,9 +20,8 @@ import static com.epam.esm.constants.QueryParams.*;
  */
 @RestController
 @RequestMapping("/certificate")
+@Slf4j
 public class GiftCertificateController {
-    private Logger logger = LoggerFactory.getLogger(GiftCertificateController.class);
-
     private GiftCertificateService giftCertificateService;
 
     public GiftCertificateController(GiftCertificateService giftCertificateService) {
@@ -29,11 +31,12 @@ public class GiftCertificateController {
     /**
      * Method for getting all gift certificates (without sorting and ordering)
      *
-     * @return list of GiftCertificate
+     * @return - a list containing all GiftCertificate objects
+     * @throws DataNotFoundException if the gift certificate table is empty
      */
     @GetMapping()
-    public List<GiftCertificate> getAllGiftCertificates() {
-        logger.info("Getting all gift certificates");
+    public List<GiftCertificate> getAllGiftCertificates() throws DataNotFoundException {
+        log.info("Getting all gift certificates");
         return giftCertificateService.getAll();
     }
 
@@ -42,10 +45,11 @@ public class GiftCertificateController {
      *
      * @param id of Gift certificate, > 0
      * @return Gift certificate
+     * @throws DataNotFoundException if the gift certificate id is not exist
      */
     @GetMapping("/{id}")
-    public GiftCertificate getGiftCertificateById(@PathVariable("id") Long id) {
-        logger.info("Getting gift certificate by id = {}", id);
+    public GiftCertificate getGiftCertificateById(@PathVariable("id") Long id) throws DataNotFoundException {
+        log.info("Getting gift certificate by id = {}", id);
         return giftCertificateService.getGiftCertificatesById(id);
     }
 
@@ -53,10 +57,11 @@ public class GiftCertificateController {
      * Method for deleting gift certificate
      *
      * @param id of Gift certificate, > 0
+     * @throws WrongParameterException if there is no such id
      */
     @DeleteMapping("/{id}")
-    public void deleteGiftCertificateById(@PathVariable("id") Long id) {
-        logger.info("Delete gift certificate by id = {}", id);
+    public void deleteGiftCertificateById(@PathVariable("id") Long id) throws WrongParameterException {
+        log.info("Delete gift certificate by id = {}", id);
         giftCertificateService.deleteGiftCertificate(id);
     }
 
@@ -65,10 +70,13 @@ public class GiftCertificateController {
      *
      * @param giftCertificate - new Object
      * @return giftCertificate from DB
+     * @throws WrongParameterException - if the body of request is not correct
+     * @throws OtherDatabaseException if there is db exception
      */
     @PostMapping()
-    public GiftCertificate saveGiftCertificate(@RequestBody GiftCertificate giftCertificate) {
-        logger.info("Save gift certificate {}", giftCertificate);
+    public GiftCertificate saveGiftCertificate(@RequestBody GiftCertificate giftCertificate)
+            throws WrongModelParameterException, OtherDatabaseException {
+        log.info("Save gift certificate {}", giftCertificate);
         return giftCertificateService.saveGiftCertificate(giftCertificate);
     }
 
@@ -78,11 +86,14 @@ public class GiftCertificateController {
      * @param id              of giftCertificate, > 0
      * @param giftCertificate - request body
      * @return giftCertificate from db
+     * @throws WrongParameterException - if the body of request is not correct
+     * @throws OtherDatabaseException if there is db exception
      */
     @PutMapping("/{id}")
     public GiftCertificate saveGiftCertificate(@PathVariable("id") Long id,
-                                               @RequestBody GiftCertificate giftCertificate) {
-        logger.info("Update gift certificate {}", giftCertificate.toString());
+                                               @RequestBody GiftCertificate giftCertificate)
+            throws WrongParameterException,  OtherDatabaseException {
+        log.info("Update gift certificate {}", giftCertificate.toString());
         return giftCertificateService.updateGiftCertificate(id, giftCertificate);
     }
 
@@ -95,13 +106,16 @@ public class GiftCertificateController {
      * @param ordering    - order of results (variants: name, date)
      * @param order       - if needed desc, then "desc"
      * @return List of Gift Certificate
+     * @throws WrongParameterException - if the request is not correct
+     * @throws OtherDatabaseException if there is db exception
      */
     @GetMapping("/search")
     public List<GiftCertificate> getGiftCertificateByParam(@RequestParam(required = false) String name,
                                                            @RequestParam(required = false) String description,
                                                            @RequestParam(required = false) String tagName,
                                                            @RequestParam(required = false) List<String> ordering,
-                                                           @RequestParam(required = false) String order) {
+                                                           @RequestParam(required = false) String order)
+            throws DataNotFoundException, WrongParameterException {
         Map<String, String> params = new HashMap<>();
         params.put(NAME, name);
         params.put(DESCRIPTION, description);

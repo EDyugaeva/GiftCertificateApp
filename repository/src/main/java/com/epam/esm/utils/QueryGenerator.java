@@ -67,7 +67,7 @@ public class QueryGenerator {
         query.append(String.format(SELECT_BY_TAG_NAME, tagName));
     }
 
-    public void addSorting(String sortValue) {
+    public void addSorting(String sortValue) throws WrongParameterException {
         if (sorting) {
             query.append(" ,").append(getSortParameter(sortValue));
         } else {
@@ -80,7 +80,7 @@ public class QueryGenerator {
         query.append(DESC);
     }
 
-    private String getSortParameter(String sortValue) {
+    private String getSortParameter(String sortValue) throws WrongParameterException {
         if (sortValue.equalsIgnoreCase(NAME)) {
             return NAME_COLUMN;
         } else if (sortValue.equalsIgnoreCase(DATE)) {
@@ -90,7 +90,7 @@ public class QueryGenerator {
         }
     }
 
-    public void createFilter(Map<String, String> filteredBy, QueryGenerator queryGenerator) {
+    public void createFilter(Map<String, String> filteredBy, QueryGenerator queryGenerator) throws WrongParameterException {
         if (filteredBy != null) {
             for (Map.Entry<String, String> entry : filteredBy.entrySet()) {
                 if (entry.getValue() != null) {
@@ -113,7 +113,7 @@ public class QueryGenerator {
         }
     }
 
-    public void createSorting(List<String> orderingBy, QueryGenerator queryGenerator) {
+    public void createSorting(List<String> orderingBy, QueryGenerator queryGenerator) throws WrongParameterException {
         if (orderingBy != null) {
             for (String s : orderingBy) {
                 if (!s.equalsIgnoreCase(QueryParams.DATE) && !s.equalsIgnoreCase(QueryParams.NAME)) {

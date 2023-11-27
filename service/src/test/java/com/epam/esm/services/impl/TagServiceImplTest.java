@@ -2,6 +2,8 @@ package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.impl.TagDaoImpl;
 import com.epam.esm.exceptions.DataNotFoundException;
+import com.epam.esm.exceptions.OtherDatabaseException;
+import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,13 +27,13 @@ public class TagServiceImplTest {
     private TagServiceImpl service;
 
     @Test
-    public void getTag_expectedTag_whenGettingTag() {
+    public void getTag_expectedTag_whenGettingTag() throws DataNotFoundException, OtherDatabaseException {
         when(mock.getTag(TAG_1.getId())).thenReturn(TAG_1);
         assertEquals("Actual tag should be equal to expected", TAG_1, service.getTag(TAG_1.getId()));
     }
 
     @Test
-    public void getTag_exception_whenGettingException() {
+    public void getTag_exception_whenGettingException() throws DataNotFoundException {
         when(mock.getTag(TAG_1.getId())).thenThrow(DataNotFoundException.class);
         DataNotFoundException exception = assertThrows(DataNotFoundException.class,
                 () -> service.getTag(TAG_1.getId()),
@@ -39,19 +41,19 @@ public class TagServiceImplTest {
     }
 
     @Test
-    public void getTags_expectedTagList_whenGettingTags() {
+    public void getTags_expectedTagList_whenGettingTags() throws DataNotFoundException {
         when(mock.getTags()).thenReturn(TAG_LIST);
         assertEquals("Actual tag list should be equal to expected", TAG_LIST, service.getTags());
     }
 
     @Test
-    public void getTagByName_expectedTag_whenGettingTagByName() {
+    public void getTagByName_expectedTag_whenGettingTagByName() throws DataNotFoundException {
         when(mock.getTagByName(TAG_1.getName())).thenReturn(TAG_1);
         assertEquals("Actual tag should be equal to expected", TAG_1, service.getTagByName(TAG_1.getName()));
     }
 
     @Test
-    public void saveTag_expectedTag_whenSavingTag() {
+    public void saveTag_expectedTag_whenSavingTag() throws WrongParameterException, OtherDatabaseException {
         Tag savingTag = new Tag();
         savingTag.setName(TAG_2.getName());
         when(mock.saveTag(savingTag)).thenReturn(TAG_2);

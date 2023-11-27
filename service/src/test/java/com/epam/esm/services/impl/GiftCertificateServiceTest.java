@@ -1,6 +1,10 @@
 package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.GiftCertificateDao;
+import com.epam.esm.exceptions.DataNotFoundException;
+import com.epam.esm.exceptions.OtherDatabaseException;
+import com.epam.esm.exceptions.WrongModelParameterException;
+import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,28 +33,28 @@ public class GiftCertificateServiceTest {
     private GiftCertificateServiceImpl service;
 
     @Test
-    public void getGiftCertificate_expectedGiftCertificate_whenGetting1GiftCertificate() {
+    public void getGiftCertificate_expectedGiftCertificate_whenGetting1GiftCertificate() throws DataNotFoundException {
         when(mock.getGiftCertificate(GIFT_CERTIFICATE_1.getId())).thenReturn(GIFT_CERTIFICATE_1);
         assertEquals("Actual gift certificate should be equal to expected",
                 GIFT_CERTIFICATE_1, service.getGiftCertificatesById(GIFT_CERTIFICATE_1.getId()));
     }
 
     @Test
-    public void getAll_expectedGiftCertificateList_whenGetting1GiftCertificates() {
+    public void getAll_expectedGiftCertificateList_whenGetting1GiftCertificates() throws DataNotFoundException {
         when(mock.getGiftCertificates()).thenReturn(GIFT_CERTIFICATE_LIST);
         assertEquals("Actual gift certificate list should be equal to expected",
                 GIFT_CERTIFICATE_LIST, service.getAll());
     }
 
     @Test
-    public void getByParameter_expectedGiftCertificateList_whenGettingGiftCertificatesWithNullParams() {
+    public void getByParameter_expectedGiftCertificateList_whenGettingGiftCertificatesWithNullParams() throws DataNotFoundException, WrongParameterException {
         when(mock.getGiftCertificatesByQuery(null, null, null)).thenReturn(GIFT_CERTIFICATE_LIST);
         assertEquals("Actual gift certificate list should be equal to expected",
                 GIFT_CERTIFICATE_LIST, service.getGiftCertificatesByParameter(null, null, null));
     }
 
     @Test
-    public void getByParameter_expectedGiftCertificateList_whenGettingGiftCertificatesWithParams()  {
+    public void getByParameter_expectedGiftCertificateList_whenGettingGiftCertificatesWithParams() throws DataNotFoundException, WrongParameterException {
         HashMap<String, String> params = new HashMap<>();
         params.put(NAME, NAME_VALUE);
         when(mock.getGiftCertificatesByQuery(params, Arrays.asList(NAME, DATE), DESC)).thenReturn(GIFT_CERTIFICATE_LIST);
@@ -59,7 +63,8 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void saveGiftCertificate_GiftCertificateWithRightParams_whenSavingCorrectGiftCertificate() {
+    public void saveGiftCertificate_GiftCertificateWithRightParams_whenSavingCorrectGiftCertificate()
+            throws WrongModelParameterException, OtherDatabaseException, DataNotFoundException {
         when(mock.saveGiftCertificate(any())).thenReturn(GIFT_CERTIFICATE_1);
         when(mock.getGiftCertificate(GIFT_CERTIFICATE_1.getId())).thenReturn(GIFT_CERTIFICATE_1);
 
@@ -75,7 +80,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void updateGiftCertificate_GiftCertificateWithRightParams_whenUpdatingCorrectGiftCertificate() {
+    public void updateGiftCertificate_GiftCertificateWithRightParams_whenUpdatingCorrectGiftCertificate() throws DataNotFoundException, WrongParameterException, WrongModelParameterException, OtherDatabaseException {
         Map<String, Object> params = new HashMap<>();
         params.put(NAME, GIFT_CERTIFICATE_2.getName());
         params.put(DURATION, GIFT_CERTIFICATE_2.getDuration());
@@ -95,6 +100,4 @@ public class GiftCertificateServiceTest {
         assertNotNull("Created time should be not empty", actualGC.getCreateDate());
         assertNotNull("Last update time should be not empty", actualGC.getLastUpdateDate());
     }
-
-
 }
