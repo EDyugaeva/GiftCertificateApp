@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.epam.esm.exceptions.ExceptionCodes.WRONG_PARAMETER;
+import static com.epam.esm.exceptions.ExceptionCodesConstants.WRONG_PARAMETER;
 
 /**
  * Implementation of the {@link TagService} interface that provides

@@ -21,9 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import static com.epam.esm.constants.QueryParams.*;
-import static com.epam.esm.exceptions.ExceptionCodes.EMPTY_REQUEST;
-import static com.epam.esm.exceptions.ExceptionCodes.WRONG_PARAMETER;
-import static com.epam.esm.exceptions.ExceptionCodesConstants.OTHER_EXCEPTION;
+import static com.epam.esm.exceptions.ExceptionCodesConstants.EMPTY_REQUEST;
+import static com.epam.esm.exceptions.ExceptionCodesConstants.WRONG_PARAMETER;
 
 /**
  * Implementation of the {@link GiftCertificateService} interface.
@@ -66,16 +65,16 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             OtherDatabaseException {
         log.info("Saving new gift certificate with {}}", giftCertificate);
         giftCertificate.setCreateDate(LocalDateTime.now());
+        //save gc to get correct id
         GiftCertificate savedGiftCertificate = dao.saveGiftCertificate(giftCertificate);
+        //update table tag, if tags were added to gc
         List<Tag> tagList = giftCertificate.getTagList();
         if (tagList != null) {
             updateTags(giftCertificate.getTagList(), savedGiftCertificate);
+            savedGiftCertificate.setTagList(tagList);
         }
-        try {
-            return getGiftCertificatesById(savedGiftCertificate.getId());
-        } catch (DataNotFoundException e) {
-            throw new OtherDatabaseException("Exception while saving gift certificate ", OTHER_EXCEPTION);
-        }
+        return savedGiftCertificate;
+
     }
 
     /**
@@ -209,7 +208,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         // Step 1: Delete tags that are no longer associated with the gift certificate
         try {
             List<Tag> tagsFromDb = getGiftCertificatesById(giftCertificateId).getTagList();
-            if (!tagList.equals(tagsFromDb)) {
+            if (!tagList.equals(tagsFromDb) && tagsFromDb != null) {
                 deleteTags(tagList, tagsFromDb, giftCertificateId);
             }
         } catch (DataNotFoundException e) {

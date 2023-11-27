@@ -10,6 +10,7 @@ import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.utils.QueryGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -63,12 +64,12 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
             jdbcTemplateObject.update(connection -> prepareStatementForInsert(connection, INSERT, giftCertificate), keyHolder);
             giftCertificate.setId(keyHolder.getKeyAs(Long.class));
             return giftCertificate;
-        } catch (EmptyResultDataAccessException e) {
-            log.error("Exception while saving new gift certificate");
-            throw new WrongParameterException("Parameters in model are not correct", WRONG_DATA_PARAMETER);
+        } catch (EmptyResultDataAccessException | DuplicateKeyException e) {
+            log.error("Exception while saving new gift certificate",e );
+            throw new WrongParameterException("Parameters in model are not correct", WRONG_PARAMETER);
         } catch (Exception e) {
-            log.error("Exception while saving new gift certificate");
-            throw new OtherDatabaseException("Exception while saving new gift certificate", OTHER_EXCEPTION);
+            log.error("Exception while saving new gift certificate", e);
+            throw new OtherDatabaseException("Exception while saving new gift certificate. Maybe wrong entity", OTHER_EXCEPTION);
         }
     }
 

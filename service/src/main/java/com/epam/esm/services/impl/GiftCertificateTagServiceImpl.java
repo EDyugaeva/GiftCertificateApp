@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.epam.esm.exceptions.ExceptionCodes.WRONG_PARAMETER;
+import static com.epam.esm.exceptions.ExceptionCodesConstants.WRONG_PARAMETER;
 
 /**
  * Implementation of the {@link GiftCertificateTagService} interface that provides
@@ -76,7 +76,7 @@ public class GiftCertificateTagServiceImpl implements GiftCertificateTagService 
         catch (Exception e) {
             log.error("Exception while deleting gift certificate - tag pair with certificate id = {} and tag id = {}",
                     giftCertificateId, tagId, e);
-            throw new WrongParameterException("Exception while deleting gift certificate - tag pair", WRONG_PARAMETER);
+            throw new WrongParameterException("Exception while deleting gift certificate - tag pair",WRONG_PARAMETER);
         }
     }
 }

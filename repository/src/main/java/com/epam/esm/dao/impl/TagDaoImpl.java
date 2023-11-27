@@ -8,6 +8,7 @@ import com.epam.esm.exceptions.OtherDatabaseException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -47,23 +48,21 @@ public class TagDaoImpl implements TagDao {
                     keyHolder);
             tag.setId(keyHolder.getKeyAs(Long.class));
             return tag;
-        }
-        catch (EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException | DuplicateKeyException e) {
             log.error("Exception while saving new tag");
-            throw new WrongParameterException("Parameters are not correct", WRONG_DATA_PARAMETER);
-        }
-        catch (Exception e) {
+            throw new WrongParameterException("Parameters are not correct", WRONG_PARAMETER);
+        } catch (Exception e) {
             log.error("Exception while saving new  tag ");
             throw new OtherDatabaseException("Exception while saving new   tag ", OTHER_EXCEPTION);
         }
     }
 
     @Override
-    public Tag getTag(long id) throws  DataNotFoundException {
+    public Tag getTag(long id) throws DataNotFoundException {
         try {
             log.info("Trying to get tag with id = {}", id);
             return jdbcTemplateObject.queryForObject(SELECT_BY_ID, new Object[]{id}, new TagMapper());
-        } catch (EmptyResultDataAccessException e) {
+        } catch (RuntimeException e) {
             log.error("Error while getting tag with id = {}", id, e);
             throw new DataNotFoundException(String.format("Requested resource not found (id = %d)", id), NOT_FOUND_TAG);
         }
@@ -82,13 +81,13 @@ public class TagDaoImpl implements TagDao {
 
     @Override
     public List<Tag> getTags() throws DataNotFoundException {
-        try {
             log.info("Trying to get all tags");
-            return jdbcTemplateObject.query(SELECT_ALL, new TagMapper());
-        } catch (EmptyResultDataAccessException e) {
-            log.error("Error while getting all tags", e);
-            throw new DataNotFoundException("Requested resource not found", NOT_FOUND_TAG);
+            List<Tag> tagList = jdbcTemplateObject.query(SELECT_ALL, new TagMapper());
+        if (tagList.isEmpty()) {
+            log.error("Empty tag list tags");
+            throw new DataNotFoundException("Requested resource not found (tags)", NOT_FOUND_TAG);
         }
+        return tagList;
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.epam.esm.exceptions.OtherDatabaseException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificateTag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -49,10 +50,9 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
                     keyHolder);
             giftCertificateTag.setId(keyHolder.getKeyAs(Long.class));
             return giftCertificateTag;
-        }
-        catch (EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException | DuplicateKeyException e) {
             log.error("Exception while saving new gift certificate tag pair");
-            throw new WrongParameterException("Parameters are not correct", WRONG_DATA_PARAMETER);
+            throw new WrongParameterException("Parameters are not correct", WRONG_PARAMETER);
         } catch (Exception e) {
             log.error("Exception while saving new gift certificate tag pair");
             throw new OtherDatabaseException("Exception while saving new gift certificate tag pair", OTHER_EXCEPTION);
@@ -72,13 +72,13 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
 
     @Override
     public List<GiftCertificateTag> getGiftCertificateTags() throws DataNotFoundException {
-        try {
             log.info("Trying to get all tags and certificates pairs");
-            return jdbcTemplateObject.query(SELECT_ALL, new GiftCertificateTagMapper());
-        } catch (EmptyResultDataAccessException e) {
-            log.error("Error while getting all pairs", e);
-            throw new DataNotFoundException("Requested resource not found", NOT_FOUND_PAIR);
+            List<GiftCertificateTag> giftCertificateTagList = jdbcTemplateObject.query(SELECT_ALL, new GiftCertificateTagMapper());
+        if (giftCertificateTagList.isEmpty()) {
+            log.error("Tags and certificates pairs were not found");
+            throw new DataNotFoundException("Requested resource not found (tags and certificates pairs)", NOT_FOUND_PAIR);
         }
+        return giftCertificateTagList;
     }
 
     @Override
@@ -86,8 +86,7 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
         log.info("Trying to delete tag-gift pair with id = {}", id);
         try {
             jdbcTemplateObject.update(DELETE, id);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Exception while deleting tag-gift pair with gift certificate id = {} ", id, e);
             throw new OtherDatabaseException("Database exception while deleting tag-gift pair", NOT_FOUND_PAIR);
         }
@@ -98,8 +97,7 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
         log.info("Trying to delete tag-gift pair with gift certificate id = {} and tag id = {}", giftCertificateId, tagId);
         try {
             jdbcTemplateObject.update(DELETE_BY_IDS, giftCertificateId, tagId);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Other db exception while deleting tag-gift pair with gift certificate id = {} and tag id = {}", giftCertificateId, tagId, e);
             throw new OtherDatabaseException("Other db exception while deleting tag-gift pair", OTHER_EXCEPTION);
         }
