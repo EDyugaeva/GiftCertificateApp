@@ -3,9 +3,10 @@ package com.epam.esm.services.impl;
 import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.OtherDatabaseException;
-import com.epam.esm.exceptions.WrongModelParameterException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
+import com.epam.esm.services.GiftCertificateTagService;
+import com.epam.esm.services.TagService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,12 +14,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
+import static com.epam.esm.constants.GiftCertificateTagTestConstants.*;
 import static com.epam.esm.constants.GiftCertificatesTestConstants.*;
-import static com.epam.esm.constants.QueryParams.*;
+import static com.epam.esm.constants.QueryParams.DATE;
+import static com.epam.esm.constants.QueryParams.NAME;
+import static com.epam.esm.constants.TagTestConstants.TAG_1;
+import static com.epam.esm.constants.TagTestConstants.TAG_2;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.AssertionErrors.*;
@@ -28,7 +33,10 @@ public class GiftCertificateServiceTest {
 
     @Mock
     private GiftCertificateDao mock = Mockito.mock(GiftCertificateDao.class);
-
+    @Mock
+    private TagService mockTagService = Mockito.mock(TagService.class);
+    @Mock
+    private GiftCertificateTagService mockGiftCertificateTagService = Mockito.mock(GiftCertificateTagService.class);
     @InjectMocks
     private GiftCertificateServiceImpl service;
 
@@ -64,9 +72,16 @@ public class GiftCertificateServiceTest {
 
     @Test
     public void saveGiftCertificate_GiftCertificateWithRightParams_whenSavingCorrectGiftCertificate()
-            throws WrongModelParameterException, OtherDatabaseException, DataNotFoundException {
+            throws WrongParameterException, OtherDatabaseException, DataNotFoundException {
         when(mock.saveGiftCertificate(any())).thenReturn(GIFT_CERTIFICATE_1);
         when(mock.getGiftCertificate(GIFT_CERTIFICATE_1.getId())).thenReturn(GIFT_CERTIFICATE_1);
+        when(mockTagService.getTags()).thenReturn(TAG_LIST);
+        when(mockTagService.getTagByName(TAG_1.getName())).thenReturn(TAG_1);
+        when(mockTagService.getTagByName(TAG_2.getName())).thenReturn(TAG_2);
+        when(mockGiftCertificateTagService.getGiftCertificateTags()).thenReturn(new ArrayList<>());
+        when(mockGiftCertificateTagService.saveGiftCertificateTag(GIFT_CERTIFICATE_1.getId(), TAG_1.getId())).thenReturn(GIFT_TAG_1);
+        when(mockGiftCertificateTagService.saveGiftCertificateTag(GIFT_CERTIFICATE_1.getId(), TAG_2.getId())).thenReturn(GIFT_TAG_2);
+
 
         GiftCertificate actualGC = service.saveGiftCertificate(GIFT_CERTIFICATE_1);
 
@@ -80,17 +95,15 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void updateGiftCertificate_GiftCertificateWithRightParams_whenUpdatingCorrectGiftCertificate() throws DataNotFoundException, WrongParameterException, WrongModelParameterException, OtherDatabaseException {
-        Map<String, Object> params = new HashMap<>();
-        params.put(NAME, GIFT_CERTIFICATE_2.getName());
-        params.put(DURATION, GIFT_CERTIFICATE_2.getDuration());
-        params.put(PRICE, GIFT_CERTIFICATE_2.getPrice());
-        params.put(DESCRIPTION, GIFT_CERTIFICATE_2.getDescription());
-        params.put(TAGS, GIFT_CERTIFICATE_2.getTagList());
-
+    public void updateGiftCertificate_GiftCertificateWithRightParams_whenUpdatingCorrectGiftCertificate() throws DataNotFoundException, WrongParameterException, OtherDatabaseException {
         when(mock.getGiftCertificate(GIFT_CERTIFICATE_2.getId())).thenReturn(GIFT_CERTIFICATE_2_BEFORE_UPDATE);
+        when(mock.updateGiftCertificate(any())).thenReturn(GIFT_CERTIFICATE_2);
+        when(mockTagService.getTags()).thenReturn(TAG_LIST);
+        when(mockTagService.getTagByName(TAG_1.getName())).thenReturn(TAG_1);
+        when(mockTagService.getTagByName(TAG_2.getName())).thenReturn(TAG_2);
+        when(mockGiftCertificateTagService.getGiftCertificateTags()).thenReturn(TAG_GIFT_LIST);
 
-        GiftCertificate actualGC = service.updateGiftCertificate(GIFT_CERTIFICATE_2_BEFORE_UPDATE.getId(), GIFT_CERTIFICATE_2_TO_UPDATE);
+        GiftCertificate actualGC = service.updateGiftCertificate(GIFT_CERTIFICATE_2.getId(), GIFT_CERTIFICATE_2);
 
         assertEquals("Actual name should be equal to expected", GIFT_CERTIFICATE_2.getName(), actualGC.getName());
         assertEquals("Actual description should be equal to expected", GIFT_CERTIFICATE_2.getDescription(), actualGC.getDescription());

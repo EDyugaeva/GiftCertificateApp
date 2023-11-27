@@ -15,7 +15,7 @@ public interface GiftCertificateTagService {
 
     List<GiftCertificateTag> getGiftCertificateTags() throws DataNotFoundException;
 
-    void deleteGiftCertificateTag(long id) throws OtherDatabaseException;
+    void deleteGiftCertificateTag(long id) throws WrongParameterException;
 
-    void deleteGiftCertificateTagByTagAndGiftCertificateId(long giftCertificateId, long tagId) throws OtherDatabaseException;
+    void deleteGiftCertificateTagByTagAndGiftCertificateId(long giftCertificateId, long tagId) throws WrongParameterException;
 }

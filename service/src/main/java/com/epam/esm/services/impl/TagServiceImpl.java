@@ -9,11 +9,16 @@ import com.epam.esm.services.TagService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static com.epam.esm.exceptions.ExceptionCodes.WRONG_PARAMETER;
 
+/**
+ * Implementation of the {@link TagService} interface that provides
+ * CRUD operations for managing tags.
+ */
 @Service
 @Slf4j
 public class TagServiceImpl implements TagService {
@@ -25,6 +30,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    @Transactional
     public Tag saveTag(String name) throws WrongParameterException, OtherDatabaseException {
         log.info("Saving tag with name {}", name);
         Tag tag = new Tag();
@@ -51,13 +57,15 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    @Transactional
     public void deleteTag(long id) throws WrongParameterException {
         log.info("Deleting tag with id {}", id);
         try {
             getTag(id);
             tagDao.deleteTag(id);
         } catch (Exception e) {
-            throw new WrongParameterException(e.getMessage(), WRONG_PARAMETER);
+            log.error("Exception while deleting tag with id = {}", id, e);
+            throw new WrongParameterException("Exception while deleting tag", WRONG_PARAMETER);
         }
     }
 }

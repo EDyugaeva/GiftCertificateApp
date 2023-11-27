@@ -2,7 +2,6 @@ package com.epam.esm.services;
 
 import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.OtherDatabaseException;
-import com.epam.esm.exceptions.WrongModelParameterException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 
@@ -11,7 +10,7 @@ import java.util.Map;
 
 public interface GiftCertificateService {
     GiftCertificate saveGiftCertificate(GiftCertificate giftCertificate)
-            throws WrongModelParameterException, OtherDatabaseException;
+            throws WrongParameterException, OtherDatabaseException;
 
     GiftCertificate updateGiftCertificate(Long id, GiftCertificate giftCertificate)
             throws WrongParameterException, OtherDatabaseException;

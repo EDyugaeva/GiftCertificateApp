@@ -49,15 +49,4 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         return ex;
     }
 
-    /**
-     * Handles exceptions of type {@link WrongModelParameterException}.
-     *
-     * @param ex The instance of {@link WrongModelParameterException}.
-     * @return The response with the appropriate HTTP status code and error details.
-     */
-    @ExceptionHandler(WrongModelParameterException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected BaseCustomException handleWrongModelParameterException(BaseCustomException ex) {
-        return ex;
-    }
 }

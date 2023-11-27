@@ -7,7 +7,7 @@ import java.util.Map;
 
 import static com.epam.esm.constants.QueryParams.*;
 
-public class GiftCertificateValidator {
+public class GiftCertificateParamsCreator {
 
     public Map<String, Object> getActualParams(GiftCertificate giftCertificate) {
         Map<String, Object> params = new HashMap<>();

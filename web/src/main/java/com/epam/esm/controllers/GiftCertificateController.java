@@ -2,7 +2,6 @@ package com.epam.esm.controllers;
 
 import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.OtherDatabaseException;
-import com.epam.esm.exceptions.WrongModelParameterException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.services.GiftCertificateService;
@@ -75,7 +74,7 @@ public class GiftCertificateController {
      */
     @PostMapping()
     public GiftCertificate saveGiftCertificate(@RequestBody GiftCertificate giftCertificate)
-            throws WrongModelParameterException, OtherDatabaseException {
+            throws WrongParameterException, OtherDatabaseException {
         log.info("Save gift certificate {}", giftCertificate);
         return giftCertificateService.saveGiftCertificate(giftCertificate);
     }

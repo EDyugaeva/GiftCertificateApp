@@ -9,8 +9,16 @@ import com.epam.esm.services.GiftCertificateTagService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.epam.esm.exceptions.ExceptionCodes.WRONG_PARAMETER;
+
+/**
+ * Implementation of the {@link GiftCertificateTagService} interface that provides
+ * CRUD operations for managing gift certificate-tags.
+ */
 @Slf4j
 @Service
 public class GiftCertificateTagServiceImpl implements GiftCertificateTagService {
@@ -22,6 +30,7 @@ public class GiftCertificateTagServiceImpl implements GiftCertificateTagService 
     }
 
     @Override
+    @Transactional
     public GiftCertificateTag saveGiftCertificateTag(long giftCertificateId, long tagId)
             throws OtherDatabaseException, WrongParameterException {
         log.info("Saving tag - gift certificate with id {} and {}", tagId, giftCertificateId);
@@ -40,18 +49,34 @@ public class GiftCertificateTagServiceImpl implements GiftCertificateTagService 
     @Override
     public List<GiftCertificateTag> getGiftCertificateTags() throws DataNotFoundException {
         log.info("Getting gift certificate - tag pairs");
-            return dao.getGiftCertificateTags();
+        return dao.getGiftCertificateTags();
     }
 
     @Override
-    public void deleteGiftCertificateTag(long id) throws OtherDatabaseException {
+    @Transactional
+    public void deleteGiftCertificateTag(long id) throws WrongParameterException {
         log.info("Deleting gift certificate - tag pair with id = {}", id);
-        dao.deleteGiftTag(id);
+        try {
+            dao.getGiftCertificateTag(id);
+            dao.deleteGiftTag(id);
+        } catch (Exception e) {
+            log.error("Exception while deleting gift certificate - tag pair with id = {}", id, e);
+            throw new WrongParameterException("Exception while deleting gift certificate - tag pair", WRONG_PARAMETER);
+        }
     }
 
     @Override
-    public void deleteGiftCertificateTagByTagAndGiftCertificateId(long giftCertificateId, long tagId) throws OtherDatabaseException {
+    @Transactional
+    public void deleteGiftCertificateTagByTagAndGiftCertificateId(long giftCertificateId, long tagId) throws
+            WrongParameterException {
         log.info("Deleting gift certificate - tag pair with certificate id = {} and tag id = {}", giftCertificateId, tagId);
-        dao.deleteGiftCertificateTagByTagAndGiftCertificateId(giftCertificateId, tagId);
+        try {
+            dao.deleteGiftCertificateTagByTagAndGiftCertificateId(giftCertificateId, tagId);
+        }
+        catch (Exception e) {
+            log.error("Exception while deleting gift certificate - tag pair with certificate id = {} and tag id = {}",
+                    giftCertificateId, tagId, e);
+            throw new WrongParameterException("Exception while deleting gift certificate - tag pair", WRONG_PARAMETER);
+        }
     }
 }

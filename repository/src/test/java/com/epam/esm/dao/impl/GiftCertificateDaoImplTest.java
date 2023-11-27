@@ -4,7 +4,6 @@ import com.epam.esm.config.AppConfig;
 import com.epam.esm.constants.GiftCertificatesTestConstants;
 import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.OtherDatabaseException;
-import com.epam.esm.exceptions.WrongModelParameterException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import org.apache.commons.lang3.StringUtils;
@@ -67,7 +66,7 @@ public class GiftCertificateDaoImplTest {
     }
 
     @Test
-    public void saveGiftCertificate_savedGiftCertificate_whenGiftCertificateWasSaved() throws DataNotFoundException, WrongModelParameterException, OtherDatabaseException {
+    public void saveGiftCertificate_savedGiftCertificate_whenGiftCertificateWasSaved() throws DataNotFoundException, OtherDatabaseException, WrongParameterException {
         GiftCertificate savingCertificate = NEW_GIFT_CERTIFICATE;
         giftCertificateDao.saveGiftCertificate(savingCertificate);
         savingCertificate.setId(NEW_ID);

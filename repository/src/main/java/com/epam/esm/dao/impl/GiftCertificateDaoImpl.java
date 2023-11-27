@@ -5,7 +5,6 @@ import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.dao.mapper.ListGiftCertificateMapper;
 import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.OtherDatabaseException;
-import com.epam.esm.exceptions.WrongModelParameterException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.utils.QueryGenerator;
@@ -56,7 +55,8 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
-    public GiftCertificate saveGiftCertificate(GiftCertificate giftCertificate) throws WrongModelParameterException, OtherDatabaseException {
+    public GiftCertificate saveGiftCertificate(GiftCertificate giftCertificate) throws
+            WrongParameterException, OtherDatabaseException {
         log.info("Saving gift certificate = {}", giftCertificate);
         try {
             KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -65,7 +65,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
             return giftCertificate;
         } catch (EmptyResultDataAccessException e) {
             log.error("Exception while saving new gift certificate");
-            throw new WrongModelParameterException("Parameters are not correct", WRONG_DATA_PARAMETER);
+            throw new WrongParameterException("Parameters in model are not correct", WRONG_DATA_PARAMETER);
         } catch (Exception e) {
             log.error("Exception while saving new gift certificate");
             throw new OtherDatabaseException("Exception while saving new gift certificate", OTHER_EXCEPTION);
@@ -124,10 +124,12 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     @Override
     public List<GiftCertificate> getGiftCertificates() throws DataNotFoundException {
         try {
-            return getGiftCertificatesByQuery(null, null, null);
-        } catch (WrongParameterException e) {
-            log.error("Parameter exception");
-            throw new RuntimeException("Exception while getting all gift certificates");
+            List<GiftCertificate> list = jdbcTemplateObject.query(SELECT_ALL, new ListGiftCertificateMapper());
+            return list;
+        } catch (RuntimeException e) {
+            log.error("Error while getting all gift certificates", e);
+            throw new DataNotFoundException("Requested resource not found (gift certificate)",
+                    NOT_FOUND_GIFT_CERTIFICATE);
         }
     }
 
