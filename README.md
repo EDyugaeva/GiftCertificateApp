@@ -41,3 +41,47 @@ mvn jetty::run
 
 standart port (8080) is used,
 database should be configured with init.sql file before
+
+## Endpoints
+
+### TagController:
+
+POST: /tag - create new tag, name of new tag in body
+
+GET: /tag - get all tags
+
+GET: /tag/{id} - get tag with {id}
+
+DELETE: /tag/{id} - delete tag with {id}
+
+### GiftCertificateController:
+
+POST: /certificate - create new gift certificate
+
+GET: /certificate - get all gift certificates
+
+GET: /certificate/{id} - get gift certificate with {id}
+
+DELETE: /certificate/{id} - delete gift certificate with {id}
+
+PUT: /certificate/{id} - update gift certificate with {id}, in body could be gift certificate with not all parameters
+
+GET: /certificate/search - get gift certificate with sorting and filtering. Parameters are not required.
+
+for filtering:
+
+    - name
+    - description
+    - tagName
+
+for creating order:
+
+    - ordering
+
+
+example:
+
+/certificate/search?**name**=gift&**description**=description&**tagName**=new tag name&**ordering**=date desc, name desc
+
+get all gift certificates having in name "gift", in description "description", tag name with value "new tag name" ordering by date and name desc
+

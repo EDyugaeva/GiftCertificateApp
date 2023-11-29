@@ -13,6 +13,6 @@ public interface GiftCertificateDao {
     GiftCertificate getGiftCertificate(long id) throws DataNotFoundException;
     GiftCertificate updateGiftCertificate(GiftCertificate giftCertificate) throws DataNotFoundException;
     List<GiftCertificate> getGiftCertificates() throws DataNotFoundException;
-    List<GiftCertificate> getGiftCertificatesByQuery(Map<String, String> filteredBy, List<String> orderingBy, String order) throws DataNotFoundException, WrongParameterException;
+    List<GiftCertificate> getGiftCertificatesByQuery(Map<String, String> filteredBy, List<String> orderingBy) throws DataNotFoundException, WrongParameterException;
     void deleteGiftCertificate(long id) throws OtherDatabaseException;
 }

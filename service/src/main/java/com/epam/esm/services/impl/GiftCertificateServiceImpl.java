@@ -156,18 +156,16 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      * Retrieves gift certificates based on specified parameters.
      *
      * @param filteredBy a map of filter criteria to apply on the gift certificates.
-     * @param orderingBy a list of fields to use for sorting the result.
-     * @param order      the order in which the result should be sorted (ASC or DESC).
+     * @param orderingBy a list of fields to use for sorting the result (with sorting type).
      * @return a list of gift certificates matching the specified criteria.
      * @throws DataNotFoundException   if no gift certificates match the specified criteria.
      * @throws WrongParameterException if there is an issue with the input parameters.
      */
     @Override
     public List<GiftCertificate> getGiftCertificatesByParameter(Map<String, String> filteredBy,
-                                                                List<String> orderingBy,
-                                                                String order) throws DataNotFoundException, WrongParameterException {
-        log.info("Getting all gift certificates filtered by {} ordering by {}, order = {} ", filteredBy, orderingBy, order);
-        return dao.getGiftCertificatesByQuery(filteredBy, orderingBy, order);
+                                                                List<String> orderingBy) throws DataNotFoundException, WrongParameterException {
+        log.info("Getting all gift certificates filtered by {} ordering by {} ", filteredBy);
+        return dao.getGiftCertificatesByQuery(filteredBy, orderingBy);
     }
 
     /**

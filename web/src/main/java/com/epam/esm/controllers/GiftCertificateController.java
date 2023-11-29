@@ -102,8 +102,7 @@ public class GiftCertificateController {
      * @param name        - not required, if needed filtering by name or its part
      * @param description - not required, if needed filtering by description or its part
      * @param tagName     - not required, if needed filtering by tag name
-     * @param ordering    - order of results (variants: name, date)
-     * @param order       - if needed desc, then "desc"
+     * @param ordering    - not required, order of results (variants: name (desc if needed), date (desc if needed))
      * @return List of Gift Certificate
      * @throws WrongParameterException - if the request is not correct
      * @throws OtherDatabaseException if there is db exception
@@ -112,13 +111,12 @@ public class GiftCertificateController {
     public List<GiftCertificate> getGiftCertificateByParam(@RequestParam(required = false) String name,
                                                            @RequestParam(required = false) String description,
                                                            @RequestParam(required = false) String tagName,
-                                                           @RequestParam(required = false) List<String> ordering,
-                                                           @RequestParam(required = false) String order)
+                                                           @RequestParam(required = false) List<String> ordering)
             throws DataNotFoundException, WrongParameterException {
         Map<String, String> params = new HashMap<>();
         params.put(NAME, name);
         params.put(DESCRIPTION, description);
         params.put(TAG_NAME, tagName);
-        return giftCertificateService.getGiftCertificatesByParameter(params, ordering, order);
+        return giftCertificateService.getGiftCertificatesByParameter(params, ordering);
     }
 }

@@ -8,4 +8,5 @@ public class QueryParams {
     public static final String TAGS = "tags";
     public static final String TAG_NAME = "tagName";
     public static final String DATE = "date";
+    public static final String DESC = "desc";
 }

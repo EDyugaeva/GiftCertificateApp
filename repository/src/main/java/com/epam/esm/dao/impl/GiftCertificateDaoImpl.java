@@ -148,11 +148,10 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
     @Override
     public List<GiftCertificate> getGiftCertificatesByQuery(Map<String, String> filteredBy,
-                                                            List<String> orderingBy,
-                                                            String order)
+                                                            List<String> orderingBy)
             throws DataNotFoundException, WrongParameterException {
         log.info("Getting all gift certificates with parameters ");
-        String fullQuery = SELECT_ALL + getQuery(filteredBy, orderingBy, order);
+        String fullQuery = SELECT_ALL + getQuery(filteredBy, orderingBy);
         try {
             return jdbcTemplateObject.query(fullQuery, new ListGiftCertificateMapper());
         } catch (RuntimeException e) {
@@ -161,11 +160,10 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
         }
     }
 
-    String getQuery(Map<String, String> filteredBy, List<String> orderingBy, String order) throws WrongParameterException {
+    String getQuery(Map<String, String> filteredBy, List<String> orderingBy) throws WrongParameterException {
         QueryGenerator queryGenerator = new QueryGenerator();
         queryGenerator.createFilter(filteredBy, queryGenerator);
         queryGenerator.createSorting(orderingBy, queryGenerator);
-        queryGenerator.createOrder(order, queryGenerator);
         return queryGenerator.getQuery();
     }
 }

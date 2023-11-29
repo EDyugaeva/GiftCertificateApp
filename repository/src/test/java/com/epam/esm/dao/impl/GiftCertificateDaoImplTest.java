@@ -87,21 +87,21 @@ public class GiftCertificateDaoImplTest {
                 .stream()
                 .filter(g -> g.getName().contains(NAME_VALUE))
                 .filter(g -> g.getDescription().contains(DESCRIPTION_VALUE))
-                .sorted(Comparator.comparing(GiftCertificate::getName).thenComparing(GiftCertificate::getCreateDate))
+                .sorted(Comparator.comparing(GiftCertificate::getName).thenComparing(GiftCertificate::getCreateDate).reversed())
                 .collect(Collectors.toList());
         Map<String, String> map = new HashMap<>();
         map.put(NAME, NAME_VALUE);
         map.put(DESCRIPTION_VALUE, DESCRIPTION_VALUE);
         map.put(TAG_NAME, TAG_NAME_VALUE);
 
-        assertEquals(giftCertificateList, giftCertificateDao.getGiftCertificatesByQuery(map, SORTING_VALUE, null),
+        assertEquals(giftCertificateList, giftCertificateDao.getGiftCertificatesByQuery(map, SORTING_VALUE),
                 "Actual list should be filtered by all params");
     }
 
     @Test
     public void getQuery_emptyString_whenNullParams() throws WrongParameterException {
         AssertionErrors.assertEquals("Actual query should be empty", "",
-                giftCertificateDao.getQuery(null, null, ""));
+                giftCertificateDao.getQuery(null, null));
     }
 
     @Test
@@ -109,7 +109,7 @@ public class GiftCertificateDaoImplTest {
         Map<String, String> map = new HashMap<>();
         map.put(NAME_VALUE, NAME_VALUE);
         WrongParameterException exception = assertThrows(WrongParameterException.class,
-                () -> giftCertificateDao.getQuery(map, null, null),
+                () -> giftCertificateDao.getQuery(map, null),
                 "Gift certificate should be not found and  WrongParameterException should be thrown");
         AssertionErrors.assertEquals("Exception code should be " + NOT_SUPPORTED,
                 NOT_SUPPORTED, exception.getErrorCode());
@@ -122,8 +122,9 @@ public class GiftCertificateDaoImplTest {
         map.put(DESCRIPTION, DESCRIPTION_VALUE);
         map.put(TAG_NAME, TAG_NAME_VALUE);
 
-        String query = giftCertificateDao.getQuery(map, SORTING_VALUE, DESC);
-        assertTrue("Actual query should include desc", StringUtils.containsIgnoreCase(query, DESC));
+        String query = giftCertificateDao.getQuery(map, SORTING_VALUE);
+
+        assertTrue("Actual query should include desc", StringUtils.containsIgnoreCase(query, GiftCertificatesTestConstants.DESC));
         assertFalse("Actual query should not include asc", StringUtils.containsIgnoreCase(query, GiftCertificatesTestConstants.ASC));
 
         assertTrue("Actual query should include name", StringUtils.containsIgnoreCase(query, NAME));

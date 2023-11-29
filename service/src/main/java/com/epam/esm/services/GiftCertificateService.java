@@ -23,7 +23,6 @@ public interface GiftCertificateService {
     void deleteGiftCertificate(long id) throws WrongParameterException;
 
     List<GiftCertificate> getGiftCertificatesByParameter(Map<String, String> filteredBy,
-                                                         List<String> orderingBy,
-                                                         String order)
+                                                         List<String> orderingBy)
             throws DataNotFoundException, WrongParameterException;
 }

@@ -56,18 +56,18 @@ public class GiftCertificateServiceTest {
 
     @Test
     public void getByParameter_expectedGiftCertificateList_whenGettingGiftCertificatesWithNullParams() throws DataNotFoundException, WrongParameterException {
-        when(mock.getGiftCertificatesByQuery(null, null, null)).thenReturn(GIFT_CERTIFICATE_LIST);
+        when(mock.getGiftCertificatesByQuery(null, null)).thenReturn(GIFT_CERTIFICATE_LIST);
         assertEquals("Actual gift certificate list should be equal to expected",
-                GIFT_CERTIFICATE_LIST, service.getGiftCertificatesByParameter(null, null, null));
+                GIFT_CERTIFICATE_LIST, service.getGiftCertificatesByParameter(null, null));
     }
 
     @Test
     public void getByParameter_expectedGiftCertificateList_whenGettingGiftCertificatesWithParams() throws DataNotFoundException, WrongParameterException {
         HashMap<String, String> params = new HashMap<>();
         params.put(NAME, NAME_VALUE);
-        when(mock.getGiftCertificatesByQuery(params, Arrays.asList(NAME, DATE), DESC)).thenReturn(GIFT_CERTIFICATE_LIST);
+        when(mock.getGiftCertificatesByQuery(params, Arrays.asList(NAME, DATE))).thenReturn(GIFT_CERTIFICATE_LIST);
         assertEquals("Actual gift certificate list should be equal to expected",
-                GIFT_CERTIFICATE_LIST, service.getGiftCertificatesByParameter(params, Arrays.asList(NAME, DATE), DESC));
+                GIFT_CERTIFICATE_LIST, service.getGiftCertificatesByParameter(params, Arrays.asList(NAME, DATE)));
     }
 
     @Test

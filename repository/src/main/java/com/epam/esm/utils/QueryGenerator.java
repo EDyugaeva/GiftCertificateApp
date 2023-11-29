@@ -2,8 +2,8 @@ package com.epam.esm.utils;
 
 import com.epam.esm.constants.QueryParams;
 import com.epam.esm.exceptions.WrongParameterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -11,9 +11,8 @@ import java.util.Map;
 import static com.epam.esm.constants.QueryParams.*;
 import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_SUPPORTED;
 
+@Slf4j
 public class QueryGenerator {
-
-    Logger logger = LoggerFactory.getLogger(QueryGenerator.class);
 
     private static final String SELECT_BY_TAG_NAME = " gc.id in (SELECT gc.id" +
             "             FROM gift_certificate gc" +
@@ -25,7 +24,7 @@ public class QueryGenerator {
     private static final String AND = " AND ";
     private static final String SELECT_BY_DESCRIPTION = " gc.description ILIKE '%s'";
     private static final String ORDER_BY = " order by ";
-    private static final String DESC = " DESC";
+    private static final String DESC_QUERY = " DESC ";
     private static final String NAME_COLUMN = "gc.name";
     private static final String DATE_COLUMN = "create_date";
 
@@ -67,7 +66,7 @@ public class QueryGenerator {
         query.append(String.format(SELECT_BY_TAG_NAME, tagName));
     }
 
-    public void addSorting(String sortValue) throws WrongParameterException {
+    public void addSorting(String sortValue) {
         if (sorting) {
             query.append(" ,").append(getSortParameter(sortValue));
         } else {
@@ -76,18 +75,20 @@ public class QueryGenerator {
         }
     }
 
-    public void addDescOrdering() {
-        query.append(DESC);
-    }
-
-    private String getSortParameter(String sortValue) throws WrongParameterException {
-        if (sortValue.equalsIgnoreCase(NAME)) {
-            return NAME_COLUMN;
-        } else if (sortValue.equalsIgnoreCase(DATE)) {
-            return DATE_COLUMN;
+    private String getSortParameter(String sortValue) {
+        StringBuilder sortingParam = new StringBuilder();
+        if (StringUtils.containsIgnoreCase(sortValue, NAME)) {
+            log.info("Sorting by name");
+            sortingParam.append(NAME_COLUMN);
         } else {
-            throw new WrongParameterException("Not supported sorting parameter", NOT_SUPPORTED);
+            log.info("Sorting by date");
+            sortingParam.append(DATE_COLUMN);
         }
+        if (StringUtils.containsIgnoreCase(sortValue, DESC)) {
+            log.info("Sorting desc");
+            sortingParam.append(DESC_QUERY);
+        }
+        return sortingParam.toString();
     }
 
     public void createFilter(Map<String, String> filteredBy, QueryGenerator queryGenerator) throws WrongParameterException {
@@ -105,7 +106,7 @@ public class QueryGenerator {
                             queryGenerator.addSelectByTagName(entry.getValue());
                             break;
                         default:
-                            logger.debug("Not supported filter = {}", filteredBy);
+                            log.debug("Not supported filter = {}", filteredBy);
                             throw new WrongParameterException("Non supported filtering parameter", NOT_SUPPORTED);
                     }
                 }
@@ -116,18 +117,13 @@ public class QueryGenerator {
     public void createSorting(List<String> orderingBy, QueryGenerator queryGenerator) throws WrongParameterException {
         if (orderingBy != null) {
             for (String s : orderingBy) {
-                if (!s.equalsIgnoreCase(QueryParams.DATE) && !s.equalsIgnoreCase(QueryParams.NAME)) {
-                    logger.debug("Not supported ordering = {}", s);
+                if (!StringUtils.containsIgnoreCase(s, QueryParams.DATE)
+                        && !StringUtils.containsIgnoreCase(s, QueryParams.NAME)) {
+                    log.debug("Not supported ordering = {}", s);
                     throw new WrongParameterException("Not supported ordering parameter", NOT_SUPPORTED);
                 }
                 queryGenerator.addSorting(s);
             }
-        }
-    }
-
-    public static void createOrder(String order, QueryGenerator queryGenerator) {
-        if (order != null && order.equalsIgnoreCase("desc")) {
-            queryGenerator.addDescOrdering();
         }
     }
 }
