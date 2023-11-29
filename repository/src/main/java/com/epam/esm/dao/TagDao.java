@@ -11,6 +11,6 @@ public interface TagDao {
     Tag saveTag(Tag tag) throws WrongParameterException, OtherDatabaseException;
     Tag getTag(long id) throws DataNotFoundException;
     Tag getTagByName(String name) throws DataNotFoundException;
-    List<Tag> getTags() throws DataNotFoundException;
+    List<Tag> getTags();
     void deleteTag(long id) throws OtherDatabaseException;
 }

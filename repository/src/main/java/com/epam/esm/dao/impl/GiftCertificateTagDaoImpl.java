@@ -71,12 +71,11 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
     }
 
     @Override
-    public List<GiftCertificateTag> getGiftCertificateTags() throws DataNotFoundException {
-            log.info("Trying to get all tags and certificates pairs");
-            List<GiftCertificateTag> giftCertificateTagList = jdbcTemplateObject.query(SELECT_ALL, new GiftCertificateTagMapper());
+    public List<GiftCertificateTag> getGiftCertificateTags() {
+        log.info("Trying to get all tags and certificates pairs");
+        List<GiftCertificateTag> giftCertificateTagList = jdbcTemplateObject.query(SELECT_ALL, new GiftCertificateTagMapper());
         if (giftCertificateTagList.isEmpty()) {
-            log.error("Tags and certificates pairs were not found");
-            throw new DataNotFoundException("Requested resource not found (tags and certificates pairs)", NOT_FOUND_PAIR);
+            log.warn("Tags and certificates pairs were not found");
         }
         return giftCertificateTagList;
     }

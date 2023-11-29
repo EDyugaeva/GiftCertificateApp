@@ -80,12 +80,11 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
-    public List<Tag> getTags() throws DataNotFoundException {
+    public List<Tag> getTags()  {
             log.info("Trying to get all tags");
             List<Tag> tagList = jdbcTemplateObject.query(SELECT_ALL, new TagMapper());
         if (tagList.isEmpty()) {
-            log.error("Empty tag list tags");
-            throw new DataNotFoundException("Requested resource not found (tags)", NOT_FOUND_TAG);
+            log.warn("Empty tag list tags");
         }
         return tagList;
     }

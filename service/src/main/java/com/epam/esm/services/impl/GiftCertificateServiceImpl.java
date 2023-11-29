@@ -21,8 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.epam.esm.constants.QueryParams.*;
-import static com.epam.esm.exceptions.ExceptionCodesConstants.EMPTY_REQUEST;
-import static com.epam.esm.exceptions.ExceptionCodesConstants.WRONG_PARAMETER;
+import static com.epam.esm.exceptions.ExceptionCodesConstants.*;
 
 /**
  * Implementation of the {@link GiftCertificateService} interface.
@@ -71,9 +70,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         List<Tag> tagList = giftCertificate.getTagList();
         if (tagList != null) {
             updateTags(giftCertificate.getTagList(), savedGiftCertificate);
-            savedGiftCertificate.setTagList(tagList);
         }
-        return savedGiftCertificate;
+        try {
+            return getGiftCertificatesById(savedGiftCertificate.getId());
+        } catch (DataNotFoundException e) {
+            log.error("Exception while getting saved giftCertificate", e);
+            throw new OtherDatabaseException("Exception while getting saved giftCertificate", OTHER_EXCEPTION);
+        }
 
     }
 
@@ -217,10 +220,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             List<Tag> savedTag = tagService.getTags();
             List<GiftCertificateTag> giftCertificateTagList = giftCertificateTagService.getGiftCertificateTags();
-            for (int i = 0; i < tagList.size(); i++) {
-                Tag currTag = tagList.get(i);
+            for (Tag currTag : tagList) {
+
+                System.out.println(currTag.getName());
+
                 long tagId = savedTag.contains(currTag) ?
-                        tagService.getTagByName(currTag.getName()).getId() : tagService.saveTag(currTag.getName()).getId();
+                        tagService.getTagByName(currTag.getName()).getId()
+                        : tagService.saveTag(currTag.getName()).getId();
 
                 GiftCertificateTag certificateTag = new GiftCertificateTag(giftCertificateId, tagId);
                 if (!giftCertificateTagList.contains(certificateTag)) {
