@@ -35,12 +35,15 @@ o	sort by date or by name ASC/DESC (extra task: implement ability to apply both 
 
 
 ## How to run
-mvn clean package
-mvn jetty::run
 
 
-standart port (8080) is used,
-database should be configured with init.sql file before
+`docker-compose up`
+
+`mvn clean package`
+
+`mvn jetty::run`
+
+standard port (8080) is used
 
 ## Endpoints
 
