@@ -1,7 +1,7 @@
 package com.epam.esm.services;
 
-import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.ApplicationDatabaseException;
+import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 
@@ -15,8 +15,7 @@ public interface GiftCertificateService {
     GiftCertificate updateGiftCertificate(Long id, GiftCertificate giftCertificate)
             throws WrongParameterException, ApplicationDatabaseException;
 
-    GiftCertificate getGiftCertificatesById(Long id)
-            throws DataNotFoundException;
+    GiftCertificate getGiftCertificatesById(Long id) throws DataNotFoundException;
 
     List<GiftCertificate> getAll() throws DataNotFoundException;
 

@@ -6,49 +6,24 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-/**
- * Global exception handler for handling custom exceptions in the application.
- * Extends {@link ResponseEntityExceptionHandler} to provide consistent responses.
- */
 @RestControllerAdvice
 public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
-    /**
-     * Handles exceptions of type {@link DataNotFoundException}.
-     *
-     * @param ex The instance of {@link DataNotFoundException}.
-     * @return The response with the appropriate HTTP status code and error details.
-     */
+
     @ExceptionHandler(DataNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     protected BaseCustomException handleDataNotFoundException(BaseCustomException ex) {
         return ex;
     }
 
-
-    /**
-     * Handles exceptions of type {@link WrongParameterException}.
-     *
-     * @param ex The instance of {@link WrongParameterException}.
-     * @return The response with the appropriate HTTP status code and error details.
-     */
-
-    //TODO another response status
     @ExceptionHandler(WrongParameterException.class)
-    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected BaseCustomException handleWrongParameterException(BaseCustomException ex) {
         return ex;
     }
 
-    /**
-     * Handles exceptions of type {@link ApplicationDatabaseException}.
-     *
-     * @param ex The instance of {@link ApplicationDatabaseException}.
-     * @return The response with the appropriate HTTP status code and error details.
-     */
     @ExceptionHandler(ApplicationDatabaseException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected BaseCustomException handleOtherDatabaseException(BaseCustomException ex) {
         return ex;
     }
-
 }
