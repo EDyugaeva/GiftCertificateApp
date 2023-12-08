@@ -13,6 +13,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = {"com.epam.esm"})
+
+//TODO deprecated extends, rewrite
 public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Override

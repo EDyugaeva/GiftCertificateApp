@@ -6,6 +6,7 @@ public class Column {
     public static final String NAME = "name";
 
     public static class GiftCertificateColumn {
+        //TODO переименовать, т.к. это short name
         public static final String TABLE_NAME = "gc";
         public static final String DESCRIPTION = "description";
         public static final String PRICE = "price";

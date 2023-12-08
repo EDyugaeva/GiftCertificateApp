@@ -2,7 +2,7 @@ package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.OtherDatabaseException;
+import com.epam.esm.exceptions.ApplicationDatabaseException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.Tag;
 import com.epam.esm.services.TagService;
@@ -31,7 +31,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
-    public Tag saveTag(String name) throws WrongParameterException, OtherDatabaseException {
+    public Tag saveTag(String name) throws WrongParameterException, ApplicationDatabaseException {
         log.info("Saving tag with name {}", name);
         Tag tag = new Tag();
         tag.setName(name);

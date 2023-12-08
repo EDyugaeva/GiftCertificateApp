@@ -2,7 +2,7 @@ package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.OtherDatabaseException;
+import com.epam.esm.exceptions.ApplicationDatabaseException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.services.GiftCertificateTagService;
@@ -72,7 +72,7 @@ public class GiftCertificateServiceTest {
 
     @Test
     public void saveGiftCertificate_GiftCertificateWithRightParams_whenSavingCorrectGiftCertificate()
-            throws WrongParameterException, OtherDatabaseException, DataNotFoundException {
+            throws WrongParameterException, ApplicationDatabaseException, DataNotFoundException {
         when(mock.saveGiftCertificate(any())).thenReturn(GIFT_CERTIFICATE_1);
         when(mock.getGiftCertificate(GIFT_CERTIFICATE_1.getId())).thenReturn(GIFT_CERTIFICATE_1);
         when(mockTagService.getTags()).thenReturn(TAG_LIST);
@@ -95,7 +95,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void updateGiftCertificate_GiftCertificateWithRightParams_whenUpdatingCorrectGiftCertificate() throws DataNotFoundException, WrongParameterException, OtherDatabaseException {
+    public void updateGiftCertificate_GiftCertificateWithRightParams_whenUpdatingCorrectGiftCertificate() throws DataNotFoundException, WrongParameterException, ApplicationDatabaseException {
         when(mock.getGiftCertificate(GIFT_CERTIFICATE_2.getId())).thenReturn(GIFT_CERTIFICATE_2_BEFORE_UPDATE);
         when(mock.updateGiftCertificate(any())).thenReturn(GIFT_CERTIFICATE_2);
         when(mockTagService.getTags()).thenReturn(TAG_LIST);

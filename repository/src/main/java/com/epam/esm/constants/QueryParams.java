@@ -1,5 +1,5 @@
 package com.epam.esm.constants;
-
+//TODO объединить с другими константами, лучше не плодить одно и то же в разных местах
 public class QueryParams {
     public static final String NAME = "name";
     public static final String DESCRIPTION = "description";

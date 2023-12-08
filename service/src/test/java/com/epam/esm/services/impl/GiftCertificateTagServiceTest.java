@@ -3,7 +3,7 @@ package com.epam.esm.services.impl;
 import com.epam.esm.dao.GiftCertificateTagDao;
 import com.epam.esm.dao.impl.GiftCertificateTagDaoImpl;
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.OtherDatabaseException;
+import com.epam.esm.exceptions.ApplicationDatabaseException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificateTag;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ public class GiftCertificateTagServiceTest {
     }
 
     @Test
-    public void saveGiftCertificateTag_expectedGiftCertificateTag_whenSavingGiftCertificateTag() throws OtherDatabaseException, WrongParameterException {
+    public void saveGiftCertificateTag_expectedGiftCertificateTag_whenSavingGiftCertificateTag() throws ApplicationDatabaseException, WrongParameterException {
         GiftCertificateTag saving = new GiftCertificateTag();
         saving.setTagId(GIFT_TAG_2.getTagId());
         saving.setGiftCertificateId(GIFT_TAG_2.getGiftCertificateId());

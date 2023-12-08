@@ -2,7 +2,7 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.config.AppConfig;
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.OtherDatabaseException;
+import com.epam.esm.exceptions.ApplicationDatabaseException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificateTag;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ public class GiftCertificateTagDaoImplTest {
     }
 
     @Test
-    public void saveGiftTag_savedGiftTag_whenGiftTagWasSaved() throws OtherDatabaseException, WrongParameterException, DataNotFoundException {
+    public void saveGiftTag_savedGiftTag_whenGiftTagWasSaved() throws ApplicationDatabaseException, WrongParameterException, DataNotFoundException {
         GiftCertificateTag savingPair = GIFT_TAG_NEW;
         dao.saveGiftTag(savingPair);
         savingPair.setId(NEW_ID);
@@ -51,7 +51,7 @@ public class GiftCertificateTagDaoImplTest {
     }
 
     @Test
-    public void deleteGiftTag_Exception_whenTryToGetDeletedGiftTag() throws OtherDatabaseException {
+    public void deleteGiftTag_Exception_whenTryToGetDeletedGiftTag() throws ApplicationDatabaseException {
         dao.deleteGiftTag(GIFT_TAG_1.getId());
         DataNotFoundException exception = assertThrows(DataNotFoundException.class, () -> dao.getGiftCertificateTag(GIFT_TAG_1.getId()),
                 "Gift tag pair should be not found and  DataNotFoundException should be thrown");

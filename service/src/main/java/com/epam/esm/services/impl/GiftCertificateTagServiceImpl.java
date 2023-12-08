@@ -2,7 +2,7 @@ package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.GiftCertificateTagDao;
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.OtherDatabaseException;
+import com.epam.esm.exceptions.ApplicationDatabaseException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificateTag;
 import com.epam.esm.services.GiftCertificateTagService;
@@ -32,7 +32,7 @@ public class GiftCertificateTagServiceImpl implements GiftCertificateTagService 
     @Override
     @Transactional
     public GiftCertificateTag saveGiftCertificateTag(long giftCertificateId, long tagId)
-            throws OtherDatabaseException, WrongParameterException {
+            throws ApplicationDatabaseException, WrongParameterException {
         log.info("Saving tag - gift certificate with id {} and {}", tagId, giftCertificateId);
         GiftCertificateTag savingGiftCertificateTag = new GiftCertificateTag();
         savingGiftCertificateTag.setTagId(tagId);

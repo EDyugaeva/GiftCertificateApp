@@ -15,13 +15,13 @@ import javax.sql.DataSource;
 @PropertySource("classpath:application.properties")
 public class AppConfig {
     @Value("${database.driver.class.name}")
-    String driverClassName;
+    private String driverClassName;
     @Value("${database.url}")
-    String url;
+    private String url;
     @Value("${database.username}")
-    String username;
+    private String username;
     @Value("${database.password}")
-    String password;
+    private String password;
 
     @Bean
     public DataSource dataSource() {

@@ -4,7 +4,7 @@ import com.epam.esm.dao.Column;
 import com.epam.esm.dao.GiftCertificateTagDao;
 import com.epam.esm.dao.mapper.GiftCertificateTagMapper;
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.OtherDatabaseException;
+import com.epam.esm.exceptions.ApplicationDatabaseException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificateTag;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
     }
 
     @Override
-    public GiftCertificateTag saveGiftTag(GiftCertificateTag giftCertificateTag) throws OtherDatabaseException, WrongParameterException {
+    public GiftCertificateTag saveGiftTag(GiftCertificateTag giftCertificateTag) throws ApplicationDatabaseException, WrongParameterException {
         log.info("Saving gift certificate tag pair " + giftCertificateTag);
         try {
             KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -55,7 +55,7 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
             throw new WrongParameterException("Parameters are not correct", WRONG_PARAMETER);
         } catch (Exception e) {
             log.error("Exception while saving new gift certificate tag pair");
-            throw new OtherDatabaseException("Exception while saving new gift certificate tag pair", OTHER_EXCEPTION);
+            throw new ApplicationDatabaseException("Exception while saving new gift certificate tag pair", OTHER_EXCEPTION);
         }
     }
 
@@ -81,24 +81,24 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
     }
 
     @Override
-    public void deleteGiftTag(Long id) throws OtherDatabaseException {
+    public void deleteGiftTag(Long id) throws ApplicationDatabaseException {
         log.info("Trying to delete tag-gift pair with id = {}", id);
         try {
             jdbcTemplateObject.update(DELETE, id);
         } catch (Exception e) {
             log.error("Exception while deleting tag-gift pair with gift certificate id = {} ", id, e);
-            throw new OtherDatabaseException("Database exception while deleting tag-gift pair", NOT_FOUND_PAIR);
+            throw new ApplicationDatabaseException("Database exception while deleting tag-gift pair", NOT_FOUND_PAIR);
         }
     }
 
     @Override
-    public void deleteGiftCertificateTagByTagAndGiftCertificateId(long giftCertificateId, long tagId) throws OtherDatabaseException {
+    public void deleteGiftCertificateTagByTagAndGiftCertificateId(long giftCertificateId, long tagId) throws ApplicationDatabaseException {
         log.info("Trying to delete tag-gift pair with gift certificate id = {} and tag id = {}", giftCertificateId, tagId);
         try {
             jdbcTemplateObject.update(DELETE_BY_IDS, giftCertificateId, tagId);
         } catch (Exception e) {
             log.error("Other db exception while deleting tag-gift pair with gift certificate id = {} and tag id = {}", giftCertificateId, tagId, e);
-            throw new OtherDatabaseException("Other db exception while deleting tag-gift pair", OTHER_EXCEPTION);
+            throw new ApplicationDatabaseException("Other db exception while deleting tag-gift pair", OTHER_EXCEPTION);
         }
     }
 }

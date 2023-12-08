@@ -4,7 +4,7 @@ import com.epam.esm.dao.Column;
 import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.dao.mapper.ListGiftCertificateMapper;
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.OtherDatabaseException;
+import com.epam.esm.exceptions.ApplicationDatabaseException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.utils.QueryGenerator;
@@ -57,7 +57,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
     @Override
     public GiftCertificate saveGiftCertificate(GiftCertificate giftCertificate) throws
-            WrongParameterException, OtherDatabaseException {
+            WrongParameterException, ApplicationDatabaseException {
         log.info("Saving gift certificate = {}", giftCertificate);
         try {
             KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -69,7 +69,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
             throw new WrongParameterException("Parameters in model are not correct", WRONG_PARAMETER);
         } catch (Exception e) {
             log.error("Exception while saving new gift certificate", e);
-            throw new OtherDatabaseException("Exception while saving new gift certificate. Maybe wrong entity", OTHER_EXCEPTION);
+            throw new ApplicationDatabaseException("Exception while saving new gift certificate. Maybe wrong entity", OTHER_EXCEPTION);
         }
     }
 
@@ -106,7 +106,9 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
         }
         return giftCertificate;
     }
-
+//TODO не ловить Runtime Exception
+    //TODO перенести catch в service
+    //TODO возвращать null
     @Override
     public GiftCertificate getGiftCertificate(long id) throws DataNotFoundException {
         log.info("Getting gift certificate with id = {}", id);
@@ -135,13 +137,13 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
-    public void deleteGiftCertificate(long id) throws OtherDatabaseException {
+    public void deleteGiftCertificate(long id) throws ApplicationDatabaseException {
         log.info("Deleting  gift certificate with id = ?");
         try {
             jdbcTemplateObject.update(DELETE, id);
         } catch (Exception e) {
             log.error("Deleting gift certificate with id = {} failed", id, e);
-            throw new OtherDatabaseException(String.format("Deleting gift certificate with id  %d failed", id),
+            throw new ApplicationDatabaseException(String.format("Deleting gift certificate with id  %d failed", id),
                     OTHER_EXCEPTION);
         }
     }

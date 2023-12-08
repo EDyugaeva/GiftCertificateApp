@@ -3,7 +3,7 @@ package com.epam.esm.dao.impl;
 import com.epam.esm.config.AppConfig;
 import com.epam.esm.constants.GiftCertificatesTestConstants;
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.OtherDatabaseException;
+import com.epam.esm.exceptions.ApplicationDatabaseException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import org.apache.commons.lang3.StringUtils;
@@ -66,7 +66,7 @@ public class GiftCertificateDaoImplTest {
     }
 
     @Test
-    public void saveGiftCertificate_savedGiftCertificate_whenGiftCertificateWasSaved() throws DataNotFoundException, OtherDatabaseException, WrongParameterException {
+    public void saveGiftCertificate_savedGiftCertificate_whenGiftCertificateWasSaved() throws DataNotFoundException, ApplicationDatabaseException, WrongParameterException {
         GiftCertificate savingCertificate = NEW_GIFT_CERTIFICATE;
         giftCertificateDao.saveGiftCertificate(savingCertificate);
         savingCertificate.setId(NEW_ID);
@@ -74,7 +74,7 @@ public class GiftCertificateDaoImplTest {
     }
 
     @Test
-    public void deleteGiftCertificate_exception_whenTryToGetDeletedGiftCertificate() throws OtherDatabaseException {
+    public void deleteGiftCertificate_exception_whenTryToGetDeletedGiftCertificate() throws ApplicationDatabaseException {
         giftCertificateDao.deleteGiftCertificate(GIFT_CERTIFICATE_1.getId());
         DataNotFoundException exception = assertThrows(DataNotFoundException.class, () -> giftCertificateDao.getGiftCertificate(GIFT_CERTIFICATE_1.getId()),
                 "Tag should be not found and  DataNotFoundException should be thrown");

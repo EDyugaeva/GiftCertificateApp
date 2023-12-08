@@ -31,6 +31,8 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
      * @param ex The instance of {@link WrongParameterException}.
      * @return The response with the appropriate HTTP status code and error details.
      */
+
+    //TODO another response status
     @ExceptionHandler(WrongParameterException.class)
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     protected BaseCustomException handleWrongParameterException(BaseCustomException ex) {
@@ -38,12 +40,12 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Handles exceptions of type {@link OtherDatabaseException}.
+     * Handles exceptions of type {@link ApplicationDatabaseException}.
      *
-     * @param ex The instance of {@link OtherDatabaseException}.
+     * @param ex The instance of {@link ApplicationDatabaseException}.
      * @return The response with the appropriate HTTP status code and error details.
      */
-    @ExceptionHandler(OtherDatabaseException.class)
+    @ExceptionHandler(ApplicationDatabaseException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected BaseCustomException handleOtherDatabaseException(BaseCustomException ex) {
         return ex;

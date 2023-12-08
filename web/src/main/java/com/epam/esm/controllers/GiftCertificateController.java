@@ -1,7 +1,7 @@
 package com.epam.esm.controllers;
 
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.OtherDatabaseException;
+import com.epam.esm.exceptions.ApplicationDatabaseException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.services.GiftCertificateService;
@@ -18,7 +18,7 @@ import static com.epam.esm.constants.QueryParams.*;
  * Controller for CRUD operations with Gift Certificate model
  */
 @RestController
-@RequestMapping("/certificate")
+@RequestMapping("/certificates")
 @Slf4j
 public class GiftCertificateController {
     private GiftCertificateService giftCertificateService;
@@ -70,11 +70,11 @@ public class GiftCertificateController {
      * @param giftCertificate - new Object
      * @return giftCertificate from DB
      * @throws WrongParameterException - if the body of request is not correct
-     * @throws OtherDatabaseException if there is db exception
+     * @throws ApplicationDatabaseException if there is db exception
      */
     @PostMapping()
     public GiftCertificate saveGiftCertificate(@RequestBody GiftCertificate giftCertificate)
-            throws WrongParameterException, OtherDatabaseException {
+            throws WrongParameterException, ApplicationDatabaseException {
         log.info("Save gift certificate {}", giftCertificate);
         return giftCertificateService.saveGiftCertificate(giftCertificate);
     }
@@ -86,12 +86,12 @@ public class GiftCertificateController {
      * @param giftCertificate - request body
      * @return giftCertificate from db
      * @throws WrongParameterException - if the body of request is not correct
-     * @throws OtherDatabaseException if there is db exception
+     * @throws ApplicationDatabaseException if there is db exception
      */
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public GiftCertificate saveGiftCertificate(@PathVariable("id") Long id,
                                                @RequestBody GiftCertificate giftCertificate)
-            throws WrongParameterException,  OtherDatabaseException {
+            throws WrongParameterException, ApplicationDatabaseException {
         log.info("Update gift certificate {}", giftCertificate.toString());
         return giftCertificateService.updateGiftCertificate(id, giftCertificate);
     }
@@ -105,7 +105,7 @@ public class GiftCertificateController {
      * @param ordering    - not required, order of results (variants: name (desc if needed), date (desc if needed))
      * @return List of Gift Certificate
      * @throws WrongParameterException - if the request is not correct
-     * @throws OtherDatabaseException if there is db exception
+     * @throws ApplicationDatabaseException if there is db exception
      */
     @GetMapping("/search")
     public List<GiftCertificate> getGiftCertificateByParam(@RequestParam(required = false) String name,

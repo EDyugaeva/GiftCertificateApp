@@ -4,7 +4,7 @@ import com.epam.esm.dao.Column;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.dao.mapper.TagMapper;
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.OtherDatabaseException;
+import com.epam.esm.exceptions.ApplicationDatabaseException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
-    public Tag saveTag(Tag tag) throws WrongParameterException, OtherDatabaseException {
+    public Tag saveTag(Tag tag) throws WrongParameterException, ApplicationDatabaseException {
         log.info("Saving tag " + tag);
         try {
             KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -53,7 +53,7 @@ public class TagDaoImpl implements TagDao {
             throw new WrongParameterException("Parameters are not correct", WRONG_PARAMETER);
         } catch (Exception e) {
             log.error("Exception while saving new  tag ");
-            throw new OtherDatabaseException("Exception while saving new   tag ", OTHER_EXCEPTION);
+            throw new ApplicationDatabaseException("Exception while saving new   tag ", OTHER_EXCEPTION);
         }
     }
 
@@ -90,13 +90,13 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
-    public void deleteTag(long id) throws OtherDatabaseException {
+    public void deleteTag(long id) throws ApplicationDatabaseException {
         log.info("Trying to delete tag with id = {}", id);
         try {
             jdbcTemplateObject.update(DELETE, id);
         } catch (RuntimeException e) {
             log.error("Exception while deleting tag with id = {}", id, e);
-            throw new OtherDatabaseException("Exception while deleting tag", OTHER_EXCEPTION);
+            throw new ApplicationDatabaseException("Exception while deleting tag", OTHER_EXCEPTION);
         }
     }
 }

@@ -2,7 +2,7 @@ package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.OtherDatabaseException;
+import com.epam.esm.exceptions.ApplicationDatabaseException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.GiftCertificateTag;
@@ -56,12 +56,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      * @param giftCertificate - new Entity
      * @return {@link GiftCertificate} with generated id
      * @throws WrongParameterException
-     * @throws OtherDatabaseException
+     * @throws ApplicationDatabaseException
      */
     @Transactional
     @Override
     public GiftCertificate saveGiftCertificate(GiftCertificate giftCertificate) throws WrongParameterException,
-            OtherDatabaseException {
+            ApplicationDatabaseException {
         log.info("Saving new gift certificate with {}}", giftCertificate);
         giftCertificate.setCreateDate(LocalDateTime.now());
         //save gc to get correct id
@@ -75,7 +75,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             return getGiftCertificatesById(savedGiftCertificate.getId());
         } catch (DataNotFoundException e) {
             log.error("Exception while getting saved giftCertificate", e);
-            throw new OtherDatabaseException("Exception while getting saved giftCertificate", OTHER_EXCEPTION);
+            throw new ApplicationDatabaseException("Exception while getting saved giftCertificate", OTHER_EXCEPTION);
         }
 
     }
@@ -87,11 +87,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      * @param giftCertificate - new entity (maybe not all parameters)
      * @return {@link GiftCertificate} saved instant
      * @throws WrongParameterException
-     * @throws OtherDatabaseException
+     * @throws ApplicationDatabaseException
      */
     @Override
     public GiftCertificate updateGiftCertificate(Long id, GiftCertificate giftCertificate)
-            throws WrongParameterException, OtherDatabaseException {
+            throws WrongParameterException, ApplicationDatabaseException {
         GiftCertificateParamsCreator giftCertificateParamsCreator = new GiftCertificateParamsCreator();
         Map<String, Object> params = giftCertificateParamsCreator.getActualParams(giftCertificate);
         log.info("Updating gift certificate with id = {}, new params = {}", id, params);
@@ -178,7 +178,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      * @param updatingGiftCertificate The GiftCertificate to update.
      */
     private void updateGiftCertificateValues(Map<String, Object> params, GiftCertificate updatingGiftCertificate)
-            throws WrongParameterException, DataNotFoundException, OtherDatabaseException {
+            throws WrongParameterException, DataNotFoundException, ApplicationDatabaseException {
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             switch (entry.getKey()) {
                 case NAME:
@@ -204,7 +204,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     private void updateTags(List<Tag> tagList, GiftCertificate giftCertificate)
-            throws WrongParameterException, OtherDatabaseException {
+            throws WrongParameterException, ApplicationDatabaseException {
         long giftCertificateId = giftCertificate.getId();
         // Step 1: Delete tags that are no longer associated with the gift certificate
         try {

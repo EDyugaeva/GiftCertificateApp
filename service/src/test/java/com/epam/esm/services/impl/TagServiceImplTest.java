@@ -2,7 +2,7 @@ package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.impl.TagDaoImpl;
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.OtherDatabaseException;
+import com.epam.esm.exceptions.ApplicationDatabaseException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.Tag;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ public class TagServiceImplTest {
     private TagServiceImpl service;
 
     @Test
-    public void getTag_expectedTag_whenGettingTag() throws DataNotFoundException, OtherDatabaseException {
+    public void getTag_expectedTag_whenGettingTag() throws DataNotFoundException, ApplicationDatabaseException {
         when(mock.getTag(TAG_1.getId())).thenReturn(TAG_1);
         assertEquals("Actual tag should be equal to expected", TAG_1, service.getTag(TAG_1.getId()));
     }
@@ -53,7 +53,7 @@ public class TagServiceImplTest {
     }
 
     @Test
-    public void saveTag_expectedTag_whenSavingTag() throws WrongParameterException, OtherDatabaseException {
+    public void saveTag_expectedTag_whenSavingTag() throws WrongParameterException, ApplicationDatabaseException {
         Tag savingTag = new Tag();
         savingTag.setName(TAG_2.getName());
         when(mock.saveTag(savingTag)).thenReturn(TAG_2);
