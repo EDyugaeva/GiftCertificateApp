@@ -1,6 +1,5 @@
 package com.epam.esm.controllers;
 
-import com.epam.esm.exceptions.ApplicationException;
 import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.Tag;
@@ -14,7 +13,7 @@ import java.util.List;
  * Class for CRD operations with TAG model
  */
 @RestController
-@RequestMapping(value = "/tags")
+@RequestMapping(value = "/tags", produces = "application/json", consumes = "application/json")
 @Slf4j
 public class TagController {
     private final TagService tagService;
@@ -28,7 +27,7 @@ public class TagController {
      *
      * @param id - tag id, should be > 0
      */
-    @GetMapping(value = "/{id}", produces = "application/json")
+    @GetMapping(value = "/{id}")
     public Tag getTag(@PathVariable("id") Long id) throws DataNotFoundException {
         log.info("Getting tag with id = {} in controller", id);
         return tagService.getTag(id);
@@ -51,8 +50,8 @@ public class TagController {
      * @param tag new Tag
      * @return saved tag
      */
-    @PostMapping(produces = "application/json", consumes = "application/json")
-    public Tag saveTag(@RequestBody Tag tag) throws WrongParameterException, ApplicationException {
+    @PostMapping()
+    public Tag saveTag(@RequestBody Tag tag) throws WrongParameterException {
         log.info("Creating new tag with name = {}", tag);
         return tagService.saveTag(tag);
     }
