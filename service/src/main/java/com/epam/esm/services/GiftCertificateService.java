@@ -13,7 +13,7 @@ public interface GiftCertificateService {
             throws WrongParameterException, ApplicationException;
 
     GiftCertificate updateGiftCertificate(Long id, GiftCertificate giftCertificate)
-            throws WrongParameterException, ApplicationException;
+            throws WrongParameterException;
 
     GiftCertificate getGiftCertificatesById(Long id) throws DataNotFoundException;
 

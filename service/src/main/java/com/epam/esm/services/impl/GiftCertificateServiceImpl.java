@@ -90,7 +90,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      */
     @Override
     public GiftCertificate updateGiftCertificate(Long id, GiftCertificate giftCertificate)
-            throws WrongParameterException, ApplicationException {
+            throws WrongParameterException {
         GiftCertificateParamsCreator giftCertificateParamsCreator = new GiftCertificateParamsCreator();
         Map<String, Object> params = giftCertificateParamsCreator.getActualParams(giftCertificate);
         log.info("Updating gift certificate with id = {}, new params = {}", id, params);
@@ -188,7 +188,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      * @param updatingGiftCertificate The GiftCertificate to update.
      */
     private void updateGiftCertificateValues(Map<String, Object> params, GiftCertificate updatingGiftCertificate)
-            throws WrongParameterException, DataNotFoundException, ApplicationException {
+            throws WrongParameterException, DataNotFoundException {
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             switch (entry.getKey()) {
                 case NAME:
@@ -214,7 +214,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     private void updateTags(List<Tag> tagList, GiftCertificate giftCertificate)
-            throws WrongParameterException, ApplicationException {
+            throws WrongParameterException {
         long giftCertificateId = giftCertificate.getId();
         // Step 1: Delete tags that are no longer associated with the gift certificate
         try {
@@ -231,8 +231,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             List<Tag> savedTag = tagService.getTags();
             List<GiftCertificateTag> giftCertificateTagList = giftCertificateTagService.getGiftCertificateTags();
             for (Tag currTag : tagList) {
-
-                System.out.println(currTag.getName());
 
                 long tagId = savedTag.contains(currTag) ?
                         tagService.getTagByName(currTag.getName()).getId()

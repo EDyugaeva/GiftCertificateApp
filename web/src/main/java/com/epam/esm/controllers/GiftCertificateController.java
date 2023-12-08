@@ -81,7 +81,7 @@ public class GiftCertificateController {
     @PatchMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
     public GiftCertificate saveGiftCertificate(@PathVariable("id") Long id,
                                                @RequestBody GiftCertificate giftCertificate)
-            throws WrongParameterException, ApplicationException {
+            throws WrongParameterException {
         log.info("Update gift certificate {}", giftCertificate.toString());
         return giftCertificateService.updateGiftCertificate(id, giftCertificate);
     }

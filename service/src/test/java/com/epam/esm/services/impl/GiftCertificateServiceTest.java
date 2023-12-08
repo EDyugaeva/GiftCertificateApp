@@ -96,7 +96,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void updateGiftCertificate_GiftCertificateWithRightParams_whenUpdatingCorrectGiftCertificate() throws DataNotFoundException, WrongParameterException, ApplicationException {
+    public void updateGiftCertificate_GiftCertificateWithRightParams_whenUpdatingCorrectGiftCertificate() throws DataNotFoundException, WrongParameterException {
         when(mock.getById(GIFT_CERTIFICATE_2.getId())).thenReturn(Optional.of(GIFT_CERTIFICATE_2_BEFORE_UPDATE));
         when(mock.updateGiftCertificate(any())).thenReturn(GIFT_CERTIFICATE_2);
         when(mockTagService.getTags()).thenReturn(TAG_LIST);

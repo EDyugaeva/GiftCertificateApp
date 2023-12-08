@@ -45,7 +45,6 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
                 keyHolder);
         giftCertificateTag.setId(keyHolder.getKeyAs(Long.class));
         return giftCertificateTag;
-
     }
 
     @Override
@@ -58,7 +57,6 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
             return Optional.empty();
         }
     }
-
 
     @Override
     public List<GiftCertificateTag> getAll() {
