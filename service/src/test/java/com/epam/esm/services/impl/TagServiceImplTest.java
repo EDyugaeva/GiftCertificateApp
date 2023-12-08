@@ -2,7 +2,6 @@ package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.impl.TagDaoImpl;
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.ApplicationDatabaseException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.Tag;
 import org.junit.jupiter.api.Test;
@@ -27,22 +26,21 @@ public class TagServiceImplTest {
     private TagServiceImpl service;
 
     @Test
-    public void getTag_expectedTag_whenGettingTag() throws DataNotFoundException, ApplicationDatabaseException {
-        when(mock.getTag(TAG_1.getId())).thenReturn(TAG_1);
+    public void getTag_expectedTag_whenGettingTag() throws DataNotFoundException {
+        when(mock.getById(TAG_1.getId())).thenReturn(TAG_1);
         assertEquals("Actual tag should be equal to expected", TAG_1, service.getTag(TAG_1.getId()));
     }
 
     @Test
-    public void getTag_exception_whenGettingException() throws DataNotFoundException {
-        when(mock.getTag(TAG_1.getId())).thenThrow(DataNotFoundException.class);
-        DataNotFoundException exception = assertThrows(DataNotFoundException.class,
-                () -> service.getTag(TAG_1.getId()),
+    public void getTag_exception_whenGettingException() {
+        when(mock.getById(TAG_1.getId())).thenReturn(null);
+        assertThrows(DataNotFoundException.class, () -> service.getTag(TAG_1.getId()),
                 "Tag should be not found and DataNotFoundException should be thrown");
     }
 
     @Test
     public void getTags_expectedTagList_whenGettingTags() throws DataNotFoundException {
-        when(mock.getTags()).thenReturn(TAG_LIST);
+        when(mock.getAll()).thenReturn(TAG_LIST);
         assertEquals("Actual tag list should be equal to expected", TAG_LIST, service.getTags());
     }
 
@@ -53,10 +51,10 @@ public class TagServiceImplTest {
     }
 
     @Test
-    public void saveTag_expectedTag_whenSavingTag() throws WrongParameterException, ApplicationDatabaseException {
+    public void saveTag_expectedTag_whenSavingTag() throws WrongParameterException {
         Tag savingTag = new Tag();
         savingTag.setName(TAG_2.getName());
-        when(mock.saveTag(savingTag)).thenReturn(TAG_2);
+        when(mock.create(savingTag)).thenReturn(TAG_2);
         assertEquals("Actual tag should be equal to expected", TAG_2, service.saveTag(TAG_2.getName()));
     }
 }

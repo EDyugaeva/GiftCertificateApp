@@ -1,8 +1,8 @@
 package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.GiftCertificateDao;
-import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.ApplicationDatabaseException;
+import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.GiftCertificateTag;
@@ -13,6 +13,7 @@ import com.epam.esm.services.TagService;
 import com.epam.esm.utils.GiftCertificateParamsCreator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,17 +63,20 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public GiftCertificate saveGiftCertificate(GiftCertificate giftCertificate) throws WrongParameterException,
             ApplicationDatabaseException {
-        log.info("Saving new gift certificate with {}}", giftCertificate);
-        giftCertificate.setCreateDate(LocalDateTime.now());
-        //save gc to get correct id
-        GiftCertificate savedGiftCertificate = dao.saveGiftCertificate(giftCertificate);
-        //update table tag, if tags were added to gc
-        List<Tag> tagList = giftCertificate.getTagList();
-        if (tagList != null) {
-            updateTags(giftCertificate.getTagList(), savedGiftCertificate);
-        }
         try {
+            log.info("Saving new gift certificate with {}}", giftCertificate);
+            giftCertificate.setCreateDate(LocalDateTime.now());
+            //save gc to get correct id
+            GiftCertificate savedGiftCertificate = dao.create(giftCertificate);
+            //update table tag, if tags were added to gc
+            List<Tag> tagList = giftCertificate.getTagList();
+            if (tagList != null) {
+                updateTags(giftCertificate.getTagList(), savedGiftCertificate);
+            }
+
             return getGiftCertificatesById(savedGiftCertificate.getId());
+        } catch (DuplicateKeyException e) {
+            throw new WrongParameterException("Wrong parameter in request", WRONG_PARAMETER);
         } catch (DataNotFoundException e) {
             log.error("Exception while getting saved giftCertificate", e);
             throw new ApplicationDatabaseException("Exception while getting saved giftCertificate", OTHER_EXCEPTION);
@@ -121,7 +125,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public GiftCertificate getGiftCertificatesById(Long id) throws DataNotFoundException {
         log.info("Getting gift certificate by id = {}", id);
-        return dao.getGiftCertificate(id);
+        GiftCertificate giftCertificate = dao.getById(id);
+        if (giftCertificate != null) {
+            return giftCertificate;
+        }
+        throw new DataNotFoundException(String.format("Requested resource was not found (id = %d)", id),
+                NOT_FOUND_GIFT_CERTIFICATE);
     }
 
     /**
@@ -133,7 +142,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<GiftCertificate> getAll() throws DataNotFoundException {
         log.info("Getting all gift certificates");
-        return dao.getGiftCertificates();
+        List<GiftCertificate> giftCertificateList = dao.getAll();
+        if (giftCertificateList != null) {
+            return giftCertificateList;
+        }
+        throw new DataNotFoundException("Requested resource was not found (gift certificates)", NOT_FOUND_GIFT_CERTIFICATE);
     }
 
     /**
@@ -148,8 +161,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         log.info("Deleting gift certificate with id = {}", id);
         try {
             getGiftCertificatesById(id);
-            dao.deleteGiftCertificate(id);
-        } catch (Exception e) {
+            dao.deleteById(id);
+        } catch (DataNotFoundException e) {
             throw new WrongParameterException(e.getMessage(), WRONG_PARAMETER);
         }
 
@@ -167,8 +180,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<GiftCertificate> getGiftCertificatesByParameter(Map<String, String> filteredBy,
                                                                 List<String> orderingBy) throws DataNotFoundException, WrongParameterException {
-        log.info("Getting all gift certificates filtered by {} ordering by {} ", filteredBy);
-        return dao.getGiftCertificatesByQuery(filteredBy, orderingBy);
+        log.info("Getting all gift certificates filtered by {} ordering by {} ", filteredBy, orderingBy);
+
+        List<GiftCertificate> giftCertificateList = dao.getGiftCertificatesBySortingParams(filteredBy, orderingBy);
+        if (giftCertificateList != null) {
+            return giftCertificateList;
+        }
+        throw new DataNotFoundException("Requested resource was not found (goft certificates)", NOT_FOUND_GIFT_CERTIFICATE);
     }
 
     /**

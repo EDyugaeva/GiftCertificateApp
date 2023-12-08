@@ -1,17 +1,19 @@
 package com.epam.esm.dao.impl;
 
-import com.epam.esm.config.AppConfig;
+import com.epam.esm.config.AppTestConfig;
 import com.epam.esm.constants.GiftCertificatesTestConstants;
-import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.ApplicationDatabaseException;
+import com.epam.esm.dao.Constants;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.AssertionErrors;
 
@@ -22,67 +24,63 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.epam.esm.constants.GiftCertificatesTestConstants.*;
-import static com.epam.esm.constants.QueryParams.*;
-import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_FOUND_GIFT_CERTIFICATE;
 import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_SUPPORTED;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.util.AssertionErrors.assertFalse;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = AppConfig.class)
-@Sql(scripts = "classpath:schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "classpath:test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class GiftCertificateDaoImplTest {
+@ContextConfiguration(classes = AppTestConfig.class)
+@ActiveProfiles("test")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class GiftCertificateDaoImplTest extends BaseTest{
 
     @Autowired
     private GiftCertificateDaoImpl giftCertificateDao;
 
     @Test
-    public void getTags_correctTagList_whenGetGiftCertificates() throws DataNotFoundException, WrongParameterException {
-        assertEquals(GIFT_CERTIFICATE_LIST, giftCertificateDao.getGiftCertificates(),
+    @Order(1)
+    public void getTags_correctTagList_whenGetGiftCertificates()  {
+        assertEquals(GIFT_CERTIFICATE_LIST, giftCertificateDao.getAll(),
                 "When getting certificates, list should be equal to database values");
     }
 
     @Test
-    public void getGiftCertificate_correctGiftCertificate_whenGetGiftCertificate() throws DataNotFoundException {
-        assertEquals(GIFT_CERTIFICATE_2, giftCertificateDao.getGiftCertificate(GIFT_CERTIFICATE_2.getId()),
+    public void getGiftCertificate_correctGiftCertificate_whenGetGiftCertificate() {
+        assertEquals(GIFT_CERTIFICATE_2, giftCertificateDao.getById(GIFT_CERTIFICATE_2.getId()),
                 "When getting certificate, it should be equal to database value");
     }
 
     @Test
-    public void getGiftCertificate_exception_whenTryToGetAbsentCertificate() {
-        DataNotFoundException exception = assertThrows(DataNotFoundException.class, () -> giftCertificateDao.getGiftCertificate(ABSENT_ID),
-                "Tag should be not found and  DataNotFoundException should be thrown");
-        assertEquals(NOT_FOUND_GIFT_CERTIFICATE, exception.getErrorCode(), "Exception message should be " + NOT_FOUND_GIFT_CERTIFICATE);
+    public void getGiftCertificate_null_whenTryToGetAbsentCertificate() {
+       assertNull( giftCertificateDao.getById(ABSENT_ID),
+                "Tag should be not found and null should be return");
     }
 
-    @Test
-    public void updateGiftCertificate_updatedGiftCertificate_whenGiftCertificateWasUpdated() throws DataNotFoundException {
+    @Test()
+    public void updateGiftCertificate_updatedGiftCertificate_whenGiftCertificateWasUpdated()  {
         giftCertificateDao.updateGiftCertificate(UPDATED_CERTIFICATE);
-        assertEquals(UPDATED_CERTIFICATE, giftCertificateDao.getGiftCertificate(UPDATED_CERTIFICATE.getId()),
+        assertEquals(UPDATED_CERTIFICATE, giftCertificateDao.getById(UPDATED_CERTIFICATE.getId()),
                 "Tag should be updated");
     }
 
     @Test
-    public void saveGiftCertificate_savedGiftCertificate_whenGiftCertificateWasSaved() throws DataNotFoundException, ApplicationDatabaseException, WrongParameterException {
+    public void saveGiftCertificate_savedGiftCertificate_whenGiftCertificateWasSaved()   {
         GiftCertificate savingCertificate = NEW_GIFT_CERTIFICATE;
-        giftCertificateDao.saveGiftCertificate(savingCertificate);
+        giftCertificateDao.create(savingCertificate);
         savingCertificate.setId(NEW_ID);
-        assertEquals(savingCertificate, giftCertificateDao.getGiftCertificate(NEW_ID), "Gift certificate should be saved with correct ID");
+        assertEquals(savingCertificate, giftCertificateDao.getById(NEW_ID), "Gift certificate should be saved with correct ID");
     }
 
     @Test
-    public void deleteGiftCertificate_exception_whenTryToGetDeletedGiftCertificate() throws ApplicationDatabaseException {
-        giftCertificateDao.deleteGiftCertificate(GIFT_CERTIFICATE_1.getId());
-        DataNotFoundException exception = assertThrows(DataNotFoundException.class, () -> giftCertificateDao.getGiftCertificate(GIFT_CERTIFICATE_1.getId()),
-                "Tag should be not found and  DataNotFoundException should be thrown");
-        assertEquals(NOT_FOUND_GIFT_CERTIFICATE, exception.getErrorCode(), "Exception message should be " + NOT_FOUND_GIFT_CERTIFICATE);
+    public void deleteGiftCertificate_null_whenTryToGetDeletedGiftCertificate()  {
+        giftCertificateDao.deleteById(GIFT_CERTIFICATE_5.getId());
+        assertNull(giftCertificateDao.getById(GIFT_CERTIFICATE_5.getId()),
+                "Tag should be not found and null should be return");
     }
 
     @Test
-    public void getGiftCertificatesByDescription_certificateList_whenGetListFilterByAllParams() throws DataNotFoundException, WrongParameterException {
+    public void getGiftCertificatesByDescription_certificateList_whenGetListFilterByAllParams() throws  WrongParameterException {
         List<GiftCertificate> giftCertificateList = GIFT_CERTIFICATE_LIST_WITH_TAG_NAME
                 .stream()
                 .filter(g -> g.getName().contains(NAME_VALUE))
@@ -90,11 +88,11 @@ public class GiftCertificateDaoImplTest {
                 .sorted(Comparator.comparing(GiftCertificate::getName).thenComparing(GiftCertificate::getCreateDate).reversed())
                 .collect(Collectors.toList());
         Map<String, String> map = new HashMap<>();
-        map.put(NAME, NAME_VALUE);
+        map.put(Constants.NAME, NAME_VALUE);
         map.put(DESCRIPTION_VALUE, DESCRIPTION_VALUE);
-        map.put(TAG_NAME, TAG_NAME_VALUE);
+        map.put(Constants.GiftCertificateColumn.TAG_NAME_QUERY, TAG_NAME_VALUE);
 
-        assertEquals(giftCertificateList, giftCertificateDao.getGiftCertificatesByQuery(map, SORTING_VALUE),
+        assertEquals(giftCertificateList, giftCertificateDao.getGiftCertificatesBySortingParams(map, SORTING_VALUE),
                 "Actual list should be filtered by all params");
     }
 
@@ -118,19 +116,19 @@ public class GiftCertificateDaoImplTest {
     @Test
     public void getQuery_queryWithAllParams_whenSortingByAllParams() throws WrongParameterException {
         HashMap<String, String> map = new HashMap<>();
-        map.put(NAME, NAME_VALUE);
-        map.put(DESCRIPTION, DESCRIPTION_VALUE);
-        map.put(TAG_NAME, TAG_NAME_VALUE);
+        map.put(Constants.NAME, NAME_VALUE);
+        map.put(Constants.GiftCertificateColumn.DESCRIPTION, DESCRIPTION_VALUE);
+        map.put(Constants.GiftCertificateColumn.TAG_NAME_QUERY, TAG_NAME_VALUE);
 
         String query = giftCertificateDao.getQuery(map, SORTING_VALUE);
 
         assertTrue("Actual query should include desc", StringUtils.containsIgnoreCase(query, GiftCertificatesTestConstants.DESC));
         assertFalse("Actual query should not include asc", StringUtils.containsIgnoreCase(query, GiftCertificatesTestConstants.ASC));
 
-        assertTrue("Actual query should include name", StringUtils.containsIgnoreCase(query, NAME));
+        assertTrue("Actual query should include name", StringUtils.containsIgnoreCase(query, Constants.NAME));
         assertTrue("Actual query should include name param", StringUtils.containsIgnoreCase(query, NAME_VALUE));
 
-        assertTrue("Actual query should include description", StringUtils.containsIgnoreCase(query, DESCRIPTION));
+        assertTrue("Actual query should include description", StringUtils.containsIgnoreCase(query, Constants.GiftCertificateColumn.DESCRIPTION));
         assertTrue("Actual query should include description param", StringUtils.containsIgnoreCase(query, DESCRIPTION_VALUE));
 
         assertTrue("Actual query should include tagName", StringUtils.containsIgnoreCase(query, TAG_NAME_IN_QUERY));

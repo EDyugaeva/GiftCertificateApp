@@ -28,22 +28,22 @@ public class GiftCertificateTagServiceTest {
 
     @Test
     public void getGiftCertificateTag_expectedGiftCertificateTag_whenGettingGiftCertificateTag() throws DataNotFoundException {
-        when(mock.getGiftCertificateTag(GIFT_TAG_1.getId())).thenReturn(GIFT_TAG_1);
+        when(mock.getById(GIFT_TAG_1.getId())).thenReturn(GIFT_TAG_1);
         assertEquals("Actual gift-certificate-tag should be equal to expected", GIFT_TAG_1, service.getGiftCertificateTag(GIFT_TAG_1.getId()));
     }
 
     @Test
     public void getGiftCertificatesTags_expectedGiftCertificateTagList_whenGettingGiftCertificateTags() throws DataNotFoundException {
-        when(mock.getGiftCertificateTags()).thenReturn(TAG_GIFT_LIST);
+        when(mock.getAll()).thenReturn(TAG_GIFT_LIST);
         assertEquals("Actual gift-certificate-tag list should be equal to expected", TAG_GIFT_LIST, service.getGiftCertificateTags());
     }
 
     @Test
-    public void saveGiftCertificateTag_expectedGiftCertificateTag_whenSavingGiftCertificateTag() throws ApplicationDatabaseException, WrongParameterException {
+    public void saveGiftCertificateTag_expectedGiftCertificateTag_whenSavingGiftCertificateTag() throws WrongParameterException {
         GiftCertificateTag saving = new GiftCertificateTag();
         saving.setTagId(GIFT_TAG_2.getTagId());
         saving.setGiftCertificateId(GIFT_TAG_2.getGiftCertificateId());
-        when(mock.saveGiftTag(saving)).thenReturn(GIFT_TAG_2);
+        when(mock.create(saving)).thenReturn(GIFT_TAG_2);
         assertEquals("Actual gift-certificate-tag should be equal to expected",
                 GIFT_TAG_2, service.saveGiftCertificateTag(GIFT_TAG_2.getGiftCertificateId(), GIFT_TAG_2.getTagId()));
     }
