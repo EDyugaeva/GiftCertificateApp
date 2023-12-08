@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_FOUND_PAIR;
 import static com.epam.esm.exceptions.ExceptionCodesConstants.WRONG_PARAMETER;
@@ -49,19 +50,16 @@ public class GiftCertificateTagServiceImpl implements GiftCertificateTagService 
     @Override
     public GiftCertificateTag getGiftCertificateTag(long id) throws DataNotFoundException {
         log.info("Getting gift certificate - tag pair with id = {}", id);
-        GiftCertificateTag giftCertificateTag = dao.getById(id);
-        if (giftCertificateTag != null) {
-            return giftCertificateTag;
-        }
-        log.warn("Gift Certificate - Tag was not found");
-        throw new DataNotFoundException(String.format("Requested resource was not found (id = %d)", id), NOT_FOUND_PAIR);
+        Optional<GiftCertificateTag> giftCertificateTag = dao.getById(id);
+        return giftCertificateTag.orElseThrow(() ->
+                new DataNotFoundException(String.format("Requested resource was not found (id = %d)", id), NOT_FOUND_PAIR));
     }
 
     @Override
     public List<GiftCertificateTag> getGiftCertificateTags() throws DataNotFoundException {
         log.info("Getting gift certificate - tag pairs");
         List<GiftCertificateTag> giftCertificateTagList = dao.getAll();
-        if (giftCertificateTagList != null) {
+        if (!giftCertificateTagList.isEmpty()) {
             return giftCertificateTagList;
         }
         log.warn("Gift Certificate - Tags were not found");

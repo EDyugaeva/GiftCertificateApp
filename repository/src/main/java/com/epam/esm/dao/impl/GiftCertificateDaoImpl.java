@@ -18,8 +18,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -89,15 +91,15 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
-    public GiftCertificate getById(long id) {
+    public Optional<GiftCertificate> getById(long id) {
         try {
             log.info("Getting gift certificate with id = {}", id);
             String query = SELECT_ALL + SELECT_BY_ID;
             List<GiftCertificate> list = jdbcTemplateObject.query(query, new ListGiftCertificateMapper(), id);
-            return list != null ? list.get(0) : null;
+            return list != null ? Optional.ofNullable(list.get(0)) : null;
         } catch (UncategorizedSQLException | DataIntegrityViolationException e) {
             log.warn("Gift certificate with id = {} was not found", id, e);
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -109,7 +111,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
         }
         catch (UncategorizedSQLException e) {
             log.warn("Gift certificates were not found", e);
-            return null;
+            return new ArrayList<>();
         }
     }
 

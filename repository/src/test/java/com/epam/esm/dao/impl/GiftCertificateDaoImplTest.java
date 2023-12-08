@@ -17,10 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.AssertionErrors;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.epam.esm.constants.GiftCertificatesTestConstants.*;
@@ -47,20 +44,20 @@ public class GiftCertificateDaoImplTest extends BaseTest{
 
     @Test
     public void getGiftCertificate_correctGiftCertificate_whenGetGiftCertificate() {
-        assertEquals(GIFT_CERTIFICATE_2, giftCertificateDao.getById(GIFT_CERTIFICATE_2.getId()),
+        assertEquals(Optional.of(GIFT_CERTIFICATE_2), giftCertificateDao.getById(GIFT_CERTIFICATE_2.getId()),
                 "When getting certificate, it should be equal to database value");
     }
 
     @Test
-    public void getGiftCertificate_null_whenTryToGetAbsentCertificate() {
-       assertNull( giftCertificateDao.getById(ABSENT_ID),
+    public void getGiftCertificate_Empty_whenTryToGetAbsentCertificate() {
+       assertEquals(Optional.empty(), giftCertificateDao.getById(ABSENT_ID),
                 "Tag should be not found and null should be return");
     }
 
     @Test()
     public void updateGiftCertificate_updatedGiftCertificate_whenGiftCertificateWasUpdated()  {
         giftCertificateDao.updateGiftCertificate(UPDATED_CERTIFICATE);
-        assertEquals(UPDATED_CERTIFICATE, giftCertificateDao.getById(UPDATED_CERTIFICATE.getId()),
+        assertEquals(Optional.of(UPDATED_CERTIFICATE), giftCertificateDao.getById(UPDATED_CERTIFICATE.getId()),
                 "Tag should be updated");
     }
 
@@ -69,13 +66,13 @@ public class GiftCertificateDaoImplTest extends BaseTest{
         GiftCertificate savingCertificate = NEW_GIFT_CERTIFICATE;
         giftCertificateDao.create(savingCertificate);
         savingCertificate.setId(NEW_ID);
-        assertEquals(savingCertificate, giftCertificateDao.getById(NEW_ID), "Gift certificate should be saved with correct ID");
+        assertEquals(Optional.of(savingCertificate), giftCertificateDao.getById(NEW_ID), "Gift certificate should be saved with correct ID");
     }
 
     @Test
     public void deleteGiftCertificate_null_whenTryToGetDeletedGiftCertificate()  {
         giftCertificateDao.deleteById(GIFT_CERTIFICATE_5.getId());
-        assertNull(giftCertificateDao.getById(GIFT_CERTIFICATE_5.getId()),
+        assertEquals(Optional.empty(),giftCertificateDao.getById(GIFT_CERTIFICATE_5.getId()),
                 "Tag should be not found and null should be return");
     }
 

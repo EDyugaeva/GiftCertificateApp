@@ -11,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static com.epam.esm.constants.TagTestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -27,13 +29,13 @@ public class TagServiceImplTest {
 
     @Test
     public void getTag_expectedTag_whenGettingTag() throws DataNotFoundException {
-        when(mock.getById(TAG_1.getId())).thenReturn(TAG_1);
+        when(mock.getById(TAG_1.getId())).thenReturn(Optional.of(TAG_1));
         assertEquals("Actual tag should be equal to expected", TAG_1, service.getTag(TAG_1.getId()));
     }
 
     @Test
     public void getTag_exception_whenGettingException() {
-        when(mock.getById(TAG_1.getId())).thenReturn(null);
+        when(mock.getById(TAG_1.getId())).thenReturn(Optional.empty());
         assertThrows(DataNotFoundException.class, () -> service.getTag(TAG_1.getId()),
                 "Tag should be not found and DataNotFoundException should be thrown");
     }
@@ -46,7 +48,7 @@ public class TagServiceImplTest {
 
     @Test
     public void getTagByName_expectedTag_whenGettingTagByName() throws DataNotFoundException {
-        when(mock.getTagByName(TAG_1.getName())).thenReturn(TAG_1);
+        when(mock.getTagByName(TAG_1.getName())).thenReturn(Optional.of(TAG_1));
         assertEquals("Actual tag should be equal to expected", TAG_1, service.getTagByName(TAG_1.getName()));
     }
 

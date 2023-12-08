@@ -3,7 +3,6 @@ package com.epam.esm.services.impl;
 import com.epam.esm.dao.GiftCertificateTagDao;
 import com.epam.esm.dao.impl.GiftCertificateTagDaoImpl;
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.ApplicationDatabaseException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificateTag;
 import org.junit.jupiter.api.Test;
@@ -12,6 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
 
 import static com.epam.esm.constants.GiftCertificateTagTestConstants.*;
 import static org.mockito.Mockito.when;
@@ -28,7 +29,7 @@ public class GiftCertificateTagServiceTest {
 
     @Test
     public void getGiftCertificateTag_expectedGiftCertificateTag_whenGettingGiftCertificateTag() throws DataNotFoundException {
-        when(mock.getById(GIFT_TAG_1.getId())).thenReturn(GIFT_TAG_1);
+        when(mock.getById(GIFT_TAG_1.getId())).thenReturn(Optional.of(GIFT_TAG_1));
         assertEquals("Actual gift-certificate-tag should be equal to expected", GIFT_TAG_1, service.getGiftCertificateTag(GIFT_TAG_1.getId()));
     }
 

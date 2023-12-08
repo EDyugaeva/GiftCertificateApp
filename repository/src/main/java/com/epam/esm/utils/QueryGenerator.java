@@ -25,6 +25,7 @@ public class QueryGenerator {
     private static final String ORDER_BY = " order by ";
     private static final String DESC = "DESC";
     public static final String DATE = "date";
+    public static final String SPACE = " ";
 
     private StringBuilder query;
     private boolean sorting;
@@ -66,7 +67,7 @@ public class QueryGenerator {
 
     public void addSorting(String sortValue) {
         if (sorting) {
-            query.append(" ,").append(getSortParameter(sortValue));
+            query.append(SPACE).append(",").append(getSortParameter(sortValue));
         } else {
             query.append(ORDER_BY).append(getSortParameter(sortValue));
             sorting = true;
@@ -84,7 +85,7 @@ public class QueryGenerator {
         }
         if (StringUtils.containsIgnoreCase(sortValue, DESC)) {
             log.info("Sorting desc");
-            sortingParam.append(" ").append(DESC).append(" ");
+            sortingParam.append(SPACE).append(DESC).append(SPACE);
         }
         return sortingParam.toString();
     }

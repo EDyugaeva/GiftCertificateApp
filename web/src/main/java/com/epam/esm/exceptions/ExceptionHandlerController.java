@@ -21,9 +21,9 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         return ex;
     }
 
-    @ExceptionHandler(ApplicationDatabaseException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected BaseCustomException handleOtherDatabaseException(BaseCustomException ex) {
+    @ExceptionHandler(ApplicationException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    protected BaseCustomException handleApplicationException(BaseCustomException ex) {
         return ex;
     }
 }

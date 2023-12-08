@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_FOUND_TAG;
 import static com.epam.esm.exceptions.ExceptionCodesConstants.WRONG_PARAMETER;
@@ -46,31 +47,25 @@ public class TagServiceImpl implements TagService {
     @Override
     public Tag getTag(long id) throws DataNotFoundException {
         log.info("Getting tag with id {}", id);
-        Tag tag = tagDao.getById(id);
-        if (tag != null) {
-            return tag;
-        }
-        log.warn("Tag was not found");
-        throw new DataNotFoundException(String.format("Requested resource was not found (id = %d)", id), NOT_FOUND_TAG);
+        Optional<Tag> tag = tagDao.getById(id);
+        return tag.orElseThrow(()
+                -> new DataNotFoundException(String.format("Requested resource was not found (id = %d)", id), NOT_FOUND_TAG));
     }
 
     @Override
     public Tag getTagByName(String name) throws DataNotFoundException {
         log.info("Getting tag with name {}", name);
-        Tag tag = tagDao.getTagByName(name);
-        if (tag != null) {
-            return tag;
-        }
-        log.warn("Tag was not found");
-        throw new DataNotFoundException(String.format("Requested resource was not found (name = %s)", name),
-                NOT_FOUND_TAG);
+        Optional<Tag> tag = tagDao.getTagByName(name);
+        return tag.orElseThrow(() ->
+                new DataNotFoundException(String.format("Requested resource was not found (name = %s)", name),
+                        NOT_FOUND_TAG));
     }
 
     @Override
     public List<Tag> getTags() throws DataNotFoundException {
         log.info("Getting all tags");
         List<Tag> tagList = tagDao.getAll();
-        if (tagList != null) {
+        if (!tagList.isEmpty()) {
             return tagList;
         }
         log.warn("Tags were not found");

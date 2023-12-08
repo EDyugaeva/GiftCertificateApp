@@ -12,7 +12,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -44,23 +46,25 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
-    public Tag getById(long id) {
+    public Optional<Tag> getById(long id) {
         try {
             log.info("Trying to get tag with id = {}", id);
-            return jdbcTemplateObject.queryForObject(SELECT_BY_ID, new TagMapper(), id);
+            return Optional.ofNullable(jdbcTemplateObject.queryForObject(SELECT_BY_ID, new TagMapper(), id));
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            log.warn("Tag with id = {} was not found", id);
+            return Optional.empty();
         }
     }
 
     @Override
-    public Tag getTagByName(String name) {
+    public Optional<Tag> getTagByName(String name) {
         try {
             log.info("Trying to get tag with name = {}", name);
-            return jdbcTemplateObject.queryForObject(SELECT_BY_NAME, new TagMapper(), name);
+            return Optional.ofNullable(jdbcTemplateObject.queryForObject(SELECT_BY_NAME, new TagMapper(), name));
         }
         catch (EmptyResultDataAccessException e) {
-            return null;
+            log.warn("Tag with name = {} was not found", name);
+            return Optional.empty();
         }
     }
 
@@ -68,14 +72,11 @@ public class TagDaoImpl implements TagDao {
     public List<Tag> getAll() {
         try {
             log.info("Trying to get all tags");
-            List<Tag> tagList = jdbcTemplateObject.query(SELECT_ALL, new TagMapper());
-            if (tagList.isEmpty()) {
-                log.warn("Empty tag list tags");
-            }
-            return tagList;
+            return jdbcTemplateObject.query(SELECT_ALL, new TagMapper());
         }
         catch (EmptyResultDataAccessException e) {
-            return null;
+            log.warn("Empty tag list tags");
+            return new ArrayList<>();
         }
     }
 

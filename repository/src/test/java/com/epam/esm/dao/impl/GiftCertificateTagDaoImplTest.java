@@ -12,9 +12,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Optional;
+
 import static com.epam.esm.constants.GiftCertificateTagTestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = AppTestConfig.class)
@@ -32,12 +33,12 @@ public class GiftCertificateTagDaoImplTest  extends BaseTest{
 
     @Test
     public void getGiftCertificateTag_correctPair_whenGetGiftTagsPair()   {
-        assertEquals(GIFT_TAG_1, dao.getById(GIFT_TAG_1.getId()), "When getting tags gifts pair, it should be equal to database value");
+        assertEquals(Optional.of(GIFT_TAG_1), dao.getById(GIFT_TAG_1.getId()), "When getting tags gifts pair, it should be equal to database value");
     }
 
     @Test
-    public void getGiftCertificateTag_Null_whenTryToGetAbsentGiftCertificateTag() {
-       assertNull(dao.getById(ABSENT_ID),
+    public void getGiftCertificateTag_EmptyOptional_whenTryToGetAbsentGiftCertificateTag() {
+       assertEquals(Optional.empty(),dao.getById(ABSENT_ID),
                 "Pair should be not found and null should be return");
     }
 
@@ -46,13 +47,13 @@ public class GiftCertificateTagDaoImplTest  extends BaseTest{
         GiftCertificateTag savingPair = GIFT_TAG_NEW;
         dao.create(savingPair);
         savingPair.setId(NEW_ID);
-        assertEquals(savingPair, dao.getById(NEW_ID), "Gift tag pair should be saved with correct ID");
+        assertEquals(Optional.of(savingPair), dao.getById(NEW_ID), "Gift tag pair should be saved with correct ID");
     }
 
     @Test
-    public void deleteGiftTag_Null_whenTryToGetDeletedGiftTag()  {
+    public void deleteGiftTag_EmptyOptional_whenTryToGetDeletedGiftTag()  {
         dao.deleteById(GIFT_TAG_5.getId());
-        assertNull(dao.getById(GIFT_TAG_5.getId()),
+        assertEquals(Optional.empty(),dao.getById(GIFT_TAG_5.getId()),
                 "Gift tag pair should be not found and null should be return");
     }
 }

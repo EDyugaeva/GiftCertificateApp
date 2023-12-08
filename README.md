@@ -41,7 +41,7 @@ o	sort by date or by name ASC/DESC (extra task: implement ability to apply both 
 
 `mvn clean package`
 
-`mvn jetty::run`
+`mvn jetty:run '-Dspring.profiles.active=prod'`
 
 standard port (8080) is used
 

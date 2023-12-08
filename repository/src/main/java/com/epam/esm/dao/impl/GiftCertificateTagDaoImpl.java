@@ -12,7 +12,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Component
@@ -47,13 +49,13 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
     }
 
     @Override
-    public GiftCertificateTag getById(long id) {
+    public Optional<GiftCertificateTag> getById(long id) {
         try {
             log.info("Trying to get pair with id = {}", id);
-            return jdbcTemplateObject.queryForObject(SELECT_BY_ID, new GiftCertificateTagMapper(), id);
+            return Optional.ofNullable(jdbcTemplateObject.queryForObject(SELECT_BY_ID, new GiftCertificateTagMapper(), id));
         } catch (EmptyResultDataAccessException e) {
             log.warn("Gift certificate - tag pair with id = {} was not found", id, e);
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -65,7 +67,7 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
             return jdbcTemplateObject.query(SELECT_ALL, new GiftCertificateTagMapper());
         } catch (EmptyResultDataAccessException e) {
             log.warn("Tags and certificates pairs were not found");
-            return null;
+            return new ArrayList<>();
         }
     }
 
