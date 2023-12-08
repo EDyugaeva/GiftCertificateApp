@@ -24,9 +24,8 @@ public class QueryGenerator {
     private static final String SELECT_BY_DESCRIPTION = " gc.description ILIKE '%s'";
     private static final String ORDER_BY = " order by ";
     private static final String DESC = "DESC";
-    public static final String DATE = "date";
-    public static final String SPACE = " ";
-
+    private static final String DATE = "date";
+    private static final String SPACE = " ";
     private StringBuilder query;
     private boolean sorting;
     private boolean filtering;
