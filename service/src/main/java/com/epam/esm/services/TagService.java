@@ -8,7 +8,7 @@ import com.epam.esm.model.Tag;
 import java.util.List;
 
 public interface TagService {
-    Tag saveTag(String name) throws WrongParameterException, ApplicationException;
+    Tag saveTag(Tag tag) throws WrongParameterException, ApplicationException;
     Tag getTag(long id) throws DataNotFoundException;
     List<Tag> getTags() throws DataNotFoundException;
     void deleteTag(long id) throws WrongParameterException;

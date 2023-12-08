@@ -57,6 +57,6 @@ public class TagServiceImplTest {
         Tag savingTag = new Tag();
         savingTag.setName(TAG_2.getName());
         when(mock.create(savingTag)).thenReturn(TAG_2);
-        assertEquals("Actual tag should be equal to expected", TAG_2, service.saveTag(TAG_2.getName()));
+        assertEquals("Actual tag should be equal to expected", TAG_2, service.saveTag(TAG_2));
     }
 }

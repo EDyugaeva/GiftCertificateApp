@@ -33,11 +33,9 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
-    public Tag saveTag(String name) throws WrongParameterException {
+    public Tag saveTag(Tag tag) throws WrongParameterException {
         try {
-            log.info("Saving tag with name {}", name);
-            Tag tag = new Tag();
-            tag.setName(name);
+            log.info("Saving tag {}", tag);
             return tagDao.create(tag);
         } catch (DuplicateKeyException e) {
             throw new WrongParameterException("Wrong parameter in request", WRONG_PARAMETER);

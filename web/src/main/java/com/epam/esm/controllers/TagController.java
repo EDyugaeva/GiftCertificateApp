@@ -14,7 +14,7 @@ import java.util.List;
  * Class for CRD operations with TAG model
  */
 @RestController
-@RequestMapping(value = "/tags", produces = "application/json", consumes = "application/json")
+@RequestMapping(value = "/tags")
 @Slf4j
 public class TagController {
     private final TagService tagService;
@@ -28,7 +28,7 @@ public class TagController {
      *
      * @param id - tag id, should be > 0
      */
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = "application/json")
     public Tag getTag(@PathVariable("id") Long id) throws DataNotFoundException {
         log.info("Getting tag with id = {} in controller", id);
         return tagService.getTag(id);
@@ -39,7 +39,7 @@ public class TagController {
      *
      * @return list of all tags
      */
-    @GetMapping()
+    @GetMapping(produces = "application/json")
     public List<Tag> getTags() throws DataNotFoundException {
         log.info("Getting tags");
         return tagService.getTags();
@@ -48,13 +48,13 @@ public class TagController {
     /**
      * Method for creating new tag
      *
-     * @param name of tag
+     * @param tag new Tag
      * @return saved tag
      */
-    @PostMapping()
-    public Tag saveTag(@RequestBody String name) throws WrongParameterException, ApplicationException {
-        log.info("Creating new tag with name = {}", name);
-        return tagService.saveTag(name);
+    @PostMapping(produces = "application/json", consumes = "application/json")
+    public Tag saveTag(@RequestBody Tag tag) throws WrongParameterException, ApplicationException {
+        log.info("Creating new tag with name = {}", tag);
+        return tagService.saveTag(tag);
     }
 
     /**

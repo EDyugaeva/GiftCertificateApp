@@ -236,7 +236,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
                 long tagId = savedTag.contains(currTag) ?
                         tagService.getTagByName(currTag.getName()).getId()
-                        : tagService.saveTag(currTag.getName()).getId();
+                        : tagService.saveTag(currTag).getId();
 
                 GiftCertificateTag certificateTag = new GiftCertificateTag(giftCertificateId, tagId);
                 if (!giftCertificateTagList.contains(certificateTag)) {

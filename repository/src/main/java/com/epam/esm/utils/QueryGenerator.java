@@ -1,6 +1,6 @@
 package com.epam.esm.utils;
 
-import com.epam.esm.dao.Constants;
+import com.epam.esm.constants.Constants;
 import com.epam.esm.exceptions.WrongParameterException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

@@ -1,6 +1,6 @@
 package com.epam.esm.dao.mapper;
 
-import com.epam.esm.dao.Constants;
+import com.epam.esm.constants.Constants;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 import org.springframework.dao.DataAccessException;
@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.epam.esm.dao.Constants.*;
+import static com.epam.esm.constants.Constants.*;
 
 public class ListGiftCertificateMapper implements ResultSetExtractor<List<GiftCertificate>> {
     @Override

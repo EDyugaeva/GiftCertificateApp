@@ -1,4 +1,4 @@
-package com.epam.esm.dao;
+package com.epam.esm.constants;
 
 public class Constants {
     public static final String STRUCTURE = "%s.%s";

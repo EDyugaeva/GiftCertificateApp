@@ -1,6 +1,6 @@
 package com.epam.esm.dao.impl;
 
-import com.epam.esm.dao.Constants;
+import com.epam.esm.constants.Constants;
 import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.dao.mapper.ListGiftCertificateMapper;
 import com.epam.esm.exceptions.WrongParameterException;

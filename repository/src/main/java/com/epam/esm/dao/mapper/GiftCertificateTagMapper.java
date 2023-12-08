@@ -1,13 +1,13 @@
 package com.epam.esm.dao.mapper;
 
-import com.epam.esm.dao.Constants;
+import com.epam.esm.constants.Constants;
 import com.epam.esm.model.GiftCertificateTag;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static com.epam.esm.dao.Constants.ID;
+import static com.epam.esm.constants.Constants.ID;
 
 public class GiftCertificateTagMapper implements RowMapper<GiftCertificateTag> {
 

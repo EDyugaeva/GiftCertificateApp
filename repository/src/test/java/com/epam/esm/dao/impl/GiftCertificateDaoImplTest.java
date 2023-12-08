@@ -2,7 +2,7 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.config.AppTestConfig;
 import com.epam.esm.constants.GiftCertificatesTestConstants;
-import com.epam.esm.dao.Constants;
+import com.epam.esm.constants.Constants;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import org.apache.commons.lang3.StringUtils;
