@@ -1,14 +1,10 @@
 package com.epam.esm.dao.impl;
 
-import com.epam.esm.dao.Column;
+import com.epam.esm.constants.Constants;
 import com.epam.esm.dao.GiftCertificateTagDao;
 import com.epam.esm.dao.mapper.GiftCertificateTagMapper;
-import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.ApplicationDatabaseException;
-import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificateTag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -16,9 +12,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.List;
-
-import static com.epam.esm.exceptions.ExceptionCodesConstants.*;
+import java.util.Optional;
 
 
 @Component
@@ -36,69 +32,52 @@ public class GiftCertificateTagDaoImpl implements GiftCertificateTagDao {
     }
 
     @Override
-    public GiftCertificateTag saveGiftTag(GiftCertificateTag giftCertificateTag) throws ApplicationDatabaseException, WrongParameterException {
+    public GiftCertificateTag create(GiftCertificateTag giftCertificateTag) {
         log.info("Saving gift certificate tag pair " + giftCertificateTag);
-        try {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplateObject.update(
-                    connection -> {
-                        PreparedStatement ps = connection.prepareStatement(INSERT, new String[]{Column.ID});
-                        ps.setLong(1, giftCertificateTag.getGiftCertificateId());
-                        ps.setLong(2, giftCertificateTag.getTagId());
-                        return ps;
-                    },
-                    keyHolder);
-            giftCertificateTag.setId(keyHolder.getKeyAs(Long.class));
-            return giftCertificateTag;
-        } catch (EmptyResultDataAccessException | DuplicateKeyException e) {
-            log.error("Exception while saving new gift certificate tag pair");
-            throw new WrongParameterException("Parameters are not correct", WRONG_PARAMETER);
-        } catch (Exception e) {
-            log.error("Exception while saving new gift certificate tag pair");
-            throw new ApplicationDatabaseException("Exception while saving new gift certificate tag pair", OTHER_EXCEPTION);
-        }
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplateObject.update(
+                connection -> {
+                    PreparedStatement ps = connection.prepareStatement(INSERT, new String[]{Constants.ID});
+                    ps.setLong(1, giftCertificateTag.getGiftCertificateId());
+                    ps.setLong(2, giftCertificateTag.getTagId());
+                    return ps;
+                },
+                keyHolder);
+        giftCertificateTag.setId(keyHolder.getKeyAs(Long.class));
+        return giftCertificateTag;
     }
 
     @Override
-    public GiftCertificateTag getGiftCertificateTag(Long id) throws DataNotFoundException {
+    public Optional<GiftCertificateTag> getById(long id) {
         try {
             log.info("Trying to get pair with id = {}", id);
-            return jdbcTemplateObject.queryForObject(SELECT_BY_ID, new Object[]{id}, new GiftCertificateTagMapper());
+            return Optional.ofNullable(jdbcTemplateObject.queryForObject(SELECT_BY_ID, new GiftCertificateTagMapper(), id));
         } catch (EmptyResultDataAccessException e) {
-            log.error("Error while getting pair with id = {}", id, e);
-            throw new DataNotFoundException(String.format("Requested resource not found (id = %d)", id), NOT_FOUND_PAIR);
+            log.warn("Gift certificate - tag pair with id = {} was not found", id, e);
+            return Optional.empty();
         }
     }
 
     @Override
-    public List<GiftCertificateTag> getGiftCertificateTags() {
-        log.info("Trying to get all tags and certificates pairs");
-        List<GiftCertificateTag> giftCertificateTagList = jdbcTemplateObject.query(SELECT_ALL, new GiftCertificateTagMapper());
-        if (giftCertificateTagList.isEmpty()) {
+    public List<GiftCertificateTag> getAll() {
+        try {
+            log.info("Trying to get all tags and certificates pairs");
+            return jdbcTemplateObject.query(SELECT_ALL, new GiftCertificateTagMapper());
+        } catch (EmptyResultDataAccessException e) {
             log.warn("Tags and certificates pairs were not found");
+            return new ArrayList<>();
         }
-        return giftCertificateTagList;
     }
 
     @Override
-    public void deleteGiftTag(Long id) throws ApplicationDatabaseException {
+    public void deleteById(long id) {
         log.info("Trying to delete tag-gift pair with id = {}", id);
-        try {
-            jdbcTemplateObject.update(DELETE, id);
-        } catch (Exception e) {
-            log.error("Exception while deleting tag-gift pair with gift certificate id = {} ", id, e);
-            throw new ApplicationDatabaseException("Database exception while deleting tag-gift pair", NOT_FOUND_PAIR);
-        }
+        jdbcTemplateObject.update(DELETE, id);
     }
 
     @Override
-    public void deleteGiftCertificateTagByTagAndGiftCertificateId(long giftCertificateId, long tagId) throws ApplicationDatabaseException {
+    public void deleteGiftCertificateTagByTagAndGiftCertificateId(long giftCertificateId, long tagId) {
         log.info("Trying to delete tag-gift pair with gift certificate id = {} and tag id = {}", giftCertificateId, tagId);
-        try {
-            jdbcTemplateObject.update(DELETE_BY_IDS, giftCertificateId, tagId);
-        } catch (Exception e) {
-            log.error("Other db exception while deleting tag-gift pair with gift certificate id = {} and tag id = {}", giftCertificateId, tagId, e);
-            throw new ApplicationDatabaseException("Other db exception while deleting tag-gift pair", OTHER_EXCEPTION);
-        }
+        jdbcTemplateObject.update(DELETE_BY_IDS, giftCertificateId, tagId);
     }
 }

@@ -1,7 +1,7 @@
 package com.epam.esm.controllers;
 
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.ApplicationDatabaseException;
+import com.epam.esm.exceptions.ApplicationException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.services.GiftCertificateService;
@@ -18,10 +18,10 @@ import static com.epam.esm.constants.QueryParams.*;
  * Controller for CRUD operations with Gift Certificate model
  */
 @RestController
-@RequestMapping("/certificates")
+@RequestMapping(value = "/certificates", produces = "application/json", consumes = "application/json")
 @Slf4j
 public class GiftCertificateController {
-    private GiftCertificateService giftCertificateService;
+    private final GiftCertificateService giftCertificateService;
 
     public GiftCertificateController(GiftCertificateService giftCertificateService) {
         this.giftCertificateService = giftCertificateService;
@@ -30,7 +30,6 @@ public class GiftCertificateController {
     /**
      * Method for getting all gift certificates (without sorting and ordering)
      *
-     * @return - a list containing all GiftCertificate objects
      * @throws DataNotFoundException if the gift certificate table is empty
      */
     @GetMapping()
@@ -42,11 +41,9 @@ public class GiftCertificateController {
     /**
      * Method for getting all gift certificates by id
      *
-     * @param id of Gift certificate, > 0
-     * @return Gift certificate
-     * @throws DataNotFoundException if the gift certificate id is not exist
+     * @param id of Gift certificate > 0
      */
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}")
     public GiftCertificate getGiftCertificateById(@PathVariable("id") Long id) throws DataNotFoundException {
         log.info("Getting gift certificate by id = {}", id);
         return giftCertificateService.getGiftCertificatesById(id);
@@ -55,8 +52,7 @@ public class GiftCertificateController {
     /**
      * Method for deleting gift certificate
      *
-     * @param id of Gift certificate, > 0
-     * @throws WrongParameterException if there is no such id
+     * @param id of Gift certificate > 0
      */
     @DeleteMapping("/{id}")
     public void deleteGiftCertificateById(@PathVariable("id") Long id) throws WrongParameterException {
@@ -68,13 +64,10 @@ public class GiftCertificateController {
      * Method for creating gift certificate
      *
      * @param giftCertificate - new Object
-     * @return giftCertificate from DB
-     * @throws WrongParameterException - if the body of request is not correct
-     * @throws ApplicationDatabaseException if there is db exception
      */
     @PostMapping()
     public GiftCertificate saveGiftCertificate(@RequestBody GiftCertificate giftCertificate)
-            throws WrongParameterException, ApplicationDatabaseException {
+            throws WrongParameterException, ApplicationException {
         log.info("Save gift certificate {}", giftCertificate);
         return giftCertificateService.saveGiftCertificate(giftCertificate);
     }
@@ -82,16 +75,11 @@ public class GiftCertificateController {
     /**
      * Method for updating gift Certificate
      *
-     * @param id              of giftCertificate, > 0
-     * @param giftCertificate - request body
-     * @return giftCertificate from db
-     * @throws WrongParameterException - if the body of request is not correct
-     * @throws ApplicationDatabaseException if there is db exception
      */
-    @PatchMapping("/{id}")
+    @PatchMapping(value = "/{id}")
     public GiftCertificate saveGiftCertificate(@PathVariable("id") Long id,
                                                @RequestBody GiftCertificate giftCertificate)
-            throws WrongParameterException, ApplicationDatabaseException {
+            throws WrongParameterException {
         log.info("Update gift certificate {}", giftCertificate.toString());
         return giftCertificateService.updateGiftCertificate(id, giftCertificate);
     }
@@ -104,10 +92,8 @@ public class GiftCertificateController {
      * @param tagName     - not required, if needed filtering by tag name
      * @param ordering    - not required, order of results (variants: name (desc if needed), date (desc if needed))
      * @return List of Gift Certificate
-     * @throws WrongParameterException - if the request is not correct
-     * @throws ApplicationDatabaseException if there is db exception
      */
-    @GetMapping("/search")
+    @GetMapping(value = "/search")
     public List<GiftCertificate> getGiftCertificateByParam(@RequestParam(required = false) String name,
                                                            @RequestParam(required = false) String description,
                                                            @RequestParam(required = false) String tagName,

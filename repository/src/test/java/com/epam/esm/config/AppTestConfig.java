@@ -3,17 +3,25 @@ package com.epam.esm.config;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.datasource.init.DatabasePopulator;
+import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 import javax.sql.DataSource;
 
 @Configuration
 @ComponentScan("com.epam.esm")
-@PropertySource(value = "classpath:application-${spring.profiles.active}.properties")
+@PropertySource("classpath:application.properties")
+@Profile("test")
 @Slf4j
-@Profile({"dev", "prod"})
-public class AppConfig {
+public class AppTestConfig {
+    static {
+        log.info("Test profile is active");
+    }
     @Value("${database.driver.class.name}")
     private String driverClassName;
     @Value("${database.url}")
@@ -22,17 +30,20 @@ public class AppConfig {
     private String username;
     @Value("${database.password}")
     private String password;
-    @Value("${spring.profiles.active}")
-    private String activeProfile;
-
     @Bean
     public DataSource dataSource() {
-        log.info("Active profile is {}", activeProfile );
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(driverClassName);
         dataSource.setUrl(url);
         dataSource.setUsername(username);
         dataSource.setPassword(password);
+
+
+        Resource initData = new ClassPathResource("schema.sql");
+        Resource fillData = new ClassPathResource("test-data.sql");
+        DatabasePopulator databasePopulator = new ResourceDatabasePopulator(initData, fillData);
+        DatabasePopulatorUtils.execute(databasePopulator, dataSource);
+
         return dataSource;
     }
 

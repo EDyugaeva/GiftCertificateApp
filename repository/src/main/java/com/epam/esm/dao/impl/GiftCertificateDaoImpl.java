@@ -1,17 +1,14 @@
 package com.epam.esm.dao.impl;
 
-import com.epam.esm.dao.Column;
+import com.epam.esm.constants.Constants;
 import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.dao.mapper.ListGiftCertificateMapper;
-import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.ApplicationDatabaseException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.utils.QueryGenerator;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -21,10 +18,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static com.epam.esm.exceptions.ExceptionCodesConstants.*;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -56,25 +53,17 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
-    public GiftCertificate saveGiftCertificate(GiftCertificate giftCertificate) throws
-            WrongParameterException, ApplicationDatabaseException {
+    public GiftCertificate create(GiftCertificate giftCertificate) {
         log.info("Saving gift certificate = {}", giftCertificate);
-        try {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplateObject.update(connection -> prepareStatementForInsert(connection, INSERT, giftCertificate), keyHolder);
-            giftCertificate.setId(keyHolder.getKeyAs(Long.class));
-            return giftCertificate;
-        } catch (EmptyResultDataAccessException | DuplicateKeyException e) {
-            log.error("Exception while saving new gift certificate",e );
-            throw new WrongParameterException("Parameters in model are not correct", WRONG_PARAMETER);
-        } catch (Exception e) {
-            log.error("Exception while saving new gift certificate", e);
-            throw new ApplicationDatabaseException("Exception while saving new gift certificate. Maybe wrong entity", OTHER_EXCEPTION);
-        }
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplateObject.update(connection -> prepareStatementForInsert(connection, INSERT, giftCertificate), keyHolder);
+        giftCertificate.setId(keyHolder.getKeyAs(Long.class));
+        return giftCertificate;
+
     }
 
     private PreparedStatement prepareStatementForInsert(Connection connection, String sql, GiftCertificate giftCertificate) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement(sql, new String[]{Column.ID});
+        PreparedStatement ps = connection.prepareStatement(sql, new String[]{Constants.ID});
         ps.setString(1, giftCertificate.getName());
         ps.setString(2, giftCertificate.getDescription());
         ps.setFloat(3, giftCertificate.getPrice());
@@ -90,75 +79,59 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
-    public GiftCertificate updateGiftCertificate(GiftCertificate giftCertificate) throws DataNotFoundException {
+    public GiftCertificate updateGiftCertificate(GiftCertificate giftCertificate) {
         log.info("Updating gift certificate = {}", giftCertificate);
-        try {
-            jdbcTemplateObject.update(UPDATE, giftCertificate.getName(),
-                    giftCertificate.getDescription(),
-                    giftCertificate.getPrice(), giftCertificate.getDuration(),
-                    Timestamp.valueOf(giftCertificate.getCreateDate()),
-                    Timestamp.valueOf(giftCertificate.getLastUpdateDate()),
-                    giftCertificate.getId());
-        } catch (DataAccessException e) {
-            log.error("Exception while updating recourse with id = {}", giftCertificate.getId(), e);
-            throw new DataNotFoundException(String.format("Requested resource for updating not found (id = %d)",
-                    giftCertificate.getId()), NOT_FOUND_GIFT_CERTIFICATE);
-        }
+        jdbcTemplateObject.update(UPDATE, giftCertificate.getName(),
+                giftCertificate.getDescription(),
+                giftCertificate.getPrice(), giftCertificate.getDuration(),
+                Timestamp.valueOf(giftCertificate.getCreateDate()),
+                Timestamp.valueOf(giftCertificate.getLastUpdateDate()),
+                giftCertificate.getId());
         return giftCertificate;
     }
-//TODO не ловить Runtime Exception
-    //TODO перенести catch в service
-    //TODO возвращать null
+
     @Override
-    public GiftCertificate getGiftCertificate(long id) throws DataNotFoundException {
-        log.info("Getting gift certificate with id = {}", id);
-        String query = SELECT_ALL + SELECT_BY_ID;
+    public Optional<GiftCertificate> getById(long id) {
         try {
-            List<GiftCertificate> list = jdbcTemplateObject.query(query, new Object[]{id},
-                    new ListGiftCertificateMapper());
-            return list.get(0);
-        } catch (RuntimeException e) {
-            log.error("Error while getting gift certificate with id = {}", id, e);
-            throw new DataNotFoundException(String.format("Requested resource not found (id = %d)", id),
-                    NOT_FOUND_GIFT_CERTIFICATE);
+            log.info("Getting gift certificate with id = {}", id);
+            String query = SELECT_ALL + SELECT_BY_ID;
+            List<GiftCertificate> list = jdbcTemplateObject.query(query, new ListGiftCertificateMapper(), id);
+            return list != null ? Optional.ofNullable(list.get(0)) : null;
+        } catch (UncategorizedSQLException | DataIntegrityViolationException e) {
+            log.warn("Gift certificate with id = {} was not found", id, e);
+            return Optional.empty();
         }
     }
 
     @Override
-    public List<GiftCertificate> getGiftCertificates() throws DataNotFoundException {
+    public List<GiftCertificate> getAll() {
         try {
-            List<GiftCertificate> list = jdbcTemplateObject.query(SELECT_ALL, new ListGiftCertificateMapper());
-            return list;
-        } catch (RuntimeException e) {
-            log.error("Error while getting all gift certificates", e);
-            throw new DataNotFoundException("Requested resource not found (gift certificate)",
-                    NOT_FOUND_GIFT_CERTIFICATE);
+            log.info("Getting all certificates");
+            return jdbcTemplateObject.query(SELECT_ALL, new ListGiftCertificateMapper());
+        }
+        catch (UncategorizedSQLException e) {
+            log.warn("Gift certificates were not found", e);
+            return new ArrayList<>();
         }
     }
 
     @Override
-    public void deleteGiftCertificate(long id) throws ApplicationDatabaseException {
+    public void deleteById(long id) {
         log.info("Deleting  gift certificate with id = ?");
-        try {
-            jdbcTemplateObject.update(DELETE, id);
-        } catch (Exception e) {
-            log.error("Deleting gift certificate with id = {} failed", id, e);
-            throw new ApplicationDatabaseException(String.format("Deleting gift certificate with id  %d failed", id),
-                    OTHER_EXCEPTION);
-        }
+        jdbcTemplateObject.update(DELETE, id);
     }
 
     @Override
-    public List<GiftCertificate> getGiftCertificatesByQuery(Map<String, String> filteredBy,
-                                                            List<String> orderingBy)
-            throws DataNotFoundException, WrongParameterException {
-        log.info("Getting all gift certificates with parameters ");
-        String fullQuery = SELECT_ALL + getQuery(filteredBy, orderingBy);
+    public List<GiftCertificate> getGiftCertificatesBySortingParams(Map<String, String> filteredBy,
+                                                                    List<String> orderingBy) throws WrongParameterException {
         try {
+            log.info("Getting all gift certificates with parameters ");
+            String fullQuery = SELECT_ALL + getQuery(filteredBy, orderingBy);
             return jdbcTemplateObject.query(fullQuery, new ListGiftCertificateMapper());
-        } catch (RuntimeException e) {
-            log.error("Error while getting gift certificates", e);
-            throw new DataNotFoundException("Requested resource not found ", NOT_FOUND_GIFT_CERTIFICATE);
+        }
+        catch (UncategorizedSQLException | DataIntegrityViolationException e) {
+            log.warn("Gift certificates were not found", e);
+            return null;
         }
     }
 

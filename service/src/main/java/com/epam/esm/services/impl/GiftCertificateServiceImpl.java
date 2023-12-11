@@ -1,8 +1,8 @@
 package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.GiftCertificateDao;
+import com.epam.esm.exceptions.ApplicationException;
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.ApplicationDatabaseException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.GiftCertificateTag;
@@ -13,12 +13,14 @@ import com.epam.esm.services.TagService;
 import com.epam.esm.utils.GiftCertificateParamsCreator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.epam.esm.constants.QueryParams.*;
 import static com.epam.esm.exceptions.ExceptionCodesConstants.*;
@@ -55,27 +57,26 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      *
      * @param giftCertificate - new Entity
      * @return {@link GiftCertificate} with generated id
-     * @throws WrongParameterException
-     * @throws ApplicationDatabaseException
      */
     @Transactional
     @Override
     public GiftCertificate saveGiftCertificate(GiftCertificate giftCertificate) throws WrongParameterException,
-            ApplicationDatabaseException {
-        log.info("Saving new gift certificate with {}}", giftCertificate);
-        giftCertificate.setCreateDate(LocalDateTime.now());
-        //save gc to get correct id
-        GiftCertificate savedGiftCertificate = dao.saveGiftCertificate(giftCertificate);
-        //update table tag, if tags were added to gc
-        List<Tag> tagList = giftCertificate.getTagList();
-        if (tagList != null) {
-            updateTags(giftCertificate.getTagList(), savedGiftCertificate);
-        }
+            ApplicationException {
         try {
+            log.info("Saving new gift certificate with {}}", giftCertificate);
+            giftCertificate.setCreateDate(LocalDateTime.now());
+            GiftCertificate savedGiftCertificate = dao.create(giftCertificate);
+            List<Tag> tagList = giftCertificate.getTagList();
+            if (tagList != null) {
+                updateTags(giftCertificate.getTagList(), savedGiftCertificate);
+            }
+
             return getGiftCertificatesById(savedGiftCertificate.getId());
+        } catch (DuplicateKeyException e) {
+            throw new WrongParameterException("Wrong parameter in request", WRONG_PARAMETER);
         } catch (DataNotFoundException e) {
             log.error("Exception while getting saved giftCertificate", e);
-            throw new ApplicationDatabaseException("Exception while getting saved giftCertificate", OTHER_EXCEPTION);
+            throw new ApplicationException("Exception while getting saved giftCertificate", OTHER_EXCEPTION);
         }
 
     }
@@ -86,12 +87,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      * @param id              - updating instants
      * @param giftCertificate - new entity (maybe not all parameters)
      * @return {@link GiftCertificate} saved instant
-     * @throws WrongParameterException
-     * @throws ApplicationDatabaseException
      */
     @Override
     public GiftCertificate updateGiftCertificate(Long id, GiftCertificate giftCertificate)
-            throws WrongParameterException, ApplicationDatabaseException {
+            throws WrongParameterException {
         GiftCertificateParamsCreator giftCertificateParamsCreator = new GiftCertificateParamsCreator();
         Map<String, Object> params = giftCertificateParamsCreator.getActualParams(giftCertificate);
         log.info("Updating gift certificate with id = {}, new params = {}", id, params);
@@ -121,7 +120,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public GiftCertificate getGiftCertificatesById(Long id) throws DataNotFoundException {
         log.info("Getting gift certificate by id = {}", id);
-        return dao.getGiftCertificate(id);
+        Optional<GiftCertificate> giftCertificate = dao.getById(id);
+        return giftCertificate.orElseThrow(() ->
+                new DataNotFoundException(String.format("Requested resource was not found (id = %d)", id),
+                        NOT_FOUND_GIFT_CERTIFICATE));
     }
 
     /**
@@ -133,7 +135,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<GiftCertificate> getAll() throws DataNotFoundException {
         log.info("Getting all gift certificates");
-        return dao.getGiftCertificates();
+        List<GiftCertificate> giftCertificateList = dao.getAll();
+        if (!giftCertificateList.isEmpty()) {
+            return giftCertificateList;
+        }
+        throw new DataNotFoundException("Requested resource was not found (gift certificates)", NOT_FOUND_GIFT_CERTIFICATE);
     }
 
     /**
@@ -148,11 +154,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         log.info("Deleting gift certificate with id = {}", id);
         try {
             getGiftCertificatesById(id);
-            dao.deleteGiftCertificate(id);
-        } catch (Exception e) {
+            dao.deleteById(id);
+        } catch (DataNotFoundException e) {
             throw new WrongParameterException(e.getMessage(), WRONG_PARAMETER);
         }
-
     }
 
     /**
@@ -167,8 +172,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<GiftCertificate> getGiftCertificatesByParameter(Map<String, String> filteredBy,
                                                                 List<String> orderingBy) throws DataNotFoundException, WrongParameterException {
-        log.info("Getting all gift certificates filtered by {} ordering by {} ", filteredBy);
-        return dao.getGiftCertificatesByQuery(filteredBy, orderingBy);
+        log.info("Getting all gift certificates filtered by {} ordering by {} ", filteredBy, orderingBy);
+
+        List<GiftCertificate> giftCertificateList = dao.getGiftCertificatesBySortingParams(filteredBy, orderingBy);
+        if (!giftCertificateList.isEmpty()) {
+            return giftCertificateList;
+        }
+        throw new DataNotFoundException("Requested resource was not found (goft certificates)", NOT_FOUND_GIFT_CERTIFICATE);
     }
 
     /**
@@ -178,7 +188,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      * @param updatingGiftCertificate The GiftCertificate to update.
      */
     private void updateGiftCertificateValues(Map<String, Object> params, GiftCertificate updatingGiftCertificate)
-            throws WrongParameterException, DataNotFoundException, ApplicationDatabaseException {
+            throws WrongParameterException, DataNotFoundException {
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             switch (entry.getKey()) {
                 case NAME:
@@ -204,7 +214,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     private void updateTags(List<Tag> tagList, GiftCertificate giftCertificate)
-            throws WrongParameterException, ApplicationDatabaseException {
+            throws WrongParameterException {
         long giftCertificateId = giftCertificate.getId();
         // Step 1: Delete tags that are no longer associated with the gift certificate
         try {
@@ -222,11 +232,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             List<GiftCertificateTag> giftCertificateTagList = giftCertificateTagService.getGiftCertificateTags();
             for (Tag currTag : tagList) {
 
-                System.out.println(currTag.getName());
-
                 long tagId = savedTag.contains(currTag) ?
                         tagService.getTagByName(currTag.getName()).getId()
-                        : tagService.saveTag(currTag.getName()).getId();
+                        : tagService.saveTag(currTag).getId();
 
                 GiftCertificateTag certificateTag = new GiftCertificateTag(giftCertificateId, tagId);
                 if (!giftCertificateTagList.contains(certificateTag)) {

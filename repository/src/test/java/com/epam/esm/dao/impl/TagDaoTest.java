@@ -1,69 +1,68 @@
 package com.epam.esm.dao.impl;
 
-import com.epam.esm.config.AppConfig;
+import com.epam.esm.config.AppTestConfig;
 import com.epam.esm.dao.TagDao;
-import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.exceptions.ApplicationDatabaseException;
-import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.Tag;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Optional;
+
 import static com.epam.esm.constants.TagTestConstants.*;
-import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_FOUND_TAG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = AppConfig.class)
-@Sql(scripts = "classpath:schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "classpath:test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class TagDaoTest {
+@ContextConfiguration(classes = AppTestConfig.class)
+@ActiveProfiles("test")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class TagDaoTest extends BaseTest {
 
     @Autowired
     private TagDao tagDao;
 
     @Test
-    public void getTags_correctTagList_whenGetTags() throws DataNotFoundException {
-        assertEquals(TAG_LIST, tagDao.getTags(), "When getting tags, tag list should be equal to database values");
+    @Order(1)
+    public void getTags_correctTagList_whenGetTags() {
+        assertEquals(TAG_LIST, tagDao.getAll(), "When getting tags, tag list should be equal to database values");
     }
 
     @Test
-    public void getTag_correctTag_whenGetTag() throws DataNotFoundException, ApplicationDatabaseException {
-        assertEquals(TAG_1, tagDao.getTag(TAG_1.getId()), "When getting tag, tag should be equal to database value");
+    public void getTag_correctTag_whenGetTag() {
+        assertEquals(Optional.of(TAG_1) , tagDao.getById(TAG_1.getId()), "When getting tag, tag should be equal to database value");
     }
 
     @Test
-    public void getTagByName_correctTag_whenGetTagByName() throws DataNotFoundException {
-        assertEquals(TAG_1, tagDao.getTagByName(TAG_1.getName()), "When getting tag, tag should be equal to database value");
+    public void getTagByName_correctTag_whenGetTagByName() {
+        assertEquals(Optional.of(TAG_1), tagDao.getTagByName(TAG_1.getName()), "When getting tag, tag should be equal to database value");
     }
 
     @Test
-    public void getTag_exception_whenTryToGetAbsentTag() {
-        DataNotFoundException exception = assertThrows(DataNotFoundException.class, () -> tagDao.getTag(ABSENT_ID),
-                "Tag should be not found and  DataNotFoundException should be thrown");
-        assertEquals(NOT_FOUND_TAG, exception.getErrorCode(), "Exception message should be " + NOT_FOUND_TAG);
+    public void getTag_EmptyOptional_whenTryToGetAbsentTag() {
+        assertEquals(Optional.empty(),tagDao.getById(ABSENT_ID),
+                "Tag should be not found and null should be return");
     }
 
     @Test
-    public void saveTag_savedTag_whenTagWasSaved() throws DataNotFoundException, ApplicationDatabaseException, WrongParameterException {
+    public void saveTag_savedTag_whenTagWasSaved() {
         Tag savingTag = NEW_TAG;
-        tagDao.saveTag(savingTag);
+        tagDao.create(savingTag);
         savingTag.setId(NEW_ID);
-        assertEquals(savingTag, tagDao.getTag(NEW_ID), "Tag should be saved with correct ID");
+        assertEquals(Optional.of(savingTag), tagDao.getById(NEW_ID), "Tag should be saved with correct ID");
     }
 
     @Test
-    public void deleteTag_Exception_whenTryToGetDeletedTag() throws ApplicationDatabaseException {
-        tagDao.deleteTag(TAG_1.getId());
-        DataNotFoundException exception = assertThrows(DataNotFoundException.class, () -> tagDao.getTag(TAG_1.getId()),
-                "Tag should be not found and  OtherDatabaseException should be thrown");
-        assertEquals(NOT_FOUND_TAG, exception.getErrorCode(), "Exception message should be " + NOT_FOUND_TAG);
+    public void deleteTag_EmptyOptional_whenTryToGetDeletedTag() {
+        tagDao.deleteById(TAG_5.getId());
+        assertEquals(Optional.empty(), tagDao.getById(TAG_5.getId()),
+                "Tag should be not found and null should be return");
     }
 }
 
