@@ -13,7 +13,7 @@ public interface GiftCertificateService {
             throws WrongParameterException, ApplicationException;
 
     GiftCertificate updateGiftCertificate(Long id, GiftCertificate giftCertificate)
-            throws WrongParameterException;
+            throws WrongParameterException, DataNotFoundException;
 
     GiftCertificate getGiftCertificatesById(Long id) throws DataNotFoundException;
 
@@ -21,7 +21,7 @@ public interface GiftCertificateService {
 
     void deleteGiftCertificate(long id) throws WrongParameterException;
 
-    List<GiftCertificate> getGiftCertificatesByParameter(Map<String, String> filteredBy,
-                                                         List<String> orderingBy)
-            throws DataNotFoundException, WrongParameterException;
+//    List<GiftCertificate> getGiftCertificatesByParameter(Map<String, String> filteredBy,
+//                                                         List<String> orderingBy)
+//            throws DataNotFoundException, WrongParameterException;
 }

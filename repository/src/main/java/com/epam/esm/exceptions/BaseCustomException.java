@@ -14,5 +14,4 @@ public abstract class BaseCustomException extends IOException {
         super(message);
         this.errorCode = errorCode;
     }
-
 }

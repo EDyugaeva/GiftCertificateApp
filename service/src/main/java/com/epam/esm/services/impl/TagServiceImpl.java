@@ -1,12 +1,11 @@
 package com.epam.esm.services.impl;
 
-import com.epam.esm.dao.TagDao;
+import com.epam.esm.dao.TagRepository;
 import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.Tag;
 import com.epam.esm.services.TagService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,11 +23,10 @@ import static com.epam.esm.exceptions.ExceptionCodesConstants.WRONG_PARAMETER;
 @Service
 @Slf4j
 public class TagServiceImpl implements TagService {
-    private final TagDao tagDao;
+    private final TagRepository repository;
 
-    @Autowired
-    public TagServiceImpl(TagDao tagDao) {
-        this.tagDao = tagDao;
+    public TagServiceImpl(TagRepository repository) {
+        this.repository = repository;
     }
 
     @Override
@@ -36,7 +34,7 @@ public class TagServiceImpl implements TagService {
     public Tag saveTag(Tag tag) throws WrongParameterException {
         try {
             log.info("Saving tag {}", tag);
-            return tagDao.create(tag);
+            return repository.save(tag);
         } catch (DuplicateKeyException e) {
             throw new WrongParameterException("Wrong parameter in request", WRONG_PARAMETER);
         }
@@ -45,7 +43,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public Tag getTag(long id) throws DataNotFoundException {
         log.info("Getting tag with id {}", id);
-        Optional<Tag> tag = tagDao.getById(id);
+        Optional<Tag> tag = repository.findById(id);
         return tag.orElseThrow(()
                 -> new DataNotFoundException(String.format("Requested resource was not found (id = %d)", id), NOT_FOUND_TAG));
     }
@@ -53,7 +51,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public Tag getTagByName(String name) throws DataNotFoundException {
         log.info("Getting tag with name {}", name);
-        Optional<Tag> tag = tagDao.getTagByName(name);
+        Optional<Tag> tag = repository.findTagByName(name);
         return tag.orElseThrow(() ->
                 new DataNotFoundException(String.format("Requested resource was not found (name = %s)", name),
                         NOT_FOUND_TAG));
@@ -62,7 +60,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public List<Tag> getTags() throws DataNotFoundException {
         log.info("Getting all tags");
-        List<Tag> tagList = tagDao.getAll();
+        List<Tag> tagList = repository.findAll();
         if (!tagList.isEmpty()) {
             return tagList;
         }
@@ -76,7 +74,7 @@ public class TagServiceImpl implements TagService {
         log.info("Deleting tag with id {}", id);
         try {
             getTag(id);
-            tagDao.deleteById(id);
+            repository.deleteById(id);
         } catch (DataNotFoundException e) {
             log.error("Exception while deleting tag with id = {}", id, e);
             throw new WrongParameterException("Exception while deleting tag", WRONG_PARAMETER);

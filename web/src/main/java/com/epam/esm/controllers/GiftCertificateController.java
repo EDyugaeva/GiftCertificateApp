@@ -79,30 +79,30 @@ public class GiftCertificateController {
     @PatchMapping(value = "/{id}")
     public GiftCertificate saveGiftCertificate(@PathVariable("id") Long id,
                                                @RequestBody GiftCertificate giftCertificate)
-            throws WrongParameterException {
+            throws WrongParameterException, DataNotFoundException {
         log.info("Update gift certificate {}", giftCertificate.toString());
         return giftCertificateService.updateGiftCertificate(id, giftCertificate);
     }
 
-    /**
-     * Method for searching gift certificates with sorting and filtering
-     *
-     * @param name        - not required, if needed filtering by name or its part
-     * @param description - not required, if needed filtering by description or its part
-     * @param tagName     - not required, if needed filtering by tag name
-     * @param ordering    - not required, order of results (variants: name (desc if needed), date (desc if needed))
-     * @return List of Gift Certificate
-     */
-    @GetMapping(value = "/search")
-    public List<GiftCertificate> getGiftCertificateByParam(@RequestParam(required = false) String name,
-                                                           @RequestParam(required = false) String description,
-                                                           @RequestParam(required = false) String tagName,
-                                                           @RequestParam(required = false) List<String> ordering)
-            throws DataNotFoundException, WrongParameterException {
-        Map<String, String> params = new HashMap<>();
-        params.put(NAME, name);
-        params.put(DESCRIPTION, description);
-        params.put(TAG_NAME, tagName);
-        return giftCertificateService.getGiftCertificatesByParameter(params, ordering);
-    }
+//    /**
+//     * Method for searching gift certificates with sorting and filtering
+//     *
+//     * @param name        - not required, if needed filtering by name or its part
+//     * @param description - not required, if needed filtering by description or its part
+//     * @param tagName     - not required, if needed filtering by tag name
+//     * @param ordering    - not required, order of results (variants: name (desc if needed), date (desc if needed))
+//     * @return List of Gift Certificate
+//     */
+//    @GetMapping(value = "/search")
+//    public List<GiftCertificate> getGiftCertificateByParam(@RequestParam(required = false) String name,
+//                                                           @RequestParam(required = false) String description,
+//                                                           @RequestParam(required = false) String tagName,
+//                                                           @RequestParam(required = false) List<String> ordering)
+//            throws DataNotFoundException, WrongParameterException {
+//        Map<String, String> params = new HashMap<>();
+//        params.put(NAME, name);
+//        params.put(DESCRIPTION, description);
+//        params.put(TAG_NAME, tagName);
+//        return giftCertificateService.getGiftCertificatesByParameter(params, ordering);
+//    }
 }

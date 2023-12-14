@@ -1,21 +1,24 @@
 package com.epam.esm.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Objects;
 
-@Getter
-@Setter
+
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@Data
+@Entity
 public class Tag {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
     private String name;
-    @JsonIgnore
+    @ManyToMany
     private List<GiftCertificate> giftCertificateList;
 
     public Tag(String name) {
