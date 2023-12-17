@@ -1,5 +1,6 @@
 package com.epam.esm.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,8 +20,12 @@ public class Tag {
     private Long id;
     private String name;
     @ManyToMany
+    @JsonIgnore
+    @JoinTable(
+            name = "gift_certificate_tag",
+            joinColumns = @JoinColumn(name = "tag_id"),
+            inverseJoinColumns = @JoinColumn(name = "gift_id"))
     private List<GiftCertificate> giftCertificateList;
-
     public Tag(String name) {
         this.name = name;
     }

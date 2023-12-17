@@ -5,6 +5,8 @@ import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.Tag;
 import com.epam.esm.services.TagService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,9 +41,12 @@ public class TagController {
      * @return list of all tags
      */
     @GetMapping(produces = "application/json")
-    public List<Tag> getTags() throws DataNotFoundException {
+    public List<Tag> getTags(@RequestParam(defaultValue = "0", name = "page") int page,
+                             @RequestParam(defaultValue = "10", name = "size") int size)
+            throws DataNotFoundException {
         log.info("Getting tags");
-        return tagService.getTags();
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return tagService.getTags(pageRequest);
     }
 
     /**

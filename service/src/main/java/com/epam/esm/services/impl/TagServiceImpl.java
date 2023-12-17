@@ -1,12 +1,14 @@
 package com.epam.esm.services.impl;
 
-import com.epam.esm.dao.TagRepository;
 import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.Tag;
+import com.epam.esm.repository.TagRepository;
 import com.epam.esm.services.TagService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,9 +60,9 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<Tag> getTags() throws DataNotFoundException {
-        log.info("Getting all tags");
-        List<Tag> tagList = repository.findAll();
+    public List<Tag> getTags(Pageable pageable) throws DataNotFoundException {
+        log.info("Getting all tags on page = {} with size = {} ", pageable.getPageNumber(), pageable.getPageSize());
+        List<Tag> tagList = repository.findAll(pageable).getContent();
         if (!tagList.isEmpty()) {
             return tagList;
         }

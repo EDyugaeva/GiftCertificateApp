@@ -26,6 +26,10 @@ public class GiftCertificate {
     @Column(name="last_update_date")
     private LocalDateTime lastUpdateDate;
     @ManyToMany
+    @JoinTable(
+            name = "gift_certificate_tag",
+            joinColumns = @JoinColumn(name = "gift_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<Tag> tagList;
 
     public GiftCertificate(String name, String description, float price,

@@ -1,6 +1,6 @@
 CREATE TABLE gift_certificate
 (
-    id BIGSERIAL PRIMARY KEY,
+    id               BIGSERIAL PRIMARY KEY,
     name             varchar UNIQUE,
     description      varchar,
     price            float,
@@ -12,16 +12,34 @@ CREATE TABLE gift_certificate
 
 CREATE TABLE tag
 (
-    id BIGSERIAL PRIMARY KEY,
+    id   BIGSERIAL PRIMARY KEY,
     name varchar UNIQUE
 );
 
 CREATE TABLE gift_certificate_tag
 (
-    id BIGSERIAL PRIMARY KEY,
+    id      BIGSERIAL PRIMARY KEY,
     gift_id bigint REFERENCES gift_certificate (id) ON UPDATE CASCADE ON delete cascade,
     tag_id  bigint REFERENCES tag (id) ON UPDATE CASCADE ON delete cascade,
     CONSTRAINT unique_pair_constraint unique (gift_id, tag_id)
+);
+
+CREATE TABLE User
+(
+    id         SERIAL PRIMARY KEY,
+    first_name VARCHAR(255) NOT NULL,
+    last_name  VARCHAR(255) NOT NULL,
+    email      VARCHAR(255) NOT NULL,
+    password   VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Order
+(
+    id                  SERIAL PRIMARY KEY,
+    created_time        TIMESTAMP NOT NULL,
+    price               FLOAT     NOT NULL,
+    user_id             INTEGER REFERENCES User (id),
+    gift_certificate_id INTEGER REFERENCES Gift_Certificate (id)
 );
 
 INSERT INTO gift_certificate (name, description, price, duration, create_date, last_update_date)

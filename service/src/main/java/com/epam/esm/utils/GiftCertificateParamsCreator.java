@@ -5,7 +5,9 @@ import com.epam.esm.model.GiftCertificate;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.epam.esm.constants.QueryParams.*;
+import static com.epam.esm.constants.Constants.GiftCertificateColumn.*;
+import static com.epam.esm.constants.Constants.NAME;
+import static com.epam.esm.constants.Constants.TAGS;
 
 public class GiftCertificateParamsCreator {
 

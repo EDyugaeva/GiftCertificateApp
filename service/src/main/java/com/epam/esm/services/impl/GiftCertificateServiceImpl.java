@@ -1,13 +1,14 @@
 package com.epam.esm.services.impl;
 
-import com.epam.esm.dao.GiftCertificateRepository;
 import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
+import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.services.GiftCertificateService;
 import com.epam.esm.utils.GiftCertificateParamsCreator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.epam.esm.constants.QueryParams.*;
+import static com.epam.esm.constants.Constants.GiftCertificateColumn.*;
+import static com.epam.esm.constants.Constants.NAME;
+import static com.epam.esm.constants.Constants.TAGS;
 import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_FOUND_GIFT_CERTIFICATE;
 import static com.epam.esm.exceptions.ExceptionCodesConstants.WRONG_PARAMETER;
 
@@ -91,9 +94,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      * @throws DataNotFoundException if no gift certificates are found.
      */
     @Override
-    public List<GiftCertificate> getAll() throws DataNotFoundException {
+    public List<GiftCertificate> getAll(Pageable pageable) throws DataNotFoundException {
         log.info("Getting all gift certificates");
-        List<GiftCertificate> giftCertificateList = repository.findAll();
+        List<GiftCertificate> giftCertificateList = repository.findAll(pageable).getContent();
         if (!giftCertificateList.isEmpty()) {
             return giftCertificateList;
         }
@@ -119,26 +122,41 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
     }
 
+    @Override
+    public GiftCertificate updateGiftCertificateDuration(Long id, int duration) throws DataNotFoundException {
+        log.info("Updating duration of gift certificate with id = {} to duration = {} ", id, duration);
+        GiftCertificate giftCertificate = getGiftCertificatesById(id);
+        giftCertificate.setDuration(duration);
+        return repository.save(giftCertificate);
+    }
+
+    @Override
+    public GiftCertificate updateGiftCertificatePrice(Long id, float price) throws DataNotFoundException {
+        log.info("Updating duration of gift certificate with id = {} to price = {} ", id, price);
+        GiftCertificate giftCertificate = getGiftCertificatesById(id);
+        giftCertificate.setPrice(price);
+        return repository.save(giftCertificate);
+    }
+
     /**
      * Retrieves gift certificates based on specified parameters.
      *
-     * @param filteredBy a map of filter criteria to apply on the gift certificates.
-     * @param orderingBy a list of fields to use for sorting the result (with sorting type).
      * @return a list of gift certificates matching the specified criteria.
      * @throws DataNotFoundException   if no gift certificates match the specified criteria.
      * @throws WrongParameterException if there is an issue with the input parameters.
      */
-//    @Override
-//    public List<GiftCertificate> getGiftCertificatesByParameter(Map<String, String> filteredBy,
-//                                                                List<String> orderingBy) throws DataNotFoundException, WrongParameterException {
-//        log.info("Getting all gift certificates filtered by {} ordering by {} ", filteredBy, orderingBy);
-//
-//        List<GiftCertificate> giftCertificateList = dao.getGiftCertificatesBySortingParams(filteredBy, orderingBy);
-//        if (!giftCertificateList.isEmpty()) {
-//            return giftCertificateList;
-//        }
-//        throw new DataNotFoundException("Requested resource was not found (goft certificates)", NOT_FOUND_GIFT_CERTIFICATE);
-//    }
+    @Override
+    public List<GiftCertificate> getGiftCertificatesByParameters(Pageable pageable, String name, String description, String tagName)
+            throws DataNotFoundException {
+        log.info("Getting all gift certificates filtered by {}, {}, {} ", name, description, tagName);
+        List<GiftCertificate> giftCertificateList = repository
+                .findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndTagList_Name
+                        (name, description, tagName, pageable).getContent();
+        if (!giftCertificateList.isEmpty()) {
+            return giftCertificateList;
+        }
+        throw new DataNotFoundException("Requested resource was not found (gift certificates)", NOT_FOUND_GIFT_CERTIFICATE);
+    }
 
     /**
      * Updates the values of the GiftCertificate based on the provided parameters.
