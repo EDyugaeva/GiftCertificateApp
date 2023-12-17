@@ -7,8 +7,6 @@ public class Constants {
     public static final String TAG_NAME = "tagName";
     public static final String TAGS = "tags";
 
-
-
     public static class GiftCertificateColumn {
         public static final String ALIAS_TABLE_NAME = "gc";
         public static final String DESCRIPTION = "description";

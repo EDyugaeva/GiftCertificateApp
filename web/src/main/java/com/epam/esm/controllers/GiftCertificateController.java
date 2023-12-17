@@ -5,18 +5,17 @@ import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.services.GiftCertificateService;
+import com.epam.esm.utils.PageableUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-
-import static com.epam.esm.constants.Constants.GiftCertificateColumn.DESCRIPTION;
-import static com.epam.esm.constants.Constants.NAME;
-import static com.epam.esm.constants.Constants.TAG_NAME;
+import java.util.Optional;
 
 
 /**
@@ -124,12 +123,17 @@ public class GiftCertificateController {
     @GetMapping(value = "/search")
     public List<GiftCertificate> getGiftCertificateByParam(@RequestParam(required = false, name = "name", defaultValue = "") String name,
                                                            @RequestParam(required = false, name = "description", defaultValue = "") String description,
-                                                           @RequestParam(required = false, name = "tagName", defaultValue = "") String tagName,
+                                                           @RequestParam(required = false, name = "tagName") Optional<String> tagName,
                                                            @RequestParam(defaultValue = "0", name = "page") int page,
                                                            @RequestParam(defaultValue = "10", name = "size") int size,
-                                                           @RequestParam(defaultValue = "gc.id,asc", name = "sort") String[] sort)
+                                                           @RequestParam(defaultValue = "id,asc", name = "sort") String[] sort)
             throws DataNotFoundException, WrongParameterException {
-        PageRequest pageRequest = PageRequest.of(page, size);
+        log.info("Getting gift certificates with filtering and sorting");
+        PageRequest pageRequest = PageableUtils.createPageableWithSorting(page,size,sort);
+
+        log.info("Page request is {} ", pageRequest.toString());
         return giftCertificateService.getGiftCertificatesByParameters(pageRequest, name, description, tagName);
     }
+
+
 }

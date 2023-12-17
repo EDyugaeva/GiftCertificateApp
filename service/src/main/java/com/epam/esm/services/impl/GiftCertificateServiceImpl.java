@@ -9,6 +9,7 @@ import com.epam.esm.services.GiftCertificateService;
 import com.epam.esm.utils.GiftCertificateParamsCreator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,8 +48,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public GiftCertificate saveGiftCertificate(GiftCertificate giftCertificate) {
         log.info("Saving new gift certificate with {}}", giftCertificate);
         giftCertificate.setCreateDate(LocalDateTime.now());
-        GiftCertificate savedGiftCertificate = repository.save(giftCertificate);
-        return savedGiftCertificate;
+        return repository.save(giftCertificate);
     }
 
     /**
@@ -143,17 +143,26 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      *
      * @return a list of gift certificates matching the specified criteria.
      * @throws DataNotFoundException   if no gift certificates match the specified criteria.
-     * @throws WrongParameterException if there is an issue with the input parameters.
      */
     @Override
-    public List<GiftCertificate> getGiftCertificatesByParameters(Pageable pageable, String name, String description, String tagName)
-            throws DataNotFoundException {
+    public List<GiftCertificate> getGiftCertificatesByParameters(Pageable pageable, String name,
+                                                                 String description, Optional<String> tagName)
+            throws DataNotFoundException, WrongParameterException {
         log.info("Getting all gift certificates filtered by {}, {}, {} ", name, description, tagName);
-        List<GiftCertificate> giftCertificateList = repository
-                .findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndTagList_Name
-                        (name, description, tagName, pageable).getContent();
-        if (!giftCertificateList.isEmpty()) {
-            return giftCertificateList;
+        try {
+            List<GiftCertificate> giftCertificateList = tagName.map(s -> repository
+                            .findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndTagList_Name
+                                    (name, description, tagName.get(), pageable).getContent())
+                    .orElseGet(() -> repository
+                            .findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCase
+                                    (name, description, pageable).getContent());
+            if (!giftCertificateList.isEmpty()) {
+                return giftCertificateList;
+            }
+        }
+        catch (PropertyReferenceException e) {
+            log.info("Wrong type in sorting, pageable = {}", pageable, e);
+            throw new WrongParameterException("Wrong sorting param", WRONG_PARAMETER);
         }
         throw new DataNotFoundException("Requested resource was not found (gift certificates)", NOT_FOUND_GIFT_CERTIFICATE);
     }

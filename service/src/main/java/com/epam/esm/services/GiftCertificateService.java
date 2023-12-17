@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface GiftCertificateService {
     GiftCertificate saveGiftCertificate(GiftCertificate giftCertificate)
@@ -27,5 +28,7 @@ public interface GiftCertificateService {
 
     GiftCertificate updateGiftCertificatePrice(Long id, float price) throws DataNotFoundException;
 
-    List<GiftCertificate> getGiftCertificatesByParameters(Pageable pageable, String name, String description, String tagName) throws DataNotFoundException;
+    List<GiftCertificate> getGiftCertificatesByParameters(Pageable pageable, String name,
+                                                          String description, Optional<String> tagName)
+            throws DataNotFoundException, WrongParameterException;
 }
