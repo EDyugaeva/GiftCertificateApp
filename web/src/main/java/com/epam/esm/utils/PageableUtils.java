@@ -19,6 +19,7 @@ public class PageableUtils {
     private static final String DELIMITER = ":";
     private static final int SORTING_TYPE_INDEX = 1;
     private static final int SORTING_VALUE_INDEX = 0;
+    private static final String BASE_SORT = "id:asc";
 
     public static PageRequest createPageableWithSorting(int page, int size, String[] sortBy) throws WrongParameterException {
         List<Sort.Order> sortOrders = new ArrayList<>();
@@ -35,5 +36,9 @@ public class PageableUtils {
             }
         }
         return PageRequest.of(page, size, Sort.by(sortOrders));
+    }
+
+    public static PageRequest createPageableWithSorting(int page, int size) throws WrongParameterException {
+        return createPageableWithSorting(page, size, new String[]{BASE_SORT});
     }
 }

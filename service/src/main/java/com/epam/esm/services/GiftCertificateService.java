@@ -4,11 +4,9 @@ import com.epam.esm.exceptions.ApplicationException;
 import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public interface GiftCertificateService {
@@ -31,4 +29,6 @@ public interface GiftCertificateService {
     List<GiftCertificate> getGiftCertificatesByParameters(Pageable pageable, String name,
                                                           String description, Optional<String> tagName)
             throws DataNotFoundException, WrongParameterException;
+
+    List<GiftCertificate> findByTagNames(List<String> tagNames, Pageable pageable) throws DataNotFoundException;
 }

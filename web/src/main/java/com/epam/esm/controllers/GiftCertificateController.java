@@ -125,11 +125,20 @@ public class GiftCertificateController {
                                                            @RequestParam(defaultValue = "id,asc", name = "sort") String[] sort)
             throws DataNotFoundException, WrongParameterException {
         log.info("Getting gift certificates with filtering and sorting");
-        PageRequest pageRequest = PageableUtils.createPageableWithSorting(page,size,sort);
+        PageRequest pageRequest = PageableUtils.createPageableWithSorting(page, size, sort);
 
         log.info("Page request is {} ", pageRequest);
         return giftCertificateService.getGiftCertificatesByParameters(pageRequest, name, description, tagName);
     }
 
-
+    @GetMapping(value = "/tags")
+    public List<GiftCertificate> getByMethod(@RequestParam("tags") List<String> tagNames,
+                                             @RequestParam(defaultValue = "10", name = "size") int size,
+                                             @RequestParam(defaultValue = "0", name = "page") int page)
+            throws DataNotFoundException, WrongParameterException {
+        log.info("Getting gift certificates with query to find tags with tagNames = ", tagNames);
+        PageRequest pageRequest = PageableUtils.createPageableWithSorting(page, size);
+        log.info("Page request is {} ", pageRequest);
+        return giftCertificateService.findByTagNames(tagNames, pageRequest);
+    }
 }

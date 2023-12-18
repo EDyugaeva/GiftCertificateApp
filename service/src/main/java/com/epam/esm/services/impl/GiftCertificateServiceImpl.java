@@ -185,6 +185,17 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         throw new DataNotFoundException("Requested resource was not found (gift certificates)", NOT_FOUND_GIFT_CERTIFICATE);
     }
 
+    @Override
+    public List<GiftCertificate> findByTagNames(List<String> tagNames, Pageable pageable) throws DataNotFoundException {
+        log.info("Getting all gift certificates with tags = {} ", tagNames);
+        List<GiftCertificate> giftCertificateList = repository.findByTagSet_NameIn(tagNames, pageable).getContent();
+        if (!giftCertificateList.isEmpty()) {
+            return giftCertificateList;
+        }
+        throw new DataNotFoundException("Requested resource was not found (gift certificates)",
+                NOT_FOUND_GIFT_CERTIFICATE);
+    }
+
     /**
      * Updates the values of the GiftCertificate based on the provided parameters.
      *
