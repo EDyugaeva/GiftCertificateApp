@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -32,15 +32,15 @@ public class GiftCertificate {
             name = "gift_certificate_tag",
             joinColumns = @JoinColumn(name = "gift_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private List<Tag> tagList;
+    private Set<Tag> tagSet;
     public GiftCertificate(String name, String description, float price,
-                           int duration, LocalDateTime createDate, LocalDateTime lastUpdateDate, List<Tag> tagList) {
+                           int duration, LocalDateTime createDate, LocalDateTime lastUpdateDate, Set<Tag> tagSet) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.duration = duration;
         this.createDate = createDate;
         this.lastUpdateDate = lastUpdateDate;
-        this.tagList = tagList;
+        this.tagSet = tagSet;
     }
 }

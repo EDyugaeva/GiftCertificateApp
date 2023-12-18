@@ -6,6 +6,7 @@ import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.services.GiftCertificateService;
+import com.epam.esm.services.TagService;
 import com.epam.esm.utils.GiftCertificateParamsCreator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -14,9 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.epam.esm.constants.Constants.GiftCertificateColumn.*;
 import static com.epam.esm.constants.Constants.NAME;
@@ -32,9 +32,11 @@ import static com.epam.esm.exceptions.ExceptionCodesConstants.WRONG_PARAMETER;
 @Slf4j
 public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final GiftCertificateRepository repository;
+    private final TagService tagService;
 
-    public GiftCertificateServiceImpl(GiftCertificateRepository repository) {
+    public GiftCertificateServiceImpl(GiftCertificateRepository repository, TagService tagService) {
         this.repository = repository;
+        this.tagService = tagService;
     }
 
     /**
@@ -45,10 +47,27 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      */
     @Transactional
     @Override
-    public GiftCertificate saveGiftCertificate(GiftCertificate giftCertificate) {
+    public GiftCertificate saveGiftCertificate(GiftCertificate giftCertificate) throws WrongParameterException {
         log.info("Saving new gift certificate with {}}", giftCertificate);
         giftCertificate.setCreateDate(LocalDateTime.now());
+        updateTags(giftCertificate.getTagSet(), giftCertificate);
         return repository.save(giftCertificate);
+    }
+
+    private void updateTags(Set<Tag> tagList, GiftCertificate giftCertificate) throws WrongParameterException {
+        List<String> tagNames = tagList.stream()
+                .map(e -> e.getName())
+                .collect(Collectors.toList());
+        Set<Tag> tags = tagService.findAllByNameIn(tagNames).orElse(new HashSet<>());
+        for (String tagName : tagNames) {
+            boolean tagExists = tags.stream()
+                    .anyMatch(tag -> tag.getName().equalsIgnoreCase(tagName));
+            if (!tagExists) {
+                tags.add(tagService.saveTag(new Tag(tagName)));
+            }
+        }
+
+        giftCertificate.setTagSet(tags);
     }
 
     /**
@@ -142,7 +161,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      * Retrieves gift certificates based on specified parameters.
      *
      * @return a list of gift certificates matching the specified criteria.
-     * @throws DataNotFoundException   if no gift certificates match the specified criteria.
+     * @throws DataNotFoundException if no gift certificates match the specified criteria.
      */
     @Override
     public List<GiftCertificate> getGiftCertificatesByParameters(Pageable pageable, String name,
@@ -151,7 +170,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         log.info("Getting all gift certificates filtered by {}, {}, {} ", name, description, tagName);
         try {
             List<GiftCertificate> giftCertificateList = tagName.map(s -> repository
-                            .findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndTagList_Name
+                            .findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndTagSet_Name
                                     (name, description, tagName.get(), pageable).getContent())
                     .orElseGet(() -> repository
                             .findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCase
@@ -159,8 +178,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             if (!giftCertificateList.isEmpty()) {
                 return giftCertificateList;
             }
-        }
-        catch (PropertyReferenceException e) {
+        } catch (PropertyReferenceException e) {
             log.info("Wrong type in sorting, pageable = {}", pageable, e);
             throw new WrongParameterException("Wrong sorting param", WRONG_PARAMETER);
         }
@@ -190,7 +208,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                     updatingGiftCertificate.setDescription((String) entry.getValue());
                     break;
                 case TAGS:
-                    updatingGiftCertificate.setTagList((List<Tag>) entry.getValue());
+                    updateTags((Set<Tag>) entry.getValue(), updatingGiftCertificate);
                     break;
                 default:
                     log.debug("Not supported parameter = {}", entry.getValue());

@@ -6,7 +6,6 @@ import com.epam.esm.model.Tag;
 import com.epam.esm.services.TagService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -70,5 +69,12 @@ public class TagController {
     public void deleteTag(@PathVariable("id") Long id) throws WrongParameterException {
         log.info("Deleting tag with id = {} in controller", id);
         tagService.deleteTag(id);
+    }
+
+
+    @GetMapping("user/{id}")
+    public Tag getPopularTag(@PathVariable("id") Long userId) throws DataNotFoundException {
+        log.info("Getting most popular tag by user {}", userId);
+        return tagService.findMostUsedTagByUser(userId);
     }
 }

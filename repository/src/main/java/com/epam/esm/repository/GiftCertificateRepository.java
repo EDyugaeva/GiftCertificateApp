@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GiftCertificateRepository extends JpaRepository<GiftCertificate, Long> {
 
-    Page<GiftCertificate> findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndTagList_Name(
+    Page<GiftCertificate> findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndTagSet_Name(
             String name, String description, String tagName, Pageable pageable);
 
     Page<GiftCertificate> findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCase(

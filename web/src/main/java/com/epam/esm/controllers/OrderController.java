@@ -1,14 +1,12 @@
 package com.epam.esm.controllers;
 
-import com.epam.esm.dto.OrderDto;
+import com.epam.esm.dto.OrderCreatingDto;
+import com.epam.esm.dto.OrderDtoShort;
 import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.model.Order;
 import com.epam.esm.services.OrderService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Controller for CRUD operations with Order model
@@ -24,9 +22,15 @@ public class OrderController {
     }
 
     @PostMapping()
-    public Order createOrder(@RequestBody OrderDto orderDto)
+    public Order createOrder(@RequestBody OrderCreatingDto orderCreatingDto)
             throws DataNotFoundException {
         log.info("Creating new order");
-        return orderService.createOrder(orderDto.getUserId(), orderDto.getGiftCertificateId());
+        return orderService.createOrder(orderCreatingDto.getUserId(), orderCreatingDto.getGiftCertificateId());
+    }
+    @GetMapping("/{id}")
+    public OrderDtoShort GetOrder(@PathVariable("id") Long id)
+            throws DataNotFoundException {
+        log.info("Searching for order with id = {}", id);
+        return orderService.findByOrderId(id);
     }
 }

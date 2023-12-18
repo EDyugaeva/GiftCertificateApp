@@ -1,17 +1,16 @@
 package com.epam.esm.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.Objects;
 
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Data
 @Entity
 public class Tag {
@@ -19,14 +18,13 @@ public class Tag {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
-    @ManyToMany
-    @JsonIgnore
-    @JoinTable(
-            name = "gift_certificate_tag",
-            joinColumns = @JoinColumn(name = "tag_id"),
-            inverseJoinColumns = @JoinColumn(name = "gift_id"))
-    private List<GiftCertificate> giftCertificateList;
+
     public Tag(String name) {
+        this.name = name;
+    }
+
+    public Tag(Long id, String name) {
+        this.id = id;
         this.name = name;
     }
 

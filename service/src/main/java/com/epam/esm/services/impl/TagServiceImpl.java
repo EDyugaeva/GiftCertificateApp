@@ -6,14 +6,13 @@ import com.epam.esm.model.Tag;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.services.TagService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_FOUND_TAG;
 import static com.epam.esm.exceptions.ExceptionCodesConstants.WRONG_PARAMETER;
@@ -37,8 +36,9 @@ public class TagServiceImpl implements TagService {
         try {
             log.info("Saving tag {}", tag);
             return repository.save(tag);
-        } catch (DuplicateKeyException e) {
-            throw new WrongParameterException("Wrong parameter in request", WRONG_PARAMETER);
+        } catch (Exception e) {
+            log.warn("SQL exception while saving new tag = {}", tag, e);
+            throw new WrongParameterException("Wrong parameters in request", WRONG_PARAMETER);
         }
     }
 
@@ -57,6 +57,27 @@ public class TagServiceImpl implements TagService {
         return tag.orElseThrow(() ->
                 new DataNotFoundException(String.format("Requested resource was not found (name = %s)", name),
                         NOT_FOUND_TAG));
+    }
+
+    @Override
+    public Optional<Set<Tag>> findAllByNameIn(List<String> tagNames) {
+        log.info("Getting tags with name in {}", tagNames);
+        Set<Tag> tagSet = repository.findAllByNameIn(tagNames);
+        if (!tagSet.isEmpty()) {
+            return Optional.of(tagSet);
+        }
+        log.warn("Tags were not found");
+        return Optional.empty();
+    }
+
+    @Override
+    public Tag findMostUsedTagByUser(Long userId) throws DataNotFoundException {
+        log.info("Getting most used tag by user with id = {}", userId);
+
+        return repository.findMostUsedTagByUser(userId).orElseThrow(
+                () -> new DataNotFoundException("Requested resource was not found (most popular tag by user)",
+                        NOT_FOUND_TAG));
+
     }
 
     @Override
