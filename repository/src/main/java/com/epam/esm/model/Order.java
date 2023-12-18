@@ -1,5 +1,6 @@
 package com.epam.esm.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -13,9 +14,11 @@ public class Order {
     private Long id;
     private LocalDateTime createdTime;
     private Float price;
-//    @OneToOne
-//    private GiftCertificate giftCertificate;
+    @ManyToOne
+    @JoinColumn(name="gift_certificate_id", nullable=false)
+    private GiftCertificate giftCertificate;
     @ManyToOne
     @JoinColumn(name="user_id", nullable=false)
+    @JsonIgnoreProperties("orderList")
     private User user;
 }

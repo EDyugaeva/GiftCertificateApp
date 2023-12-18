@@ -1,18 +1,16 @@
 package com.epam.esm.services.impl;
 
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.model.Tag;
 import com.epam.esm.model.User;
 import com.epam.esm.repository.UserRepository;
 import com.epam.esm.services.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
-import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_FOUND_TAG;
 import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_FOUND_USER;
 
 @Service
@@ -33,8 +31,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getUsers(Pageable pageable) {
+    public List<User> getUsers(Pageable pageable) throws DataNotFoundException {
         log.info("Getting all users pageable");
-        return null;
+        List<User> userList = repository.findAll(pageable).getContent();
+        if (!userList.isEmpty()) {
+            return userList;
+        }
+        log.warn("Users were not found");
+        throw new DataNotFoundException("Requested resource was not found (users)", NOT_FOUND_USER);
     }
 }

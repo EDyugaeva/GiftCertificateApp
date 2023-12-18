@@ -8,12 +8,8 @@ import com.epam.esm.services.GiftCertificateService;
 import com.epam.esm.utils.PageableUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -131,7 +127,7 @@ public class GiftCertificateController {
         log.info("Getting gift certificates with filtering and sorting");
         PageRequest pageRequest = PageableUtils.createPageableWithSorting(page,size,sort);
 
-        log.info("Page request is {} ", pageRequest.toString());
+        log.info("Page request is {} ", pageRequest);
         return giftCertificateService.getGiftCertificatesByParameters(pageRequest, name, description, tagName);
     }
 

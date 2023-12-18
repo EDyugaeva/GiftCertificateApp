@@ -2,7 +2,9 @@ package com.epam.esm.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,7 +33,6 @@ public class GiftCertificate {
             joinColumns = @JoinColumn(name = "gift_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<Tag> tagList;
-
     public GiftCertificate(String name, String description, float price,
                            int duration, LocalDateTime createDate, LocalDateTime lastUpdateDate, List<Tag> tagList) {
         this.name = name;

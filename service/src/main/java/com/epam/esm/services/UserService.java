@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface UserService {
     User getUserById(Long id) throws DataNotFoundException;
-    List<User> getUsers(Pageable pageable);
+    List<User> getUsers(Pageable pageable) throws DataNotFoundException;
 }
