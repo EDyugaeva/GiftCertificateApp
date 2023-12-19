@@ -30,7 +30,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public Order createOrder(Long userId, Long giftCertificateId) throws DataNotFoundException {
+    public Order saveOrder(Long userId, Long giftCertificateId) throws DataNotFoundException {
         log.info("Saving new order to user = {} and gc = {}", userId, giftCertificateId);
         Order savingOrder = new Order();
         User user = userService.getUserById(userId);
@@ -43,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order findByOrderId(Long orderId) throws DataNotFoundException {
+    public Order getByOrderId(Long orderId) throws DataNotFoundException {
         log.info("Searching for order with id = {}", orderId);
         return orderRepository.findById(orderId).orElseThrow(() ->
                 new DataNotFoundException(String.format("Requested resource was not found (%d)", orderId), NOT_FOUND_ORDER));

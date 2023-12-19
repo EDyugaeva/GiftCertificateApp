@@ -4,6 +4,6 @@ import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.model.Order;
 
 public interface OrderService {
-    Order createOrder(Long userId, Long giftCertificateId) throws DataNotFoundException;
-    Order findByOrderId(Long orderId) throws DataNotFoundException;
+    Order saveOrder(Long userId, Long giftCertificateId) throws DataNotFoundException;
+    Order getByOrderId(Long orderId) throws DataNotFoundException;
 }

@@ -35,7 +35,7 @@ public class OrderController {
             throws DataNotFoundException {
         log.info("Creating new order");
         return orderModelAssembler.toModel(orderService
-                .createOrder(orderCreatingDto.getUserId(), orderCreatingDto.getGiftCertificateId()));
+                .saveOrder(orderCreatingDto.getUserId(), orderCreatingDto.getGiftCertificateId()));
     }
 
     /**
@@ -48,6 +48,6 @@ public class OrderController {
     @GetMapping("/{id}")
     public OrderModel getOrder(@PathVariable("id") Long id) throws DataNotFoundException {
         log.info("Searching for order with id = {}", id);
-        return orderModelAssembler.toModel(orderService.findByOrderId(id));
+        return orderModelAssembler.toModel(orderService.getByOrderId(id));
     }
 }

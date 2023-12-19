@@ -19,27 +19,15 @@
 //import java.util.HashMap;
 //import java.util.Optional;
 //
-//import static com.epam.esm.constants.GiftCertificateTagTestConstants.*;
-//import static com.epam.esm.constants.GiftCertificatesTestConstants.*;
-//import static com.epam.esm.constants.QueryParams.DATE;
-//import static com.epam.esm.constants.QueryParams.NAME;
+//import static com.epam.esm.constants.GiftCertificatesTestConstants.*;;
 //import static com.epam.esm.constants.TagTestConstants.TAG_1;
 //import static com.epam.esm.constants.TagTestConstants.TAG_2;
 //import static org.mockito.ArgumentMatchers.any;
 //import static org.mockito.Mockito.when;
 //import static org.springframework.test.util.AssertionErrors.*;
 //
-//@ExtendWith(MockitoExtension.class)
 //public class GiftCertificateServiceTest {
 //
-//    @Mock
-//    private GiftCertificateDao mock = Mockito.mock(GiftCertificateDao.class);
-//    @Mock
-//    private TagService mockTagService = Mockito.mock(TagService.class);
-//    @Mock
-//    private GiftCertificateTagService mockGiftCertificateTagService = Mockito.mock(GiftCertificateTagService.class);
-//    @InjectMocks
-//    private GiftCertificateServiceImpl service;
 //
 //    @Test
 //    public void getGiftCertificate_expectedGiftCertificate_whenGetting1GiftCertificate() throws DataNotFoundException {
