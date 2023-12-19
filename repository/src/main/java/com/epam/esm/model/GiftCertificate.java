@@ -1,6 +1,5 @@
 package com.epam.esm.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,10 +20,8 @@ public class GiftCertificate {
     private String description;
     private float price;
     private int duration;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name="create_date")
     private LocalDateTime createDate;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name="last_update_date")
     private LocalDateTime lastUpdateDate;
     @ManyToMany

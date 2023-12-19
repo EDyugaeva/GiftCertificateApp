@@ -3,24 +3,30 @@ package com.epam.esm.controllers;
 import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.Tag;
+import com.epam.esm.model.TagModel;
+import com.epam.esm.model.assemblers.TagModelAssembler;
 import com.epam.esm.services.TagService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import static com.epam.esm.constants.InitValues.PAGE;
+import static com.epam.esm.constants.InitValues.SIZE;
 
 /**
- * Class for CRD operations with TAG model
+ * Class for CRD operations with TAG Model (using HATEOAS)
  */
 @RestController
 @RequestMapping(value = "/tags", produces = "application/json", consumes = "application/json")
 @Slf4j
 public class TagController {
     private final TagService tagService;
+    private final TagModelAssembler tagMapper;
 
-    public TagController(TagService tagService) {
+    public TagController(TagService tagService, TagModelAssembler tagMapper) {
         this.tagService = tagService;
+        this.tagMapper = tagMapper;
     }
 
     /**
@@ -29,9 +35,9 @@ public class TagController {
      * @param id - tag id, should be > 0
      */
     @GetMapping(value = "/{id}")
-    public Tag getTag(@PathVariable("id") Long id) throws DataNotFoundException {
+    public TagModel getTag(@PathVariable("id") Long id) throws DataNotFoundException {
         log.info("Getting tag with id = {} in controller", id);
-        return tagService.getTag(id);
+        return tagMapper.toModel(tagService.getTag(id));
     }
 
     /**
@@ -40,12 +46,12 @@ public class TagController {
      * @return list of all tags
      */
     @GetMapping(produces = "application/json")
-    public List<Tag> getTags(@RequestParam(defaultValue = "0", name = "page") int page,
-                             @RequestParam(defaultValue = "10", name = "size") int size)
+    public CollectionModel<TagModel> getTags(@RequestParam(defaultValue = PAGE, name = "page") int page,
+                                             @RequestParam(defaultValue = SIZE, name = "size") int size)
             throws DataNotFoundException {
         log.info("Getting tags");
         PageRequest pageRequest = PageRequest.of(page, size);
-        return tagService.getTags(pageRequest);
+        return tagMapper.toCollectionModel(tagService.getTags(pageRequest));
     }
 
     /**
@@ -55,9 +61,9 @@ public class TagController {
      * @return saved tag
      */
     @PostMapping()
-    public Tag saveTag(@RequestBody Tag tag) throws WrongParameterException {
+    public TagModel saveTag(@RequestBody Tag tag) throws WrongParameterException {
         log.info("Creating new tag with name = {}", tag);
-        return tagService.saveTag(tag);
+        return tagMapper.toModel(tagService.saveTag(tag));
     }
 
     /**
@@ -71,10 +77,14 @@ public class TagController {
         tagService.deleteTag(id);
     }
 
-
+    /**
+     * Method for getting most popular tag (with the highest total prive) by user
+     *
+     * @param userId - user id
+     */
     @GetMapping("user/{id}")
-    public Tag getPopularTag(@PathVariable("id") Long userId) throws DataNotFoundException {
+    public TagModel getPopularTag(@PathVariable("id") Long userId) throws DataNotFoundException {
         log.info("Getting most popular tag by user {}", userId);
-        return tagService.findMostUsedTagByUser(userId);
+        return tagMapper.toModel(tagService.findMostUsedTagByUser(userId));
     }
 }

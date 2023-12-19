@@ -4,10 +4,13 @@ import com.epam.esm.exceptions.ApplicationException;
 import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
+import com.epam.esm.model.GiftCertificateModel;
+import com.epam.esm.model.assemblers.GiftCertificateModelAssembler;
 import com.epam.esm.services.GiftCertificateService;
 import com.epam.esm.utils.PageableUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,9 +25,11 @@ import java.util.Optional;
 @Slf4j
 public class GiftCertificateController {
     private final GiftCertificateService giftCertificateService;
+    private final GiftCertificateModelAssembler giftCertificateModelAssembler;
 
-    public GiftCertificateController(GiftCertificateService giftCertificateService) {
+    public GiftCertificateController(GiftCertificateService giftCertificateService, GiftCertificateModelAssembler giftCertificateModelAssembler) {
         this.giftCertificateService = giftCertificateService;
+        this.giftCertificateModelAssembler = giftCertificateModelAssembler;
     }
 
     /**
@@ -33,23 +38,23 @@ public class GiftCertificateController {
      * @throws DataNotFoundException if the gift certificate table is empty
      */
     @GetMapping()
-    public List<GiftCertificate> getAllGiftCertificates(@RequestParam(defaultValue = "0", name = "page") int page,
-                                                        @RequestParam(defaultValue = "10", name = "size") int size)
+    public CollectionModel<GiftCertificateModel> getAllGiftCertificates(@RequestParam(defaultValue = "0", name = "page") int page,
+                                                                        @RequestParam(defaultValue = "10", name = "size") int size)
             throws DataNotFoundException {
         log.info("Getting all gift certificates");
         PageRequest pageRequest = PageRequest.of(page, size);
-        return giftCertificateService.getAll(pageRequest);
+        return giftCertificateModelAssembler.toCollectionModel(giftCertificateService.getAll(pageRequest));
     }
 
     /**
-     * Method for getting all gift certificates by id
+     * Method for getting gift certificates by id
      *
      * @param id of Gift certificate > 0
      */
     @GetMapping(value = "/{id}")
-    public GiftCertificate getGiftCertificateById(@PathVariable("id") Long id) throws DataNotFoundException {
+    public GiftCertificateModel getGiftCertificateById(@PathVariable("id") Long id) throws DataNotFoundException {
         log.info("Getting gift certificate by id = {}", id);
-        return giftCertificateService.getGiftCertificatesById(id);
+        return giftCertificateModelAssembler.toModel(giftCertificateService.getGiftCertificatesById(id));
     }
 
     /**
@@ -69,43 +74,43 @@ public class GiftCertificateController {
      * @param giftCertificate - new Object
      */
     @PostMapping()
-    public GiftCertificate updateGiftCertificate(@RequestBody GiftCertificate giftCertificate)
+    public GiftCertificateModel createGiftCertificate(@RequestBody GiftCertificate giftCertificate)
             throws WrongParameterException, ApplicationException {
         log.info("Save gift certificate {}", giftCertificate);
-        return giftCertificateService.saveGiftCertificate(giftCertificate);
+        return giftCertificateModelAssembler.toModel(giftCertificateService.saveGiftCertificate(giftCertificate));
     }
 
     /**
      * Method for updating gift Certificate
      */
     @PatchMapping(value = "/{id}")
-    public GiftCertificate updateGiftCertificate(@PathVariable("id") Long id,
-                                                 @RequestBody GiftCertificate giftCertificate)
+    public GiftCertificateModel updateGiftCertificate(@PathVariable("id") Long id,
+                                                      @RequestBody GiftCertificate giftCertificate)
             throws WrongParameterException, DataNotFoundException {
         log.info("Update gift certificate with id = {}", id);
-        return giftCertificateService.updateGiftCertificate(id, giftCertificate);
+        return giftCertificateModelAssembler.toModel(giftCertificateService.updateGiftCertificate(id, giftCertificate));
     }
 
     /**
      * Method for updating gift Certificate duration
      */
     @PatchMapping(value = "/update/duration/{id}")
-    public GiftCertificate updateGiftCertificateDuration(@PathVariable("id") Long id,
-                                                         @RequestParam int duration)
+    public GiftCertificateModel updateGiftCertificateDuration(@PathVariable("id") Long id,
+                                                              @RequestParam int duration)
             throws DataNotFoundException {
         log.info("Update gift certificate duration with id = {}", id);
-        return giftCertificateService.updateGiftCertificateDuration(id, duration);
+        return giftCertificateModelAssembler.toModel(giftCertificateService.updateGiftCertificateDuration(id, duration));
     }
 
     /**
      * Method for updating gift Certificate price
      */
     @PatchMapping(value = "/update/price/{id}")
-    public GiftCertificate updateGiftCertificatePrice(@PathVariable("id") Long id,
-                                                      @RequestParam float price)
+    public GiftCertificateModel updateGiftCertificatePrice(@PathVariable("id") Long id,
+                                                           @RequestParam float price)
             throws DataNotFoundException {
         log.info("Update gift certificate duration with id = {}", id);
-        return giftCertificateService.updateGiftCertificatePrice(id, price);
+        return giftCertificateModelAssembler.toModel(giftCertificateService.updateGiftCertificatePrice(id, price));
     }
 
     /**
@@ -117,28 +122,26 @@ public class GiftCertificateController {
      * @return List of Gift Certificate
      */
     @GetMapping(value = "/search")
-    public List<GiftCertificate> getGiftCertificateByParam(@RequestParam(required = false, name = "name", defaultValue = "") String name,
-                                                           @RequestParam(required = false, name = "description", defaultValue = "") String description,
-                                                           @RequestParam(required = false, name = "tagName") Optional<String> tagName,
-                                                           @RequestParam(defaultValue = "0", name = "page") int page,
-                                                           @RequestParam(defaultValue = "10", name = "size") int size,
-                                                           @RequestParam(defaultValue = "id,asc", name = "sort") String[] sort)
+    public CollectionModel<GiftCertificateModel> getGiftCertificateByParam(@RequestParam(required = false, name = "name", defaultValue = "") String name,
+                                                                           @RequestParam(required = false, name = "description", defaultValue = "") String description,
+                                                                           @RequestParam(required = false, name = "tagName") Optional<String> tagName,
+                                                                           @RequestParam(defaultValue = "0", name = "page") int page,
+                                                                           @RequestParam(defaultValue = "10", name = "size") int size,
+                                                                           @RequestParam(defaultValue = "id,asc", name = "sort") String[] sort)
             throws DataNotFoundException, WrongParameterException {
         log.info("Getting gift certificates with filtering and sorting");
         PageRequest pageRequest = PageableUtils.createPageableWithSorting(page, size, sort);
-
-        log.info("Page request is {} ", pageRequest);
-        return giftCertificateService.getGiftCertificatesByParameters(pageRequest, name, description, tagName);
+        return giftCertificateModelAssembler.toCollectionModel(giftCertificateService
+                .getGiftCertificatesByParameters(pageRequest, name, description, tagName));
     }
 
     @GetMapping(value = "/tags")
-    public List<GiftCertificate> getByMethod(@RequestParam("tags") List<String> tagNames,
-                                             @RequestParam(defaultValue = "10", name = "size") int size,
-                                             @RequestParam(defaultValue = "0", name = "page") int page)
+    public CollectionModel<GiftCertificateModel> getByMethod(@RequestParam("tags") List<String> tagNames,
+                                                             @RequestParam(defaultValue = "10", name = "size") int size,
+                                                             @RequestParam(defaultValue = "0", name = "page") int page)
             throws DataNotFoundException, WrongParameterException {
-        log.info("Getting gift certificates with query to find tags with tagNames = ", tagNames);
+        log.info("Getting gift certificates with query to find tags with tagNames = {}", tagNames);
         PageRequest pageRequest = PageableUtils.createPageableWithSorting(page, size);
-        log.info("Page request is {} ", pageRequest);
-        return giftCertificateService.findByTagNames(tagNames, pageRequest);
+        return giftCertificateModelAssembler.toCollectionModel(giftCertificateService.findByTagNames(tagNames, pageRequest));
     }
 }

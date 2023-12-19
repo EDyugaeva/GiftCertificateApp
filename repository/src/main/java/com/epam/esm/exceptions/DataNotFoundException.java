@@ -4,7 +4,9 @@ import lombok.Getter;
 
 @Getter
 public class DataNotFoundException extends BaseCustomException {
-    public DataNotFoundException(String message, String errorCode) {
-        super(message, errorCode);
+    private static final String baseMessage = "Requested resource (%s) was not found";
+
+    public DataNotFoundException(String resource, String errorCode) {
+        super(String.format(baseMessage, resource), errorCode);
     }
 }

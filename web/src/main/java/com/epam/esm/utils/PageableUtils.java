@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.epam.esm.constants.InitValues.BASE_SORT;
 import static com.epam.esm.exceptions.ExceptionCodesConstants.WRONG_PARAMETER;
 
 @UtilityClass
@@ -19,7 +20,6 @@ public class PageableUtils {
     private static final String DELIMITER = ":";
     private static final int SORTING_TYPE_INDEX = 1;
     private static final int SORTING_VALUE_INDEX = 0;
-    private static final String BASE_SORT = "id:asc";
 
     public static PageRequest createPageableWithSorting(int page, int size, String[] sortBy) throws WrongParameterException {
         List<Sort.Order> sortOrders = new ArrayList<>();

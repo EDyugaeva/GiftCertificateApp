@@ -102,7 +102,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         log.info("Getting gift certificate by id = {}", id);
         Optional<GiftCertificate> giftCertificate = repository.findById(id);
         return giftCertificate.orElseThrow(() ->
-                new DataNotFoundException(String.format("Requested resource was not found (id = %d)", id),
+                new DataNotFoundException(String.format(String.valueOf(id)),
                         NOT_FOUND_GIFT_CERTIFICATE));
     }
 
@@ -119,7 +119,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         if (!giftCertificateList.isEmpty()) {
             return giftCertificateList;
         }
-        throw new DataNotFoundException("Requested resource was not found (gift certificates)", NOT_FOUND_GIFT_CERTIFICATE);
+        throw new DataNotFoundException("gift certificates", NOT_FOUND_GIFT_CERTIFICATE);
     }
 
     /**
@@ -137,7 +137,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             repository.deleteById(id);
         } catch (DataNotFoundException e) {
             log.info("Deleting gift certificate with id = {} is not possible, there is no such entity", id);
-            throw new WrongParameterException(e.getMessage(), WRONG_PARAMETER);
+            throw new WrongParameterException("deleting gift certificate", WRONG_PARAMETER);
         }
     }
 
@@ -180,9 +180,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             }
         } catch (PropertyReferenceException e) {
             log.info("Wrong type in sorting, pageable = {}", pageable, e);
-            throw new WrongParameterException("Wrong sorting param", WRONG_PARAMETER);
+            throw new WrongParameterException("getting certificates: wrong sorting param", WRONG_PARAMETER);
         }
-        throw new DataNotFoundException("Requested resource was not found (gift certificates)", NOT_FOUND_GIFT_CERTIFICATE);
+        throw new DataNotFoundException("gift certificates", NOT_FOUND_GIFT_CERTIFICATE);
     }
 
     @Override
@@ -192,8 +192,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         if (!giftCertificateList.isEmpty()) {
             return giftCertificateList;
         }
-        throw new DataNotFoundException("Requested resource was not found (gift certificates)",
-                NOT_FOUND_GIFT_CERTIFICATE);
+        throw new DataNotFoundException("gift certificates", NOT_FOUND_GIFT_CERTIFICATE);
     }
 
     /**
@@ -223,7 +222,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                     break;
                 default:
                     log.debug("Not supported parameter = {}", entry.getValue());
-                    throw new WrongParameterException("Wrong parameter in updating gift certificate", WRONG_PARAMETER);
+                    throw new WrongParameterException("updating gift certificate", WRONG_PARAMETER);
             }
         }
     }
