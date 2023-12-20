@@ -50,7 +50,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public GiftCertificate saveGiftCertificate(GiftCertificate giftCertificate) throws WrongParameterException {
         log.info("Saving new gift certificate with {}}", giftCertificate);
         giftCertificate.setCreateDate(LocalDateTime.now());
-        updateTags(giftCertificate.getTagSet(), giftCertificate);
+        if (giftCertificate.getTagSet() != null) {
+            updateTags(giftCertificate.getTagSet(), giftCertificate);
+        }
         return repository.save(giftCertificate);
     }
 
