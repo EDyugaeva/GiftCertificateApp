@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -51,23 +52,14 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Tag getTagByName(String name) throws DataNotFoundException {
-        log.info("Getting tag with name {}", name);
-        Optional<Tag> tag = repository.findTagByName(name);
-        return tag.orElseThrow(() ->
-                new DataNotFoundException(String.format("Requested resource was not found (name = %s)", name),
-                        NOT_FOUND_TAG));
-    }
-
-    @Override
-    public Optional<Set<Tag>> findAllByNameIn(List<String> tagNames) {
+    public Set<Tag> findAllByNameIn(List<String> tagNames) {
         log.info("Getting tags with name in {}", tagNames);
         Set<Tag> tagSet = repository.findAllByNameIn(tagNames);
         if (!tagSet.isEmpty()) {
-            return Optional.of(tagSet);
+            return tagSet;
         }
         log.warn("Tags were not found");
-        return Optional.empty();
+        return new HashSet<>();
     }
 
     @Override

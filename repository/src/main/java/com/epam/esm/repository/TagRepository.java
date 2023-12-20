@@ -11,7 +11,6 @@ import java.util.Set;
 
 @Repository
 public interface TagRepository extends JpaRepository<Tag,Long> {
-    Optional<Tag> findTagByName(String name)  ;
     Set<Tag> findAllByNameIn(List<String> tagNames);
     @Query(value = "select t.id, t.name " +
             "from orders o " +

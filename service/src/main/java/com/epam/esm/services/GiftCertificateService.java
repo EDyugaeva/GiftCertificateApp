@@ -22,9 +22,9 @@ public interface GiftCertificateService {
 
     void deleteGiftCertificate(long id) throws WrongParameterException;
 
-    GiftCertificate updateGiftCertificateDuration(Long id, int duration) throws DataNotFoundException;
+    GiftCertificate updateGiftCertificateDuration(Long id, int duration) throws DataNotFoundException, WrongParameterException;
 
-    GiftCertificate updateGiftCertificatePrice(Long id, float price) throws DataNotFoundException;
+    GiftCertificate updateGiftCertificatePrice(Long id, float price) throws DataNotFoundException, WrongParameterException;
 
     List<GiftCertificate> getGiftCertificatesByParameters(Pageable pageable, String name,
                                                           String description, Optional<String> tagName)

@@ -97,7 +97,7 @@ public class GiftCertificateController {
     @PatchMapping(value = "/update/duration/{id}")
     public GiftCertificateModel updateGiftCertificateDuration(@PathVariable("id") Long id,
                                                               @RequestParam int duration)
-            throws DataNotFoundException {
+            throws DataNotFoundException, WrongParameterException {
         log.info("Update gift certificate duration with id = {}", id);
         return giftCertificateModelAssembler.toModel(giftCertificateService.updateGiftCertificateDuration(id, duration));
     }
@@ -108,7 +108,7 @@ public class GiftCertificateController {
     @PatchMapping(value = "/update/price/{id}")
     public GiftCertificateModel updateGiftCertificatePrice(@PathVariable("id") Long id,
                                                            @RequestParam float price)
-            throws DataNotFoundException {
+            throws DataNotFoundException, WrongParameterException {
         log.info("Update gift certificate duration with id = {}", id);
         return giftCertificateModelAssembler.toModel(giftCertificateService.updateGiftCertificatePrice(id, price));
     }

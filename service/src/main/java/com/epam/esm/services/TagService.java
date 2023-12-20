@@ -14,9 +14,6 @@ public interface TagService {
     Tag getTag(long id) throws DataNotFoundException;
     List<Tag> getTags(Pageable pageable) throws DataNotFoundException;
     void deleteTag(long id) throws WrongParameterException;
-    Tag getTagByName(String name) throws DataNotFoundException;
-
-    Optional<Set<Tag>> findAllByNameIn(List<String> tagNames);
-
+    Set<Tag> findAllByNameIn(List<String> tagNames);
     Tag findMostUsedTagByUser(Long userId) throws DataNotFoundException;
 }

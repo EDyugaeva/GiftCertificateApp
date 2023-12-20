@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.epam.esm.constants.TestConstants.GiftCertificatesTestConstants.*;
-import static com.epam.esm.constants.TestConstants.TagTestConstants.*;
+import static com.epam.esm.constants.TestConstants.TagTestConstants.TAG_SET;
 
 public class TestConstants {
     public static final Long ACTUAL_ID = 1L;
@@ -36,15 +36,17 @@ public class TestConstants {
         public static final GiftCertificate GIFT_CERTIFICATE_2_TO_UPDATE = new GiftCertificate(2L, "gift_certificate_2", "description 2", 150.5f, 5,
                 LocalDateTime.of(2018, 2, 1, 0, 0), null, TAG_SET);
         public static final List<GiftCertificate> GIFT_CERTIFICATE_LIST = Arrays.asList(GIFT_CERTIFICATE_1, GIFT_CERTIFICATE_2, GIFT_CERTIFICATE_3);
-        public static final List<Tag> TAG_LIST = Arrays.asList(TAG_1, TAG_2);
+        public static final Page<GiftCertificate> GIFT_CERTIFICATE_PAGE = new PageImpl<>(GIFT_CERTIFICATE_LIST);
+        public static final float POSITIVE_PRICE = 50f;
+        public static final int POSITIVE_DURATION = 10;
     }
 
     public static class TagTestConstants {
         public static final Tag TAG_1 = new Tag(1L, "tag_1");
         public static final Tag TAG_2 = new Tag(2L, "tag_2");
-        public static final Set<Tag> TAG_SET = Arrays.stream(new Tag[] {TAG_1, TAG_2}).collect(Collectors.toSet());
+        public static final Set<Tag> TAG_SET = Arrays.stream(new Tag[]{TAG_1, TAG_2}).collect(Collectors.toSet());
+        public static final Page<Tag> TAG_PAGE = new PageImpl<>(new ArrayList<>(TAG_SET));
     }
-
 
     public static class UserConstants {
         public static final User MOCK_USER_1 = new User(1L, "John", "Doe", "john@example.com",

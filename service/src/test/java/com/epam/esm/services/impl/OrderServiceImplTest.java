@@ -27,7 +27,6 @@ public class OrderServiceImplTest {
     private UserService userService;
     @Mock
     private GiftCertificateService giftCertificateService ;
-
     @InjectMocks
     private OrderServiceImpl orderService;
 

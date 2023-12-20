@@ -58,7 +58,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         List<String> tagNames = tagList.stream()
                 .map(e -> e.getName())
                 .collect(Collectors.toList());
-        Set<Tag> tags = tagService.findAllByNameIn(tagNames).orElse(new HashSet<>());
+        Set<Tag> tags = tagService.findAllByNameIn(tagNames);
         for (String tagName : tagNames) {
             boolean tagExists = tags.stream()
                     .anyMatch(tag -> tag.getName().equalsIgnoreCase(tagName));
@@ -66,7 +66,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 tags.add(tagService.saveTag(new Tag(tagName)));
             }
         }
-
         giftCertificate.setTagSet(tags);
     }
 
@@ -142,18 +141,28 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public GiftCertificate updateGiftCertificateDuration(Long id, int duration) throws DataNotFoundException {
+    public GiftCertificate updateGiftCertificateDuration(Long id, int duration) throws DataNotFoundException, WrongParameterException {
         log.info("Updating duration of gift certificate with id = {} to duration = {} ", id, duration);
+        if (duration <= 0) {
+            log.warn("Wrong parameter in duration: can not be <= 0");
+            throw new WrongParameterException("updating gc with negative duration", WRONG_PARAMETER);
+        }
         GiftCertificate giftCertificate = getGiftCertificatesById(id);
         giftCertificate.setDuration(duration);
+        giftCertificate.setLastUpdateDate(LocalDateTime.now());
         return repository.save(giftCertificate);
     }
 
     @Override
-    public GiftCertificate updateGiftCertificatePrice(Long id, float price) throws DataNotFoundException {
+    public GiftCertificate updateGiftCertificatePrice(Long id, float price) throws DataNotFoundException, WrongParameterException {
         log.info("Updating duration of gift certificate with id = {} to price = {} ", id, price);
+        if (price <= 0) {
+            log.warn("Wrong parameter in price: can not be <= 0");
+            throw new WrongParameterException("updating gc with negative price", WRONG_PARAMETER);
+        }
         GiftCertificate giftCertificate = getGiftCertificatesById(id);
         giftCertificate.setPrice(price);
+        giftCertificate.setLastUpdateDate(LocalDateTime.now());
         return repository.save(giftCertificate);
     }
 
