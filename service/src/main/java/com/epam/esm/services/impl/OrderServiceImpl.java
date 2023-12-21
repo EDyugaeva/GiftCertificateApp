@@ -28,7 +28,6 @@ public class OrderServiceImpl implements OrderService {
         this.userService = userService;
     }
 
-
     @Override
     public Order saveOrder(Long userId, Long giftCertificateId) throws DataNotFoundException {
         log.info("Saving new order to user = {} and gc = {}", userId, giftCertificateId);

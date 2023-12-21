@@ -6,6 +6,7 @@ import com.epam.esm.model.Tag;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.services.TagService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +38,7 @@ public class TagServiceImpl implements TagService {
         try {
             log.info("Saving tag {}", tag);
             return repository.save(tag);
-        } catch (Exception e) {
+        } catch (DataIntegrityViolationException e) {
             log.warn("SQL exception while saving new tag = {}", tag, e);
             throw new WrongParameterException("Wrong parameters in request", WRONG_PARAMETER);
         }

@@ -9,6 +9,7 @@ import com.epam.esm.services.GiftCertificateService;
 import com.epam.esm.services.TagService;
 import com.epam.esm.utils.GiftCertificateParamsCreator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.stereotype.Service;
@@ -53,12 +54,17 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         if (giftCertificate.getTagSet() != null) {
             updateTags(giftCertificate.getTagSet(), giftCertificate);
         }
-        return repository.save(giftCertificate);
+        try {
+            return repository.save(giftCertificate);
+        } catch (DataIntegrityViolationException e) {
+            log.warn("Not correct values");
+            throw new WrongParameterException("during saving new gift-certificate", WRONG_PARAMETER);
+        }
     }
 
     private void updateTags(Set<Tag> tagList, GiftCertificate giftCertificate) throws WrongParameterException {
         List<String> tagNames = tagList.stream()
-                .map(e -> e.getName())
+                .map(Tag::getName)
                 .collect(Collectors.toList());
         Set<Tag> tags = tagService.findAllByNameIn(tagNames);
         for (String tagName : tagNames) {
@@ -79,6 +85,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      * @return {@link GiftCertificate} saved instant
      */
     @Override
+    @Transactional
     public GiftCertificate updateGiftCertificate(Long id, GiftCertificate giftCertificate)
             throws DataNotFoundException, WrongParameterException {
         GiftCertificateParamsCreator giftCertificateParamsCreator = new GiftCertificateParamsCreator();

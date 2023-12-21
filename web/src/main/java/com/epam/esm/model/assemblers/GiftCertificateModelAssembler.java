@@ -53,7 +53,7 @@ public class GiftCertificateModelAssembler extends BaseAssembler<GiftCertificate
     }
 
     private Set<TagModel> toTagModel(Set<Tag> tags) {
-        if (tags.isEmpty()) {
+        if (tags == null || tags.isEmpty()) {
             return Collections.emptySet();
         }
 
