@@ -9,8 +9,6 @@ public class ExceptionCodesConstants {
     public static final String WRONG_PARAMETER = "400003";
     public static final String NOT_FOUND_USER = "404004";
     public static final String NOT_FOUND_ORDER = "404005";
-    public static final String  EMPTY_REQUEST = "400004";
     public static final String OTHER_EXCEPTION = "500000";
-    public static final String  NOT_SUPPORTED = "500001";
 
 }

@@ -23,7 +23,6 @@ public class PageableUtils {
 
     public static PageRequest createPageableWithSorting(int page, int size, String[] sortBy) throws WrongParameterException {
         List<Sort.Order> sortOrders = new ArrayList<>();
-        System.out.println(Arrays.toString(sortBy));
         if (sortBy != null) {
             try {
                 sortOrders = Arrays.stream(sortBy).map(

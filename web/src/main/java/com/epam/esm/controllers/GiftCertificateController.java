@@ -11,10 +11,13 @@ import com.epam.esm.utils.PageableUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.epam.esm.exceptions.ExceptionCodesConstants.OTHER_EXCEPTION;
 
 
 /**
@@ -77,7 +80,12 @@ public class GiftCertificateController {
     public GiftCertificateModel createGiftCertificate(@RequestBody GiftCertificate giftCertificate)
             throws WrongParameterException, ApplicationException {
         log.info("Save gift certificate {}", giftCertificate);
-        return giftCertificateModelAssembler.toModel(giftCertificateService.saveGiftCertificate(giftCertificate));
+        try {
+            return giftCertificateModelAssembler.toModel(giftCertificateService.saveGiftCertificate(giftCertificate));
+        } catch (UnexpectedRollbackException e) {
+            log.warn("Transactional exception while saving new gc", e);
+            throw new ApplicationException("Transactional exception while saving new gc", OTHER_EXCEPTION);
+        }
     }
 
     /**
@@ -135,10 +143,18 @@ public class GiftCertificateController {
                 .getGiftCertificatesByParameters(pageRequest, name, description, tagName));
     }
 
+    /**
+     * Get gift certificates with tag names
+     *
+     * @param tagNames - searching tag names
+     * @param size - size of a page
+     * @param page - page number
+     * @return List of Gift Certificate
+     */
     @GetMapping(value = "/tags")
-    public CollectionModel<GiftCertificateModel> getByMethod(@RequestParam("tags") List<String> tagNames,
-                                                             @RequestParam(defaultValue = "10", name = "size") int size,
-                                                             @RequestParam(defaultValue = "0", name = "page") int page)
+    public CollectionModel<GiftCertificateModel> getByTagName(@RequestParam("tags") List<String> tagNames,
+                                                              @RequestParam(defaultValue = "10", name = "size") int size,
+                                                              @RequestParam(defaultValue = "0", name = "page") int page)
             throws DataNotFoundException, WrongParameterException {
         log.info("Getting gift certificates with query to find tags with tagNames = {}", tagNames);
         PageRequest pageRequest = PageableUtils.createPageableWithSorting(page, size);

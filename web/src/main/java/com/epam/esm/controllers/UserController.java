@@ -1,16 +1,15 @@
 package com.epam.esm.controllers;
 
 import com.epam.esm.exceptions.DataNotFoundException;
-import com.epam.esm.model.Order;
+import com.epam.esm.model.OrderModel;
 import com.epam.esm.model.UserModel;
+import com.epam.esm.model.assemblers.OrderModelAssembler;
 import com.epam.esm.model.assemblers.UserModelAssembler;
 import com.epam.esm.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * Controller for CRUD operations with User model
@@ -21,10 +20,12 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final UserModelAssembler userModelAssembler;
+    private final OrderModelAssembler orderModelAssembler;
 
-    public UserController(UserService userService, UserModelAssembler userModelAssembler) {
+    public UserController(UserService userService, UserModelAssembler userModelAssembler, OrderModelAssembler orderModelAssembler) {
         this.userService = userService;
         this.userModelAssembler = userModelAssembler;
+        this.orderModelAssembler = orderModelAssembler;
     }
 
     /**
@@ -61,12 +62,12 @@ public class UserController {
      * @throws DataNotFoundException if orders were not found
      */
     @GetMapping("/{id}/orders")
-    public List<Order> getUsersOrders(@PathVariable("id") Long userId,
-                                      @RequestParam(defaultValue = "0", name = "page") int page,
-                                      @RequestParam(defaultValue = "10", name = "size") int size)
+    public CollectionModel<OrderModel> getUsersOrders(@PathVariable("id") Long userId,
+                                           @RequestParam(defaultValue = "0", name = "page") int page,
+                                           @RequestParam(defaultValue = "10", name = "size") int size)
             throws DataNotFoundException {
         log.info("Getting users with userId = {} orders", userId);
         PageRequest pageRequest = PageRequest.of(page, size);
-        return userService.getUserOrders(userId, pageRequest);
+        return orderModelAssembler.toCollectionModel(userService.getUserOrders(userId, pageRequest)) ;
     }
 }

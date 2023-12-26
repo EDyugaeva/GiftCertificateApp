@@ -43,6 +43,7 @@ public class UserModelAssembler extends BaseAssembler<User, UserModel> {
 
         userModel.setId(entity.getId());
         userModel.setFirstName(entity.getFirstName());
+        userModel.setEmail(entity.getEmail());
         userModel.setLastName(entity.getFirstName());
         userModel.setOrderList(toOrderModel(entity.getOrderList()));
 

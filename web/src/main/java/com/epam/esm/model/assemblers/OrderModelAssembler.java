@@ -38,7 +38,6 @@ public class OrderModelAssembler extends BaseAssembler<Order, OrderModel> {
         return orderModel;
     }
 
-
     @SneakyThrows
     @Override
     public CollectionModel<OrderModel> toCollectionModel(Iterable<? extends Order> entities) {
@@ -53,7 +52,7 @@ public class OrderModelAssembler extends BaseAssembler<Order, OrderModel> {
     @SneakyThrows
     private Link createUserLink(Long userId) {
         return linkTo(methodOn(UserController.class).getUser(userId))
-                .withRel("userOrders")
+                .withRel("user")
                 .withType(String.valueOf(HttpMethod.GET));
     }
 

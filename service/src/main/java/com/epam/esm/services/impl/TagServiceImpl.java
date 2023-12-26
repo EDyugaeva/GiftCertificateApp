@@ -33,7 +33,6 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    @Transactional
     public Tag saveTag(Tag tag) throws WrongParameterException {
         try {
             log.info("Saving tag {}", tag);
