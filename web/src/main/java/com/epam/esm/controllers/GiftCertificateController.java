@@ -53,6 +53,7 @@ public class GiftCertificateController {
      * Method for getting gift certificates by id
      *
      * @param id of Gift certificate > 0
+     * @throws DataNotFoundException if gc with id does not exist
      */
     @GetMapping(value = "/{id}")
     public GiftCertificateModel getGiftCertificateById(@PathVariable("id") Long id) throws DataNotFoundException {
@@ -64,6 +65,7 @@ public class GiftCertificateController {
      * Method for deleting gift certificate
      *
      * @param id of Gift certificate > 0
+     * @throws WrongParameterException if gc with id does not exist
      */
     @DeleteMapping("/{id}")
     public void deleteGiftCertificateById(@PathVariable("id") Long id) throws WrongParameterException {
@@ -75,6 +77,8 @@ public class GiftCertificateController {
      * Method for creating gift certificate
      *
      * @param giftCertificate - new Object
+     * @throws WrongParameterException - if parameters in body were wrong
+     * @throws ApplicationException    - if there was transactional exception
      */
     @PostMapping()
     public GiftCertificateModel createGiftCertificate(@RequestBody GiftCertificate giftCertificate)
@@ -90,6 +94,9 @@ public class GiftCertificateController {
 
     /**
      * Method for updating gift Certificate
+     *
+     * @throws DataNotFoundException   if gc with id does not exist
+     * @throws WrongParameterException - if parameters in body were wrong
      */
     @PatchMapping(value = "/{id}")
     public GiftCertificateModel updateGiftCertificate(@PathVariable("id") Long id,
@@ -101,10 +108,13 @@ public class GiftCertificateController {
 
     /**
      * Method for updating gift Certificate duration
+     *
+     * @throws DataNotFoundException   if gc with id does not exist
+     * @throws WrongParameterException if parameter is wrong
      */
     @PatchMapping(value = "/update/duration/{id}")
     public GiftCertificateModel updateGiftCertificateDuration(@PathVariable("id") Long id,
-                                                              @RequestParam int duration)
+                                                              @RequestParam("duration") int duration)
             throws DataNotFoundException, WrongParameterException {
         log.info("Update gift certificate duration with id = {}", id);
         return giftCertificateModelAssembler.toModel(giftCertificateService.updateGiftCertificateDuration(id, duration));
@@ -112,10 +122,13 @@ public class GiftCertificateController {
 
     /**
      * Method for updating gift Certificate price
+     *
+     * @throws DataNotFoundException   if gc with id does not exist
+     * @throws WrongParameterException if parameter is wrong
      */
     @PatchMapping(value = "/update/price/{id}")
     public GiftCertificateModel updateGiftCertificatePrice(@PathVariable("id") Long id,
-                                                           @RequestParam float price)
+                                                           @RequestParam("price") float price)
             throws DataNotFoundException, WrongParameterException {
         log.info("Update gift certificate duration with id = {}", id);
         return giftCertificateModelAssembler.toModel(giftCertificateService.updateGiftCertificatePrice(id, price));
@@ -128,6 +141,8 @@ public class GiftCertificateController {
      * @param description - not required, if needed filtering by description or its part
      * @param tagName     - not required, if needed filtering by tag name
      * @return List of Gift Certificate
+     * @throws DataNotFoundException   if gc with that values do not exist
+     * @throws WrongParameterException if parameter were wrong
      */
     @GetMapping(value = "/search")
     public CollectionModel<GiftCertificateModel> getGiftCertificateByParam(@RequestParam(required = false, name = "name", defaultValue = "") String name,
@@ -147,8 +162,8 @@ public class GiftCertificateController {
      * Get gift certificates with tag names
      *
      * @param tagNames - searching tag names
-     * @param size - size of a page
-     * @param page - page number
+     * @param size     - size of a page
+     * @param page     - page number
      * @return List of Gift Certificate
      */
     @GetMapping(value = "/tags")

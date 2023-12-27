@@ -43,7 +43,7 @@ public class UserController {
     }
 
     /**
-     * Method for getting all gift certificates (without sorting and ordering)
+     * Method for getting user by id
      *
      * @throws DataNotFoundException if the gift certificate table is empty
      */
@@ -54,7 +54,8 @@ public class UserController {
     }
 
     /**
-     * Getting all orders by user
+     * Getting all orders by one user
+     *
      * @param userId - user id
      * @param page - page
      * @param size - size of a page

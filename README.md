@@ -1,37 +1,34 @@
 # Task
 
-Business requirements
-1.	Developing web service for Gift Certificates system with the following entities (many-to-many)
+The system should be extended to expose the following REST APIs:
+1. Change single field of gift certificate (e.g. implement the possibility to change only duration of a certificate or only price).
+2. User entity  (implement only get operations for user entity)
 
-   ![image](https://github.com/EDyugaeva/GiftCertificateApp/assets/94297798/00322936-e238-4421-be22-3069b70dde9a)
+3. Make an order on gift certificate for a user (user should have an ability to buy a certificate).
+4. Get information about user’s orders.
+5. Get information about user’s order: cost and timestamp of a purchase (The order cost should not be changed if the price of the gift certificate is changed.)
+6. Get the most widely used tag of a user with the highest cost of all orders. (Create separate endpoint for this query.)
+7. Search for gift certificates by several tags (“and” condition).
+8. Pagination should be implemented for all GET endpoints. 
+9. Support HATEOAS on REST endpoints.
 
- 
-•	CreateDate, LastUpdateDate - format ISO 8601 (https://en.wikipedia.org/wiki/ISO_8601). Example: 2018-08-29T06:12:15.156.
-•	Duration - in days (expiration period)
 
-2. The system should expose REST APIs to perform the following operations:
-•	CRUD operations for GiftCertificate. If new tags are passed during creation/modification – they should be created in the DB. For update operation - update only fields, that pass in request, others should not be updated. Patch insert is out of scope.
-•	CRD operations for Tag.
-•	Get certificates with tags (all params are optional and can be used in conjunction):
-o	by tag name (ONE tag)
-o	search by part of name/description (can be implemented, using DB function call)
-o	sort by date or by name ASC/DESC (extra task: implement ability to apply both sort type at the same time).
+
+
 
 
 ## Application requirements
-1.	JDK version: 8 – use Streams, java.time.*, etc. where it is possible. (the JDK version can be increased in agreement with the mentor/group coordinator/run coordinator)
-2.	Application packages root: com.epam.esm
-3.	Any widely-used connection pool could be used.
-4.	JDBC / Spring JDBC Template should be used for data access.
-5.	Use transactions where it’s necessary.
-6.	Java Code Convention is mandatory (exception: margin size – 120 chars).
-7.	Build tool: Maven/Gradle, latest version. Multi-module project.
-8.	Web server: Apache Tomcat/Jetty.
-9.	Application container: Spring IoC. Spring Framework, the latest version.
-10.	Database: PostgreSQL/MySQL, latest version.
-11.	Testing: JUnit 5.+, Mockito.
-12.	Service layer should be covered with unit tests not less than 80%.
-13.	Repository layer should be tested using integration tests with an in-memory embedded database (all operations with certificates).
+1. JDK version: 8. Use Streams, java.time.*, an etc. where it is appropriate. (the JDK version can be increased in agreement with the mentor/group coordinator/run coordinator)
+2. Application packages root: com.epam.esm.
+3. Java Code Convention is mandatory (exception: margin size –120 characters).
+4. Apache Maven/Gradle, latest version. Multi-module project.
+5. Spring Framework, the latest version.
+6. Database: PostgreSQL/MySQL, latest version.
+7. Testing: JUnit, the latest version, Mockito.
+8. Service layer should be covered with unit tests not less than 80%.
+9. Hibernate should be used as a JPA implementation for data access.
+10. Spring Transaction should be used in all necessary areas of the application.
+11. Audit data should be populated using JPA features.
 
 
 ## How to run
@@ -39,9 +36,7 @@ o	sort by date or by name ASC/DESC (extra task: implement ability to apply both 
 
 `docker-compose up`
 
-`mvn clean package`
-
-`mvn jetty:run '-Dspring.profiles.active=prod'`
+ run spring boot application
 
 standard port (8080) is used
 
@@ -49,27 +44,35 @@ standard port (8080) is used
 
 ### TagController:
 
-POST: /tag - create new tag, name of new tag in body
+POST: /tags - create new tag, name of new tag in body
 
-GET: /tag - get all tags
+GET: /tags - get all tags
 
-GET: /tag/{id} - get tag with {id}
+GET: /tags/{id} - get tag with {id}
 
-DELETE: /tag/{id} - delete tag with {id}
+GET: /tags/user/{id} - get the most popular tag (with the highest total price) by user with {id}
+
+DELETE: /tags/{id} - delete tag with {id}
 
 ### GiftCertificateController:
 
-POST: /certificate - create new gift certificate
+POST: /certificates - create new gift certificate
 
-GET: /certificate - get all gift certificates
+GET: /certificates - get all gift certificates
 
-GET: /certificate/{id} - get gift certificate with {id}
+GET: /certificates/{id} - get gift certificate with {id}
 
-DELETE: /certificate/{id} - delete gift certificate with {id}
+DELETE: /certificates/{id} - delete gift certificate with {id}
 
-PUT: /certificate/{id} - update gift certificate with {id}, in body could be gift certificate with not all parameters
+PATCH: /certificates/{id} - update gift certificate with {id}, in body could be gift certificate with not all parameters
 
-GET: /certificate/search - get gift certificate with sorting and filtering. Parameters are not required.
+PATCH: /certificates/update/duration/{id} - update duration in gift certificate with {id}
+
+PATCH: /certificates/update/price/{id} - update price in gift certificate with {id}
+
+GET: /certificates/tags - get gift certificate with tag names
+
+GET: /certificates/search - get gift certificate with sorting and filtering. Parameters are not required.
 
 for filtering:
 
@@ -79,12 +82,26 @@ for filtering:
 
 for creating order:
 
-    - ordering
-
+    - sort
 
 example:
 
-/certificate/search?**name**=gift&**description**=description&**tagName**=new tag name&**ordering**=date desc, name desc
+/certificate/search?**name**=gift&**description**=description&**tagName**=new tag name&**sort**=createDate:desc,name:desc
 
 get all gift certificates having in name "gift", in description "description", tag name with value "new tag name" ordering by date and name desc
 
+
+### UserController
+
+GET: /users - get all users
+
+GET: /users/{id} - get user with {id}
+
+GET: /users/{id}/orders - get orders from user with {id}
+
+
+### OrderController:
+
+POST: /orders - create new order
+
+GET: /orders/{id} - get order with {id}

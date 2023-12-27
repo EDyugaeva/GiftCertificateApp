@@ -78,7 +78,7 @@ public class TagController {
     }
 
     /**
-     * Method for getting most popular tag (with the highest total prive) by user
+     * Method for getting most popular tag (with the highest total price) by user
      *
      * @param userId - user id
      */

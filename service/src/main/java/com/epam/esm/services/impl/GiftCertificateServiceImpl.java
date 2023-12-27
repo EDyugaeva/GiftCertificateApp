@@ -97,7 +97,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return repository.save(updatingGiftCertificate);
     }
 
-
     /**
      * Retrieves a gift certificate by its unique identifier.
      *
