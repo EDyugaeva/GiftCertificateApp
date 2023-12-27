@@ -7,7 +7,6 @@ import com.epam.esm.model.Tag;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.services.GiftCertificateService;
 import com.epam.esm.services.TagService;
-import com.epam.esm.utils.GiftCertificateParamsCreator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
@@ -16,12 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.epam.esm.constants.Constants.GiftCertificateColumn.*;
-import static com.epam.esm.constants.Constants.NAME;
-import static com.epam.esm.constants.Constants.TAGS;
 import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_FOUND_GIFT_CERTIFICATE;
 import static com.epam.esm.exceptions.ExceptionCodesConstants.WRONG_PARAMETER;
 
@@ -88,11 +86,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional
     public GiftCertificate updateGiftCertificate(Long id, GiftCertificate giftCertificate)
             throws DataNotFoundException, WrongParameterException {
-        GiftCertificateParamsCreator giftCertificateParamsCreator = new GiftCertificateParamsCreator();
-        Map<String, Object> params = giftCertificateParamsCreator.getActualParams(giftCertificate);
-        log.info("Updating gift certificate with id = {}, new params = {}", id, params);
         GiftCertificate updatingGiftCertificate = getGiftCertificatesById(id);
-        updateGiftCertificateValues(params, updatingGiftCertificate);
+        log.info("Updating gift certificate with id = {}", id);
+        updatingGiftCertificate = getActualGiftCertificate(giftCertificate, updatingGiftCertificate);
         updatingGiftCertificate.setLastUpdateDate(LocalDateTime.now());
         return repository.save(updatingGiftCertificate);
     }
@@ -212,35 +208,23 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         throw new DataNotFoundException("gift certificates", NOT_FOUND_GIFT_CERTIFICATE);
     }
 
-    /**
-     * Updates the values of the GiftCertificate based on the provided parameters.
-     *
-     * @param params                  The parameters to update.
-     * @param updatingGiftCertificate The GiftCertificate to update.
-     */
-    private void updateGiftCertificateValues(Map<String, Object> params, GiftCertificate updatingGiftCertificate)
-            throws WrongParameterException {
-        for (Map.Entry<String, Object> entry : params.entrySet()) {
-            switch (entry.getKey()) {
-                case NAME:
-                    updatingGiftCertificate.setName((String) entry.getValue());
-                    break;
-                case DURATION:
-                    updatingGiftCertificate.setDuration((Integer) entry.getValue());
-                    break;
-                case PRICE:
-                    updatingGiftCertificate.setPrice((Float) entry.getValue());
-                    break;
-                case DESCRIPTION:
-                    updatingGiftCertificate.setDescription((String) entry.getValue());
-                    break;
-                case TAGS:
-                    updateTags((Set<Tag>) entry.getValue(), updatingGiftCertificate);
-                    break;
-                default:
-                    log.debug("Not supported parameter = {}", entry.getValue());
-                    throw new WrongParameterException("updating gift certificate", WRONG_PARAMETER);
-            }
+    private GiftCertificate getActualGiftCertificate(GiftCertificate updatingGiftCertificate, GiftCertificate savedGiftCertificate) throws WrongParameterException {
+        log.info("Including new values into gc {}", updatingGiftCertificate);
+        if (updatingGiftCertificate.getName() != null) {
+            savedGiftCertificate.setName(updatingGiftCertificate.getName());
         }
+        if (updatingGiftCertificate.getDescription() != null) {
+            savedGiftCertificate.setDescription(updatingGiftCertificate.getDescription());
+        }
+        if (updatingGiftCertificate.getDuration() != 0) {
+            savedGiftCertificate.setDuration(updatingGiftCertificate.getDuration());
+        }
+        if (updatingGiftCertificate.getPrice() != 0) {
+            savedGiftCertificate.setPrice(updatingGiftCertificate.getPrice());
+        }
+        if (updatingGiftCertificate.getTagSet() != null) {
+            updateTags(updatingGiftCertificate.getTagSet(), savedGiftCertificate);
+        }
+        return savedGiftCertificate;
     }
 }

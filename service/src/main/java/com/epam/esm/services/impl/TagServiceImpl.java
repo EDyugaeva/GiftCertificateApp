@@ -69,7 +69,6 @@ public class TagServiceImpl implements TagService {
         return repository.findMostUsedTagByUser(userId).orElseThrow(
                 () -> new DataNotFoundException("Requested resource was not found (most popular tag by user)",
                         NOT_FOUND_TAG));
-
     }
 
     @Override
