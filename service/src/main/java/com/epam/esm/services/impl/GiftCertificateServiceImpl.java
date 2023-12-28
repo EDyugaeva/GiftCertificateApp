@@ -9,7 +9,6 @@ import com.epam.esm.services.GiftCertificateService;
 import com.epam.esm.services.TagService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +32,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final TagService tagService;
 
     @Autowired
-    public GiftCertificateServiceImpl(@Qualifier("giftCertificateRepositoryImpl") GiftCertificateRepository repository,
+    public GiftCertificateServiceImpl(GiftCertificateRepository repository,
                                       TagService tagService) {
         this.repository = repository;
         this.tagService = tagService;
