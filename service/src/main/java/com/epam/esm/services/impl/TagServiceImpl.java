@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_FOUND_TAG;
 import static com.epam.esm.exceptions.ExceptionCodesConstants.WRONG_PARAMETER;
@@ -54,7 +55,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public Set<Tag> findAllByNameIn(List<String> tagNames) {
         log.info("Getting tags with name in {}", tagNames);
-        Set<Tag> tagSet = repository.findAllByNameIn(tagNames);
+        Set<Tag> tagSet = (Set<Tag>) repository.findAllByNameIn(tagNames).stream().collect(Collectors.toSet());
         if (!tagSet.isEmpty()) {
             return tagSet;
         }
@@ -74,7 +75,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public List<Tag> getTags(Pageable pageable) throws DataNotFoundException {
         log.info("Getting all tags on page = {} with size = {} ", pageable.getPageNumber(), pageable.getPageSize());
-        List<Tag> tagList = repository.findAll(pageable).getContent();
+        List<Tag> tagList = repository.findAll(pageable);
         if (!tagList.isEmpty()) {
             return tagList;
         }

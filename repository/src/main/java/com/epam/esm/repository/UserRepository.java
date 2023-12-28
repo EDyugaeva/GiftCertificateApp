@@ -2,15 +2,17 @@ package com.epam.esm.repository;
 
 import com.epam.esm.model.Order;
 import com.epam.esm.model.User;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-    @Query("Select o from orders o join users u on o.user.id = u.id where u.id = :id")
-    Page<Order> findOrdersByUserId(@Param("id") Long id, Pageable pageable);
+public interface UserRepository{
+    Optional<User> findById(Long id);
+
+    List<User> findAll(Pageable pageable);
+
+    List<Order> findOrdersByUserId(Long userId, Pageable pageable);
 }

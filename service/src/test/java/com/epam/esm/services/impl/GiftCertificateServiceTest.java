@@ -42,7 +42,7 @@ public class GiftCertificateServiceTest {
 
     @Test
     public void getAll_expectedGiftCertificateList_whenGetting1GiftCertificates() throws DataNotFoundException {
-        when(mock.findAll(PAGEABLE)).thenReturn(GIFT_CERTIFICATE_PAGE);
+        when(mock.findAll(PAGEABLE)).thenReturn(GIFT_CERTIFICATE_LIST);
         assertEquals("Actual gift certificate list should be equal to expected",
                 GIFT_CERTIFICATE_LIST, service.getAll(PAGEABLE));
     }
@@ -52,7 +52,7 @@ public class GiftCertificateServiceTest {
             throws WrongParameterException, DataNotFoundException {
         when(mock.findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndTagSet_Name(GIFT_CERTIFICATE_1.getName(),
                 GIFT_CERTIFICATE_1.getDescription(), TAG_1.getName(), PAGEABLE))
-                .thenReturn(GIFT_CERTIFICATE_PAGE);
+                .thenReturn(GIFT_CERTIFICATE_LIST);
         assertEquals("Actual gift certificate list should be equal to expected",
                 GIFT_CERTIFICATE_LIST, service.getGiftCertificatesByParameters(PAGEABLE, GIFT_CERTIFICATE_1.getName(),
                         GIFT_CERTIFICATE_1.getDescription(), Optional.ofNullable(TAG_1.getName())));

@@ -118,7 +118,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<GiftCertificate> getAll(Pageable pageable) throws DataNotFoundException {
         log.info("Getting all gift certificates");
-        List<GiftCertificate> giftCertificateList = repository.findAll(pageable).getContent();
+        List<GiftCertificate> giftCertificateList = repository.findAll(pageable);
         if (!giftCertificateList.isEmpty()) {
             return giftCertificateList;
         }
@@ -184,10 +184,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             List<GiftCertificate> giftCertificateList = tagName.map(s -> repository
                             .findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndTagSet_Name
-                                    (name, description, tagName.get(), pageable).getContent())
+                                    (name, description, tagName.get(), pageable))
                     .orElseGet(() -> repository
                             .findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCase
-                                    (name, description, pageable).getContent());
+                                    (name, description, pageable));
             if (!giftCertificateList.isEmpty()) {
                 return giftCertificateList;
             }
@@ -201,7 +201,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<GiftCertificate> findByTagNames(List<String> tagNames, Pageable pageable) throws DataNotFoundException {
         log.info("Getting all gift certificates with tags = {} ", tagNames);
-        List<GiftCertificate> giftCertificateList = repository.findByTagSet_NameIn(tagNames, pageable).getContent();
+        List<GiftCertificate> giftCertificateList = repository.findByTagSet_NameIn(tagNames, pageable);
         if (!giftCertificateList.isEmpty()) {
             return giftCertificateList;
         }

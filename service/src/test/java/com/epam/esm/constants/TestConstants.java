@@ -45,6 +45,7 @@ public class TestConstants {
         public static final Tag TAG_1 = new Tag(1L, "tag_1");
         public static final Tag TAG_2 = new Tag(2L, "tag_2");
         public static final Set<Tag> TAG_SET = Arrays.stream(new Tag[]{TAG_1, TAG_2}).collect(Collectors.toSet());
+        public static final List<Tag> TAG_LIST = Arrays.stream(new Tag[]{TAG_1, TAG_2}).collect(Collectors.toList());
         public static final Page<Tag> TAG_PAGE = new PageImpl<>(new ArrayList<>(TAG_SET));
     }
 

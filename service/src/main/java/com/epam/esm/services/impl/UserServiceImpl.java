@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Order> getUserOrders(Long id, PageRequest pageRequest) throws DataNotFoundException {
         log.info("Getting all user orders pageable");
-        List<Order> orders = repository.findOrdersByUserId(id, pageRequest).getContent();
+        List<Order> orders = repository.findOrdersByUserId(id, pageRequest);
         if (!orders.isEmpty()) {
             return orders;
         }

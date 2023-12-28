@@ -45,7 +45,7 @@ public class TagServiceImplTest {
 
     @Test
     public void getTags_expectedTagList_whenGettingTags() throws DataNotFoundException {
-        when(mock.findAll(PAGEABLE)).thenReturn(TAG_PAGE);
+        when(mock.findAll(PAGEABLE)).thenReturn(TAG_LIST);
         assertEquals("Actual tag set should be equal to expected", new ArrayList(TAG_SET), service.getTags(PAGEABLE));
     }
 
@@ -60,7 +60,7 @@ public class TagServiceImplTest {
     @Test
     public void findAllByNameIn_expectedTagList_whenGettingTags() throws DataNotFoundException {
         List<String> tagNames = Arrays.asList(TAG_1.getName(), TAG_2.getName());
-        when(mock.findAllByNameIn(tagNames)).thenReturn(TAG_SET);
+        when(mock.findAllByNameIn(tagNames)).thenReturn(TAG_LIST);
         assertEquals("Actual tag set should be equal to expected", TAG_SET, service.findAllByNameIn(tagNames));
     }
 }
