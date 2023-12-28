@@ -6,8 +6,8 @@ import com.epam.esm.model.Tag;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.services.TagService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +29,7 @@ import static com.epam.esm.exceptions.ExceptionCodesConstants.WRONG_PARAMETER;
 public class TagServiceImpl implements TagService {
     private final TagRepository repository;
 
-    public TagServiceImpl(TagRepository repository) {
+    public TagServiceImpl(@Qualifier("tagRepositoryImpl") TagRepository repository) {
         this.repository = repository;
     }
 
@@ -73,9 +73,9 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<Tag> getTags(Pageable pageable) throws DataNotFoundException {
-        log.info("Getting all tags on page = {} with size = {} ", pageable.getPageNumber(), pageable.getPageSize());
-        List<Tag> tagList = repository.findAll(pageable);
+    public List<Tag> getTags(int page, int size) {
+        log.info("Getting all tags on page = {} with size = {} ", page, size);
+        List<Tag> tagList = repository.findAll(page, size);
         if (!tagList.isEmpty()) {
             return tagList;
         }
@@ -85,7 +85,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
-    public void deleteTag(long id) throws WrongParameterException {
+    public void deleteTag(long id) {
         log.info("Deleting tag with id {}", id);
         try {
             getTag(id);

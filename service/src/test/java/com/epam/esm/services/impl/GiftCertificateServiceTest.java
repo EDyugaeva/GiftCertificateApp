@@ -15,8 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.epam.esm.constants.TestConstants.*;
 import static com.epam.esm.constants.TestConstants.GiftCertificatesTestConstants.*;
-import static com.epam.esm.constants.TestConstants.PAGEABLE;
 import static com.epam.esm.constants.TestConstants.TagTestConstants.TAG_1;
 import static com.epam.esm.constants.TestConstants.TagTestConstants.TAG_SET;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,27 +42,27 @@ public class GiftCertificateServiceTest {
 
     @Test
     public void getAll_expectedGiftCertificateList_whenGetting1GiftCertificates() throws DataNotFoundException {
-        when(mock.findAll(PAGEABLE)).thenReturn(GIFT_CERTIFICATE_LIST);
+        when(mock.findAll(PAGE, SIZE)).thenReturn(GIFT_CERTIFICATE_LIST);
         assertEquals("Actual gift certificate list should be equal to expected",
-                GIFT_CERTIFICATE_LIST, service.getAll(PAGEABLE));
+                GIFT_CERTIFICATE_LIST, service.getAll(PAGE, SIZE));
     }
 
     @Test
     public void getByParameters_expectedGiftCertificateList_whenGettingGiftCertificatesWithParams()
             throws WrongParameterException, DataNotFoundException {
         when(mock.findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndTagSet_Name(GIFT_CERTIFICATE_1.getName(),
-                GIFT_CERTIFICATE_1.getDescription(), TAG_1.getName(), PAGEABLE))
+                GIFT_CERTIFICATE_1.getDescription(), TAG_1.getName(), PAGE, SIZE))
                 .thenReturn(GIFT_CERTIFICATE_LIST);
         assertEquals("Actual gift certificate list should be equal to expected",
-                GIFT_CERTIFICATE_LIST, service.getGiftCertificatesByParameters(PAGEABLE, GIFT_CERTIFICATE_1.getName(),
+                GIFT_CERTIFICATE_LIST, service.getGiftCertificatesByParameters(PAGE, SIZE, GIFT_CERTIFICATE_1.getName(),
                         GIFT_CERTIFICATE_1.getDescription(), Optional.ofNullable(TAG_1.getName())));
 
         verify(mock, times(1))
                 .findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndTagSet_Name(GIFT_CERTIFICATE_1.getName(),
-                        GIFT_CERTIFICATE_1.getDescription(), TAG_1.getName(), PAGEABLE);
+                        GIFT_CERTIFICATE_1.getDescription(), TAG_1.getName(), PAGE, SIZE);
         verify(mock, times(0))
                 .findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCase(GIFT_CERTIFICATE_1.getName(),
-                        GIFT_CERTIFICATE_1.getDescription(), PAGEABLE);
+                        GIFT_CERTIFICATE_1.getDescription(), PAGE, SIZE);
 
     }
 

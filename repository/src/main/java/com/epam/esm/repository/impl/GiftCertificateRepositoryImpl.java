@@ -5,19 +5,17 @@ import com.epam.esm.repository.GiftCertificateRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 @Repository
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {
-    @PersistenceContext
+    @PersistenceContext()
     private EntityManager entityManager;
-
     @Override
     public List findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndTagSet_Name(
-            String name, String description, String tagName, Pageable pageable) {
+            String name, String description, String tagName, int page, int size) {
         String hql = "FROM GiftCertificate gc  "  +
                 " WHERE LOWER(gc.name) LIKE LOWER(:name) " +
                 "AND LOWER(gc.description) LIKE LOWER(:description) " +
@@ -26,31 +24,31 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                 .setParameter("name", "%" + name + "%")
                 .setParameter("description", "%" + description + "%")
                 .setParameter("tagName", tagName)
-                .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
-                .setMaxResults(pageable.getPageSize());
+                .setFirstResult(page *size)
+                .setMaxResults(size);
         return query.getResultList();
     }
 
     @Override
     public List findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCase(
-            String name, String description, Pageable pageable) {
+            String name, String description, int page, int size) {
         String hql = "FROM GiftCertificate WHERE LOWER(name) LIKE LOWER(:name) " +
                 "AND LOWER(description) LIKE LOWER(:description)";
         Query query = entityManager.createQuery(hql, GiftCertificate.class)
                 .setParameter("name", "%" + name + "%")
                 .setParameter("description", "%" + description + "%")
-                .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
-                .setMaxResults(pageable.getPageSize());
+                .setFirstResult(page *size)
+                .setMaxResults(size);
         return query.getResultList();
     }
 
     @Override
-    public List findByTagSet_NameIn(List<String> names, Pageable pageable) {
+    public List findByTagSet_NameIn(List<String> names, int page, int size) {
         String hql = "FROM GiftCertificate gc join Tag t WHERE t.name IN :names";
         Query query = entityManager.createQuery(hql, GiftCertificate.class)
                 .setParameter("names", names)
-                .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
-                .setMaxResults(pageable.getPageSize());
+                .setFirstResult(page *size)
+                .setMaxResults(size);
         return query.getResultList();
     }
 
@@ -60,11 +58,11 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public List findAll(Pageable pageable) {
+    public List findAll(int page, int size) {
         String hql = "FROM GiftCertificate";
         Query query = entityManager.createQuery(hql, GiftCertificate.class)
-                .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
-                .setMaxResults(pageable.getPageSize());
+                .setFirstResult(page *size)
+                .setMaxResults(size);
         return query.getResultList();
     }
 

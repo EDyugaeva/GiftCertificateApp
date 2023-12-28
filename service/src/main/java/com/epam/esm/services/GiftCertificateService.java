@@ -4,7 +4,6 @@ import com.epam.esm.exceptions.ApplicationException;
 import com.epam.esm.exceptions.DataNotFoundException;
 import com.epam.esm.exceptions.WrongParameterException;
 import com.epam.esm.model.GiftCertificate;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +17,7 @@ public interface GiftCertificateService {
 
     GiftCertificate getGiftCertificatesById(Long id) throws DataNotFoundException;
 
-    List<GiftCertificate> getAll(Pageable pageable) throws DataNotFoundException;
+    List<GiftCertificate> getAll(int page, int size) throws DataNotFoundException;
 
     void deleteGiftCertificate(long id) throws WrongParameterException;
 
@@ -26,9 +25,9 @@ public interface GiftCertificateService {
 
     GiftCertificate updateGiftCertificatePrice(Long id, float price) throws DataNotFoundException, WrongParameterException;
 
-    List<GiftCertificate> getGiftCertificatesByParameters(Pageable pageable, String name,
+    List<GiftCertificate> getGiftCertificatesByParameters(int page, int size, String name,
                                                           String description, Optional<String> tagName)
             throws DataNotFoundException, WrongParameterException;
 
-    List<GiftCertificate> findByTagNames(List<String> tagNames, Pageable pageable) throws DataNotFoundException;
+    List<GiftCertificate> findByTagNames(List<String> tagNames, int page, int size) throws DataNotFoundException;
 }

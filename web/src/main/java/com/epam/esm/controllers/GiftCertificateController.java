@@ -7,9 +7,7 @@ import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.GiftCertificateModel;
 import com.epam.esm.model.assemblers.GiftCertificateModelAssembler;
 import com.epam.esm.services.GiftCertificateService;
-import com.epam.esm.utils.PageableUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.web.bind.annotation.*;
@@ -45,8 +43,7 @@ public class GiftCertificateController {
                                                                         @RequestParam(defaultValue = "10", name = "size") int size)
             throws DataNotFoundException {
         log.info("Getting all gift certificates");
-        PageRequest pageRequest = PageRequest.of(page, size);
-        return giftCertificateModelAssembler.toCollectionModel(giftCertificateService.getAll(pageRequest));
+        return giftCertificateModelAssembler.toCollectionModel(giftCertificateService.getAll(page, size));
     }
 
     /**
@@ -153,9 +150,8 @@ public class GiftCertificateController {
                                                                            @RequestParam(defaultValue = "id,asc", name = "sort") String[] sort)
             throws DataNotFoundException, WrongParameterException {
         log.info("Getting gift certificates with filtering and sorting");
-        PageRequest pageRequest = PageableUtils.createPageableWithSorting(page, size, sort);
         return giftCertificateModelAssembler.toCollectionModel(giftCertificateService
-                .getGiftCertificatesByParameters(pageRequest, name, description, tagName));
+                .getGiftCertificatesByParameters(page, size, name, description, tagName));
     }
 
     /**
@@ -172,7 +168,6 @@ public class GiftCertificateController {
                                                               @RequestParam(defaultValue = "0", name = "page") int page)
             throws DataNotFoundException, WrongParameterException {
         log.info("Getting gift certificates with query to find tags with tagNames = {}", tagNames);
-        PageRequest pageRequest = PageableUtils.createPageableWithSorting(page, size);
-        return giftCertificateModelAssembler.toCollectionModel(giftCertificateService.findByTagNames(tagNames, pageRequest));
+        return giftCertificateModelAssembler.toCollectionModel(giftCertificateService.findByTagNames(tagNames, page, size));
     }
 }

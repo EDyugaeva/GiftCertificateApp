@@ -5,15 +5,15 @@ import com.epam.esm.repository.TagRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-import org.springframework.data.domain.Pageable;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-
 @Repository
 public class TagRepositoryImpl implements TagRepository {
-    @PersistenceContext
+    @PersistenceContext()
     private EntityManager entityManager;
     @Override
     public Optional<Tag> findById(long id) {
@@ -21,15 +21,16 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public List findAll(Pageable pageable) {
+    public List findAll(int page, int size) {
         String hql = "FROM Tag ";
         Query query = entityManager.createQuery(hql, Tag.class)
-                .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
-                .setMaxResults(pageable.getPageSize());
+                .setFirstResult(page * size)
+                .setMaxResults(size);
         return query.getResultList();
     }
 
     @Override
+    @Transactional
     public Tag save(Tag entity) {
         entityManager.persist(entity);
         return entity;

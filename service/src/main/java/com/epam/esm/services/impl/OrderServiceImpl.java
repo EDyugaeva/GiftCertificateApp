@@ -9,7 +9,9 @@ import com.epam.esm.services.GiftCertificateService;
 import com.epam.esm.services.OrderService;
 import com.epam.esm.services.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -21,7 +23,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final GiftCertificateService giftCertificateService;
     private final UserService userService;
-
+@Autowired
     public OrderServiceImpl(OrderRepository orderRepository, GiftCertificateService giftCertificateService, UserService userService) {
         this.orderRepository = orderRepository;
         this.giftCertificateService = giftCertificateService;

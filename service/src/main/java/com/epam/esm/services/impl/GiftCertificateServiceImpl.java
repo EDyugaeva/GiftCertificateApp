@@ -8,9 +8,8 @@ import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.services.GiftCertificateService;
 import com.epam.esm.services.TagService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.mapping.PropertyReferenceException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +32,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final GiftCertificateRepository repository;
     private final TagService tagService;
 
-    public GiftCertificateServiceImpl(GiftCertificateRepository repository, TagService tagService) {
+    @Autowired
+    public GiftCertificateServiceImpl(@Qualifier("giftCertificateRepositoryImpl") GiftCertificateRepository repository,
+                                      TagService tagService) {
         this.repository = repository;
         this.tagService = tagService;
     }
@@ -54,7 +55,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
         try {
             return repository.save(giftCertificate);
-        } catch (DataIntegrityViolationException e) {
+        } catch (RuntimeException e) {
             log.warn("Not correct values");
             throw new WrongParameterException("during saving new gift-certificate", WRONG_PARAMETER);
         }
@@ -116,9 +117,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      * @throws DataNotFoundException if no gift certificates are found.
      */
     @Override
-    public List<GiftCertificate> getAll(Pageable pageable) throws DataNotFoundException {
+    public List<GiftCertificate> getAll(int page, int size) throws DataNotFoundException {
         log.info("Getting all gift certificates");
-        List<GiftCertificate> giftCertificateList = repository.findAll(pageable);
+        List<GiftCertificate> giftCertificateList = repository.findAll(page, size);
         if (!giftCertificateList.isEmpty()) {
             return giftCertificateList;
         }
@@ -177,31 +178,31 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
      * @throws DataNotFoundException if no gift certificates match the specified criteria.
      */
     @Override
-    public List<GiftCertificate> getGiftCertificatesByParameters(Pageable pageable, String name,
+    public List<GiftCertificate> getGiftCertificatesByParameters(int page, int size, String name,
                                                                  String description, Optional<String> tagName)
             throws DataNotFoundException, WrongParameterException {
-        log.info("Getting all gift certificates filtered by {}, {}, {} ", name, description, tagName);
+        log.info("Getting all gift certificates filtered by {}, {} ", name, description);
         try {
             List<GiftCertificate> giftCertificateList = tagName.map(s -> repository
                             .findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndTagSet_Name
-                                    (name, description, tagName.get(), pageable))
+                                    (name, description, tagName.get(), page, size))
                     .orElseGet(() -> repository
                             .findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCase
-                                    (name, description, pageable));
+                                    (name, description, page, size));
             if (!giftCertificateList.isEmpty()) {
                 return giftCertificateList;
             }
-        } catch (PropertyReferenceException e) {
-            log.info("Wrong type in sorting, pageable = {}", pageable, e);
+        } catch (RuntimeException e) {
+            log.info("Wrong type in sorting, page = {}, size = {}");
             throw new WrongParameterException("getting certificates: wrong sorting param", WRONG_PARAMETER);
         }
         throw new DataNotFoundException("gift certificates", NOT_FOUND_GIFT_CERTIFICATE);
     }
 
     @Override
-    public List<GiftCertificate> findByTagNames(List<String> tagNames, Pageable pageable) throws DataNotFoundException {
+    public List<GiftCertificate> findByTagNames(List<String> tagNames, int page, int size) throws DataNotFoundException {
         log.info("Getting all gift certificates with tags = {} ", tagNames);
-        List<GiftCertificate> giftCertificateList = repository.findByTagSet_NameIn(tagNames, pageable);
+        List<GiftCertificate> giftCertificateList = repository.findByTagSet_NameIn(tagNames, size, page);
         if (!giftCertificateList.isEmpty()) {
             return giftCertificateList;
         }

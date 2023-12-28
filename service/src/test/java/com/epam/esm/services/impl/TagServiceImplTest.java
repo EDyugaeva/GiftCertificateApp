@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static com.epam.esm.constants.TestConstants.PAGEABLE;
+import static com.epam.esm.constants.TestConstants.*;
 import static com.epam.esm.constants.TestConstants.TagTestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -45,8 +45,8 @@ public class TagServiceImplTest {
 
     @Test
     public void getTags_expectedTagList_whenGettingTags() throws DataNotFoundException {
-        when(mock.findAll(PAGEABLE)).thenReturn(TAG_LIST);
-        assertEquals("Actual tag set should be equal to expected", new ArrayList(TAG_SET), service.getTags(PAGEABLE));
+        when(mock.findAll(PAGE, SIZE)).thenReturn(TAG_LIST);
+        assertEquals("Actual tag set should be equal to expected", new ArrayList(TAG_SET), service.getTags(PAGE, SIZE));
     }
 
     @Test

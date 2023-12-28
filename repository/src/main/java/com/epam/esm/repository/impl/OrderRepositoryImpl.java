@@ -5,8 +5,8 @@ import com.epam.esm.repository.OrderRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,21 +21,23 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public List findAll(Pageable pageable) {
-        String hql = "FROM Order";
+    public List findAll(int page, int size) {
+        String hql = "FROM orders ";
         Query query = entityManager.createQuery(hql, Order.class)
-                .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
-                .setMaxResults(pageable.getPageSize());
+                .setFirstResult(page * size)
+                .setMaxResults(size);
         return query.getResultList();
     }
 
     @Override
+    @Transactional
     public Order save(Order entity) {
         entityManager.persist(entity);
         return entity;
     }
 
     @Override
+    @Transactional
     public void deleteById(long id) {
         Order order = entityManager.find(Order.class, id);
         if (order != null) {

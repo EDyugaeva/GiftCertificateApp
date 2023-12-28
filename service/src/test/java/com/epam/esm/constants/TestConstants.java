@@ -4,9 +4,6 @@ import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Order;
 import com.epam.esm.model.Tag;
 import com.epam.esm.model.User;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,7 +18,8 @@ import static com.epam.esm.constants.TestConstants.TagTestConstants.TAG_SET;
 public class TestConstants {
     public static final Long ACTUAL_ID = 1L;
     public static final Long NOT_EXISTED_ID = 100L;
-    public static final PageRequest PAGEABLE = PageRequest.of(0, 5);
+    public static final int PAGE = 0;
+    public static final int SIZE = 5;
 
     public static class GiftCertificatesTestConstants {
         public static final GiftCertificate GIFT_CERTIFICATE_1 = new GiftCertificate(1L, "gift_certificate_1", "description 1", 150.5f, 5,
@@ -36,7 +34,6 @@ public class TestConstants {
         public static final GiftCertificate GIFT_CERTIFICATE_2_TO_UPDATE = new GiftCertificate(2L, "gift_certificate_2", "description 2", 150.5f, 5,
                 LocalDateTime.of(2018, 2, 1, 0, 0), null, TAG_SET);
         public static final List<GiftCertificate> GIFT_CERTIFICATE_LIST = Arrays.asList(GIFT_CERTIFICATE_1, GIFT_CERTIFICATE_2, GIFT_CERTIFICATE_3);
-        public static final Page<GiftCertificate> GIFT_CERTIFICATE_PAGE = new PageImpl<>(GIFT_CERTIFICATE_LIST);
         public static final float POSITIVE_PRICE = 50f;
         public static final int POSITIVE_DURATION = 10;
     }
@@ -46,7 +43,6 @@ public class TestConstants {
         public static final Tag TAG_2 = new Tag(2L, "tag_2");
         public static final Set<Tag> TAG_SET = Arrays.stream(new Tag[]{TAG_1, TAG_2}).collect(Collectors.toSet());
         public static final List<Tag> TAG_LIST = Arrays.stream(new Tag[]{TAG_1, TAG_2}).collect(Collectors.toList());
-        public static final Page<Tag> TAG_PAGE = new PageImpl<>(new ArrayList<>(TAG_SET));
     }
 
     public static class UserConstants {
@@ -65,7 +61,6 @@ public class TestConstants {
         public static final User MOCK_USER_5 = new User(5L, "Eva", "Williams", "eva@example.com",
                 "password5", new ArrayList<>());
         public static final List<User> USER_LIST = Arrays.asList(MOCK_USER_1, MOCK_USER_2, MOCK_USER_3, MOCK_USER_4, MOCK_USER_5);
-        public static final Page<User> USER_PAGE = new PageImpl<>(USER_LIST);
     }
 
     public static class OrderConstants {
@@ -78,7 +73,6 @@ public class TestConstants {
         public static final Order ORDER_3 = new Order(3L, LocalDateTime.now(), 100.0f,
                 GIFT_CERTIFICATE_3, UserConstants.MOCK_USER_1);
         public static final List<Order> ORDER_LIST = Arrays.asList(ORDER_1, ORDER_2, ORDER_3);
-        public static final Page<Order> ORDER_PAGE = new PageImpl<>(ORDER_LIST);
 
     }
 }
