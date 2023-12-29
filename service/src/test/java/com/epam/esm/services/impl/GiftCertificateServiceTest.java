@@ -89,7 +89,7 @@ public class GiftCertificateServiceTest {
     public void updateGiftCertificate_GiftCertificateWithRightParams_whenUpdatingCorrectGiftCertificate()
             throws DataNotFoundException, WrongParameterException {
         when(mock.findById(GIFT_CERTIFICATE_2.getId())).thenReturn(Optional.of(GIFT_CERTIFICATE_2));
-        when(mock.save(any())).thenReturn(GIFT_CERTIFICATE_2);
+        when(mock.update(any())).thenReturn(GIFT_CERTIFICATE_2);
         when(tagService.findAllByNameIn(TAG_SET.stream().map(Tag::getName).collect(Collectors.toList()))).thenReturn(TAG_SET);
 
         GiftCertificate actualGC = service.updateGiftCertificate(GIFT_CERTIFICATE_2.getId(), GIFT_CERTIFICATE_2);
@@ -109,7 +109,7 @@ public class GiftCertificateServiceTest {
     public void updateGiftCertificateDuration_GiftCertificateWithRightParams_whenUpdatingCorrectDuration()
             throws DataNotFoundException, WrongParameterException {
         when(mock.findById(GIFT_CERTIFICATE_3.getId())).thenReturn(Optional.of(GIFT_CERTIFICATE_3));
-        when(mock.save(any())).thenReturn(GIFT_CERTIFICATE_3);
+        when(mock.update(any())).thenReturn(GIFT_CERTIFICATE_3);
 
         GiftCertificate actualGC = service.updateGiftCertificateDuration(GIFT_CERTIFICATE_3.getId(), POSITIVE_DURATION);
 
@@ -128,7 +128,7 @@ public class GiftCertificateServiceTest {
     public void updateGiftCertificatePrice_GiftCertificateWithRightParams_whenUpdatingCorrectPrice()
             throws DataNotFoundException, WrongParameterException {
         when(mock.findById(GIFT_CERTIFICATE_3.getId())).thenReturn(Optional.of(GIFT_CERTIFICATE_3));
-        when(mock.save(any())).thenReturn(GIFT_CERTIFICATE_3);
+        when(mock.update(any())).thenReturn(GIFT_CERTIFICATE_3);
 
         GiftCertificate actualGC = service.updateGiftCertificatePrice(GIFT_CERTIFICATE_3.getId(), POSITIVE_PRICE);
 
