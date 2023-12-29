@@ -55,3 +55,26 @@ Sort  (cost=649.59..649.59 rows=1 width=23) (actual time=1.361..1.364 rows=1 loo
                           Index Cond: (id = gct.tag_id)
 Planning Time: 0.720 ms
 Execution Time: 1.409 ms
+
+
+
+query:
+SELECT t.id, t.name
+                FROM orders o
+                        JOIN users u ON o.user_id = u.id
+                        JOIN gift_certificate g ON g.id = o.gift_certificate_id
+                        JOIN gift_certificate_tag gct ON g.id = gct.gift_id
+                        JOIN tag t ON t.id = gct.tag_id
+               WHERE u.id = :userId
+               group by t.id, t.name
+               having sum(o.price) = (SELECT max(total_price)
+                                      FROM (SELECT sum(o.price) AS total_price
+                                            FROM orders o
+                                                     JOIN users u ON o.user_id = u.id
+                                                     JOIN gift_certificate g ON g.id = o.gift_certificate_id
+                                                     JOIN gift_certificate_tag gct ON g.id = gct.gift_id
+                                                     JOIN tag t ON t.id = gct.tag_id
+                                            WHERE u.id = :userId
+                                            GROUP BY t.id, t.name) subquery)
+               ORDER BY SUM(o.price) DESC
+
