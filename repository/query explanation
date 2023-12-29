@@ -1,0 +1,57 @@
+Sort  (cost=649.59..649.59 rows=1 width=23) (actual time=1.361..1.364 rows=1 loops=1)
+  Sort Key: (sum(o.price)) DESC
+  Sort Method: quicksort  Memory: 25kB
+  InitPlan 1 (returns $3)
+    ->  Aggregate  (cost=324.97..324.98 rows=1 width=8) (actual time=0.698..0.699 rows=1 loops=1)
+          ->  GroupAggregate  (cost=323.86..324.51 rows=37 width=23) (actual time=0.684..0.697 rows=29 loops=1)
+                Group Key: t_1.id
+                ->  Sort  (cost=323.86..323.95 rows=37 width=23) (actual time=0.681..0.684 rows=71 loops=1)
+                      Sort Key: t_1.id
+                      Sort Method: quicksort  Memory: 29kB
+                      ->  Nested Loop  (cost=1.12..322.90 rows=37 width=23) (actual time=0.024..0.662 rows=71 loops=1)
+                            ->  Nested Loop  (cost=0.85..311.92 rows=37 width=16) (actual time=0.021..0.581 rows=71 loops=1)
+                                  Join Filter: (o_1.gift_certificate_id = g_1.id)
+                                  ->  Nested Loop  (cost=0.56..279.08 rows=87 width=32) (actual time=0.013..0.493 rows=71 loops=1)
+                                        ->  Nested Loop  (cost=0.28..155.18 rows=35 width=16) (actual time=0.008..0.452 rows=11 loops=1)
+                                              ->  Index Only Scan using users_pkey on users u_1  (cost=0.28..8.29 rows=1 width=8) (actual time=0.004..0.005 rows=1 loops=1)
+                                                    Index Cond: (id = 1)
+                                                    Heap Fetches: 1
+                                              ->  Seq Scan on orders o_1  (cost=0.00..146.54 rows=35 width=24) (actual time=0.003..0.444 rows=11 loops=1)
+                                                    Filter: (user_id = 1)
+                                                    Rows Removed by Filter: 6993
+                                        ->  Index Only Scan using unique_pair_constraint on gift_certificate_tag gct_1  (cost=0.29..3.52 rows=2 width=16) (actual time=0.001..0.003 rows=6 loops=11)
+                                              Index Cond: (gift_id = o_1.gift_certificate_id)
+                                              Heap Fetches: 55
+                                  ->  Index Only Scan using gift_certificate_pkey on gift_certificate g_1  (cost=0.29..0.36 rows=1 width=8) (actual time=0.001..0.001 rows=1 loops=71)
+                                        Index Cond: (id = gct_1.gift_id)
+                                        Heap Fetches: 71
+                            ->  Index Scan using tag_pkey on tag t_1  (cost=0.28..0.30 rows=1 width=15) (actual time=0.001..0.001 rows=1 loops=71)
+                                  Index Cond: (id = gct_1.tag_id)
+  ->  GroupAggregate  (cost=323.86..324.60 rows=1 width=23) (actual time=1.349..1.359 rows=1 loops=1)
+        Group Key: t.id
+        Filter: (sum(o.price) = $3)
+        Rows Removed by Filter: 28
+        ->  Sort  (cost=323.86..323.95 rows=37 width=23) (actual time=0.642..0.645 rows=71 loops=1)
+              Sort Key: t.id
+              Sort Method: quicksort  Memory: 29kB
+              ->  Nested Loop  (cost=1.12..322.90 rows=37 width=23) (actual time=0.030..0.630 rows=71 loops=1)
+                    ->  Nested Loop  (cost=0.85..311.92 rows=37 width=16) (actual time=0.024..0.555 rows=71 loops=1)
+                          Join Filter: (o.gift_certificate_id = g.id)
+                          ->  Nested Loop  (cost=0.56..279.08 rows=87 width=32) (actual time=0.017..0.484 rows=71 loops=1)
+                                ->  Nested Loop  (cost=0.28..155.18 rows=35 width=16) (actual time=0.012..0.441 rows=11 loops=1)
+                                      ->  Index Only Scan using users_pkey on users u  (cost=0.28..8.29 rows=1 width=8) (actual time=0.006..0.007 rows=1 loops=1)
+                                            Index Cond: (id = 1)
+                                            Heap Fetches: 1
+                                      ->  Seq Scan on orders o  (cost=0.00..146.54 rows=35 width=24) (actual time=0.006..0.432 rows=11 loops=1)
+                                            Filter: (user_id = 1)
+                                            Rows Removed by Filter: 6993
+                                ->  Index Only Scan using unique_pair_constraint on gift_certificate_tag gct  (cost=0.29..3.52 rows=2 width=16) (actual time=0.002..0.003 rows=6 loops=11)
+                                      Index Cond: (gift_id = o.gift_certificate_id)
+                                      Heap Fetches: 55
+                          ->  Index Only Scan using gift_certificate_pkey on gift_certificate g  (cost=0.29..0.36 rows=1 width=8) (actual time=0.001..0.001 rows=1 loops=71)
+                                Index Cond: (id = gct.gift_id)
+                                Heap Fetches: 71
+                    ->  Index Scan using tag_pkey on tag t  (cost=0.28..0.30 rows=1 width=15) (actual time=0.001..0.001 rows=1 loops=71)
+                          Index Cond: (id = gct.tag_id)
+Planning Time: 0.720 ms
+Execution Time: 1.409 ms

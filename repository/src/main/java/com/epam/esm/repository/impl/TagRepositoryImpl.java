@@ -5,13 +5,14 @@ import com.epam.esm.repository.TagRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 @Repository
+@Slf4j
 public class TagRepositoryImpl implements TagRepository {
     @PersistenceContext()
     private EntityManager entityManager;
@@ -46,6 +47,7 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public List findAllByNameIn(List<String> tagNames) {
+        log.info("Finding tags in names: {}", tagNames);
         String hql = "FROM Tag WHERE name IN :tagNames";
         Query query = entityManager.createQuery(hql, Tag.class)
                 .setParameter("tagNames", tagNames);
@@ -54,17 +56,24 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public Optional<Tag> findMostUsedTagByUser(Long userId) {
-        // Implement the custom native query using Hibernate
-        String sql = "SELECT t.id, t.name " +
-                "FROM orders o " +
-                "JOIN users u ON o.user_id = u.id " +
-                "JOIN gift_certificate g ON g.id = o.gift_certificate_id " +
-                "JOIN gift_certificate_tag gct ON g.id = gct.gift_id " +
-                "JOIN tag t ON t.id = gct.tag_id " +
-                "WHERE u.id = :userId " +
-                "GROUP BY t.name, t.id " +
-                "ORDER BY SUM(o.price) DESC " +
-                "LIMIT 1";
+        String sql = "SELECT t.id, t.name\n" +
+                "FROM orders o\n" +
+                "         JOIN users u ON o.user_id = u.id\n" +
+                "         JOIN gift_certificate g ON g.id = o.gift_certificate_id\n" +
+                "         JOIN gift_certificate_tag gct ON g.id = gct.gift_id\n" +
+                "         JOIN tag t ON t.id = gct.tag_id\n" +
+                "WHERE u.id = :userId\n" +
+                "group by t.id, t.name\n" +
+                "having sum(o.price) = (SELECT max(total_price)\n" +
+                "                       FROM (SELECT sum(o.price) AS total_price\n" +
+                "                             FROM orders o\n" +
+                "                                      JOIN users u ON o.user_id = u.id\n" +
+                "                                      JOIN gift_certificate g ON g.id = o.gift_certificate_id\n" +
+                "                                      JOIN gift_certificate_tag gct ON g.id = gct.gift_id\n" +
+                "                                      JOIN tag t ON t.id = gct.tag_id\n" +
+                "                             WHERE u.id = :userId\n" +
+                "                             GROUP BY t.id, t.name) subquery)\n" +
+                "ORDER BY SUM(o.price) DESC";
         Query query = entityManager.createNativeQuery(sql)
                 .setParameter("userId", userId);
         List resultList = query.getResultList();

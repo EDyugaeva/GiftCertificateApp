@@ -51,18 +51,18 @@ public class GiftCertificateServiceTest {
     public void getByParameters_expectedGiftCertificateList_whenGettingGiftCertificatesWithParams()
             throws WrongParameterException, DataNotFoundException {
         when(mock.findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndTagSet_Name(GIFT_CERTIFICATE_1.getName(),
-                GIFT_CERTIFICATE_1.getDescription(), TAG_1.getName(), PAGE, SIZE))
+                GIFT_CERTIFICATE_1.getDescription(), TAG_1.getName(), PAGE, SIZE, SORT))
                 .thenReturn(GIFT_CERTIFICATE_LIST);
         assertEquals("Actual gift certificate list should be equal to expected",
                 GIFT_CERTIFICATE_LIST, service.getGiftCertificatesByParameters(PAGE, SIZE, GIFT_CERTIFICATE_1.getName(),
-                        GIFT_CERTIFICATE_1.getDescription(), Optional.ofNullable(TAG_1.getName())));
+                        GIFT_CERTIFICATE_1.getDescription(), Optional.ofNullable(TAG_1.getName()), SORT));
 
         verify(mock, times(1))
                 .findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndTagSet_Name(GIFT_CERTIFICATE_1.getName(),
-                        GIFT_CERTIFICATE_1.getDescription(), TAG_1.getName(), PAGE, SIZE);
+                        GIFT_CERTIFICATE_1.getDescription(), TAG_1.getName(), PAGE, SIZE, SORT);
         verify(mock, times(0))
                 .findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCase(GIFT_CERTIFICATE_1.getName(),
-                        GIFT_CERTIFICATE_1.getDescription(), PAGE, SIZE);
+                        GIFT_CERTIFICATE_1.getDescription(), PAGE, SIZE, SORT);
 
     }
 

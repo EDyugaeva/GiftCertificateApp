@@ -34,7 +34,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Tag saveTag(Tag tag) throws WrongParameterException {
+    public Tag saveTag(Tag tag)  {
         try {
             log.info("Saving tag {}", tag);
             return repository.save(tag);
@@ -45,7 +45,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Tag getTag(long id) throws DataNotFoundException {
+    public Tag getTag(long id)  {
         log.info("Getting tag with id {}", id);
         Optional<Tag> tag = repository.findById(id);
         return tag.orElseThrow(()
@@ -64,7 +64,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Tag findMostUsedTagByUser(Long userId) throws DataNotFoundException {
+    public Tag findMostUsedTagByUser(Long userId)  {
         log.info("Getting most used tag by user with id = {}", userId);
 
         return repository.findMostUsedTagByUser(userId).orElseThrow(

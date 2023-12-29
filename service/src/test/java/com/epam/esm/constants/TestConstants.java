@@ -20,6 +20,7 @@ public class TestConstants {
     public static final Long NOT_EXISTED_ID = 100L;
     public static final int PAGE = 0;
     public static final int SIZE = 5;
+    public static final String[] SORT = new String[]{"name:asc"};
 
     public static class GiftCertificatesTestConstants {
         public static final GiftCertificate GIFT_CERTIFICATE_1 = new GiftCertificate(1L, "gift_certificate_1", "description 1", 150.5f, 5,
