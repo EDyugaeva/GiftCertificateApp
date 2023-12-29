@@ -15,8 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.epam.esm.constants.TestConstants.*;
 import static com.epam.esm.constants.TestConstants.GiftCertificatesTestConstants.*;
-import static com.epam.esm.constants.TestConstants.PAGEABLE;
 import static com.epam.esm.constants.TestConstants.TagTestConstants.TAG_1;
 import static com.epam.esm.constants.TestConstants.TagTestConstants.TAG_SET;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,27 +42,27 @@ public class GiftCertificateServiceTest {
 
     @Test
     public void getAll_expectedGiftCertificateList_whenGetting1GiftCertificates() throws DataNotFoundException {
-        when(mock.findAll(PAGEABLE)).thenReturn(GIFT_CERTIFICATE_PAGE);
+        when(mock.findAll(PAGE, SIZE)).thenReturn(GIFT_CERTIFICATE_LIST);
         assertEquals("Actual gift certificate list should be equal to expected",
-                GIFT_CERTIFICATE_LIST, service.getAll(PAGEABLE));
+                GIFT_CERTIFICATE_LIST, service.getAll(PAGE, SIZE));
     }
 
     @Test
     public void getByParameters_expectedGiftCertificateList_whenGettingGiftCertificatesWithParams()
             throws WrongParameterException, DataNotFoundException {
         when(mock.findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndTagSet_Name(GIFT_CERTIFICATE_1.getName(),
-                GIFT_CERTIFICATE_1.getDescription(), TAG_1.getName(), PAGEABLE))
-                .thenReturn(GIFT_CERTIFICATE_PAGE);
+                GIFT_CERTIFICATE_1.getDescription(), TAG_1.getName(), PAGE, SIZE, SORT))
+                .thenReturn(GIFT_CERTIFICATE_LIST);
         assertEquals("Actual gift certificate list should be equal to expected",
-                GIFT_CERTIFICATE_LIST, service.getGiftCertificatesByParameters(PAGEABLE, GIFT_CERTIFICATE_1.getName(),
-                        GIFT_CERTIFICATE_1.getDescription(), Optional.ofNullable(TAG_1.getName())));
+                GIFT_CERTIFICATE_LIST, service.getGiftCertificatesByParameters(PAGE, SIZE, GIFT_CERTIFICATE_1.getName(),
+                        GIFT_CERTIFICATE_1.getDescription(), Optional.ofNullable(TAG_1.getName()), SORT));
 
         verify(mock, times(1))
                 .findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndTagSet_Name(GIFT_CERTIFICATE_1.getName(),
-                        GIFT_CERTIFICATE_1.getDescription(), TAG_1.getName(), PAGEABLE);
+                        GIFT_CERTIFICATE_1.getDescription(), TAG_1.getName(), PAGE, SIZE, SORT);
         verify(mock, times(0))
                 .findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCase(GIFT_CERTIFICATE_1.getName(),
-                        GIFT_CERTIFICATE_1.getDescription(), PAGEABLE);
+                        GIFT_CERTIFICATE_1.getDescription(), PAGE, SIZE, SORT);
 
     }
 
@@ -89,7 +89,7 @@ public class GiftCertificateServiceTest {
     public void updateGiftCertificate_GiftCertificateWithRightParams_whenUpdatingCorrectGiftCertificate()
             throws DataNotFoundException, WrongParameterException {
         when(mock.findById(GIFT_CERTIFICATE_2.getId())).thenReturn(Optional.of(GIFT_CERTIFICATE_2));
-        when(mock.save(any())).thenReturn(GIFT_CERTIFICATE_2);
+        when(mock.update(any())).thenReturn(GIFT_CERTIFICATE_2);
         when(tagService.findAllByNameIn(TAG_SET.stream().map(Tag::getName).collect(Collectors.toList()))).thenReturn(TAG_SET);
 
         GiftCertificate actualGC = service.updateGiftCertificate(GIFT_CERTIFICATE_2.getId(), GIFT_CERTIFICATE_2);
@@ -109,7 +109,7 @@ public class GiftCertificateServiceTest {
     public void updateGiftCertificateDuration_GiftCertificateWithRightParams_whenUpdatingCorrectDuration()
             throws DataNotFoundException, WrongParameterException {
         when(mock.findById(GIFT_CERTIFICATE_3.getId())).thenReturn(Optional.of(GIFT_CERTIFICATE_3));
-        when(mock.save(any())).thenReturn(GIFT_CERTIFICATE_3);
+        when(mock.update(any())).thenReturn(GIFT_CERTIFICATE_3);
 
         GiftCertificate actualGC = service.updateGiftCertificateDuration(GIFT_CERTIFICATE_3.getId(), POSITIVE_DURATION);
 
@@ -128,7 +128,7 @@ public class GiftCertificateServiceTest {
     public void updateGiftCertificatePrice_GiftCertificateWithRightParams_whenUpdatingCorrectPrice()
             throws DataNotFoundException, WrongParameterException {
         when(mock.findById(GIFT_CERTIFICATE_3.getId())).thenReturn(Optional.of(GIFT_CERTIFICATE_3));
-        when(mock.save(any())).thenReturn(GIFT_CERTIFICATE_3);
+        when(mock.update(any())).thenReturn(GIFT_CERTIFICATE_3);
 
         GiftCertificate actualGC = service.updateGiftCertificatePrice(GIFT_CERTIFICATE_3.getId(), POSITIVE_PRICE);
 

@@ -1,10 +1,10 @@
 package com.epam.esm.model;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -12,7 +12,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class GiftCertificate {
+public class GiftCertificate  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,14 +30,4 @@ public class GiftCertificate {
             joinColumns = @JoinColumn(name = "gift_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tagSet;
-    public GiftCertificate(String name, String description, float price,
-                           int duration, LocalDateTime createDate, LocalDateTime lastUpdateDate, Set<Tag> tagSet) {
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.duration = duration;
-        this.createDate = createDate;
-        this.lastUpdateDate = lastUpdateDate;
-        this.tagSet = tagSet;
-    }
 }

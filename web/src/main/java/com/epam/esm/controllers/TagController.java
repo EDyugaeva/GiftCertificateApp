@@ -7,7 +7,6 @@ import com.epam.esm.model.TagModel;
 import com.epam.esm.model.assemblers.TagModelAssembler;
 import com.epam.esm.services.TagService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,8 +49,7 @@ public class TagController {
                                              @RequestParam(defaultValue = SIZE, name = "size") int size)
             throws DataNotFoundException {
         log.info("Getting tags");
-        PageRequest pageRequest = PageRequest.of(page, size);
-        return tagMapper.toCollectionModel(tagService.getTags(pageRequest));
+        return tagMapper.toCollectionModel(tagService.getTags(page, size));
     }
 
     /**

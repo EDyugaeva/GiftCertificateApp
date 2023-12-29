@@ -6,8 +6,8 @@ import com.epam.esm.model.Tag;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.services.TagService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_FOUND_TAG;
 import static com.epam.esm.exceptions.ExceptionCodesConstants.WRONG_PARAMETER;
@@ -28,12 +29,12 @@ import static com.epam.esm.exceptions.ExceptionCodesConstants.WRONG_PARAMETER;
 public class TagServiceImpl implements TagService {
     private final TagRepository repository;
 
-    public TagServiceImpl(TagRepository repository) {
+    public TagServiceImpl(@Qualifier("tagRepositoryImpl") TagRepository repository) {
         this.repository = repository;
     }
 
     @Override
-    public Tag saveTag(Tag tag) throws WrongParameterException {
+    public Tag saveTag(Tag tag)  {
         try {
             log.info("Saving tag {}", tag);
             return repository.save(tag);
@@ -44,7 +45,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Tag getTag(long id) throws DataNotFoundException {
+    public Tag getTag(long id)  {
         log.info("Getting tag with id {}", id);
         Optional<Tag> tag = repository.findById(id);
         return tag.orElseThrow(()
@@ -54,7 +55,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public Set<Tag> findAllByNameIn(List<String> tagNames) {
         log.info("Getting tags with name in {}", tagNames);
-        Set<Tag> tagSet = repository.findAllByNameIn(tagNames);
+        Set<Tag> tagSet = (Set<Tag>) repository.findAllByNameIn(tagNames).stream().collect(Collectors.toSet());
         if (!tagSet.isEmpty()) {
             return tagSet;
         }
@@ -63,7 +64,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Tag findMostUsedTagByUser(Long userId) throws DataNotFoundException {
+    public Tag findMostUsedTagByUser(Long userId)  {
         log.info("Getting most used tag by user with id = {}", userId);
 
         return repository.findMostUsedTagByUser(userId).orElseThrow(
@@ -72,9 +73,9 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<Tag> getTags(Pageable pageable) throws DataNotFoundException {
-        log.info("Getting all tags on page = {} with size = {} ", pageable.getPageNumber(), pageable.getPageSize());
-        List<Tag> tagList = repository.findAll(pageable).getContent();
+    public List<Tag> getTags(int page, int size) {
+        log.info("Getting all tags on page = {} with size = {} ", page, size);
+        List<Tag> tagList = repository.findAll(page, size);
         if (!tagList.isEmpty()) {
             return tagList;
         }
@@ -84,7 +85,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
-    public void deleteTag(long id) throws WrongParameterException {
+    public void deleteTag(long id) {
         log.info("Deleting tag with id {}", id);
         try {
             getTag(id);

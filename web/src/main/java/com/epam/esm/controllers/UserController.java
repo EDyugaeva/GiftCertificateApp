@@ -7,7 +7,6 @@ import com.epam.esm.model.assemblers.OrderModelAssembler;
 import com.epam.esm.model.assemblers.UserModelAssembler;
 import com.epam.esm.services.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,8 +37,7 @@ public class UserController {
                                                @RequestParam(defaultValue = "10", name = "size") int size)
             throws DataNotFoundException {
         log.info("Getting all users");
-        PageRequest pageRequest = PageRequest.of(page, size);
-        return userModelAssembler.toCollectionModel(userService.getUsers(pageRequest));
+        return userModelAssembler.toCollectionModel(userService.getUsers(page, size));
     }
 
     /**
@@ -68,7 +66,6 @@ public class UserController {
                                            @RequestParam(defaultValue = "10", name = "size") int size)
             throws DataNotFoundException {
         log.info("Getting users with userId = {} orders", userId);
-        PageRequest pageRequest = PageRequest.of(page, size);
-        return orderModelAssembler.toCollectionModel(userService.getUserOrders(userId, pageRequest)) ;
+        return orderModelAssembler.toCollectionModel(userService.getUserOrders(userId, page, size)) ;
     }
 }

@@ -6,8 +6,8 @@ import com.epam.esm.model.User;
 import com.epam.esm.repository.UserRepository;
 import com.epam.esm.services.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.beans.factory.annotation.Qualifier;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +21,7 @@ import static com.epam.esm.exceptions.ExceptionCodesConstants.NOT_FOUND_USER;
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
 
-    public UserServiceImpl(UserRepository repository) {
+    public UserServiceImpl(@Qualifier("userRepositoryImpl") UserRepository repository) {
         this.repository = repository;
     }
 
@@ -34,9 +34,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getUsers(Pageable pageable) throws DataNotFoundException {
+    public List<User> getUsers(int page, int size) throws DataNotFoundException {
         log.info("Getting all users pageable");
-        List<User> userList = repository.findAll(pageable).getContent();
+        List<User> userList = repository.findAll(page, size);
         if (!userList.isEmpty()) {
             return userList;
         }
@@ -45,9 +45,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Order> getUserOrders(Long id, PageRequest pageRequest) throws DataNotFoundException {
+    public List<Order> getUserOrders(Long id, int page, int size) throws DataNotFoundException {
         log.info("Getting all user orders pageable");
-        List<Order> orders = repository.findOrdersByUserId(id, pageRequest).getContent();
+        List<Order> orders = repository.findOrdersByUserId(id, page, size);
         if (!orders.isEmpty()) {
             return orders;
         }
